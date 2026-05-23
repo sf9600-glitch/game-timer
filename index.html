@@ -218,31 +218,33 @@
             flex-wrap: wrap;
         }
 
-        /* 已完成卡片：獨立小卡，任務色淡底、標籤字色跟隨任務色 */
+        /* 已完成卡片：極小面積 */
         .timer-card.is-finished {
-            width: 148px;
-            max-width: 148px;
+            width: 84px;
+            max-width: 84px;
             height: auto;
             aspect-ratio: auto;
             justify-self: start;
             align-self: start;
-            background: color-mix(in srgb, var(--local-raw-color) 16%, var(--card-bg)) !important;
-            border: 3px solid var(--local-raw-color) !important;
+            background: color-mix(in srgb, var(--local-raw-color) 14%, var(--card-bg)) !important;
+            border: 2px solid var(--local-raw-color) !important;
         }
         .timer-card.is-finished .timer-card-bg { display: none; }
+        .timer-card.is-finished .timer-card-inner.finished-layout {
+            padding: 3px 4px 4px;
+        }
         .timer-card.is-finished .finished-layout {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            padding: 8px 10px;
+            gap: 2px;
             height: auto;
             text-align: center;
         }
         .timer-card.is-finished .finished-header {
             position: relative;
             width: 100%;
-            min-height: 22px;
+            min-height: 13px;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -252,12 +254,20 @@
             left: 0;
             top: 0;
             z-index: 2;
+            font-size: 0.45rem;
+            padding: 0 2px;
+            height: 11px;
+            min-width: 0;
+            border-radius: 2px;
+            line-height: 11px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
         .timer-card.is-finished .finished-char-center {
             display: flex;
             justify-content: center;
             align-items: center;
-            max-width: calc(100% - 34px);
+            max-width: calc(100% - 18px);
             margin: 0 auto;
         }
         .timer-card.is-finished .finished-row-2 {
@@ -265,33 +275,49 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            min-width: 0;
         }
         .timer-card.is-finished .finished-row-2 .task-title-display {
-            display: inline-block;
-            width: auto;
+            display: block;
+            width: 100%;
             max-width: 100%;
-            font-size: 0.72rem;
+            font-size: 0.52rem;
             font-weight: 800;
             text-align: center;
             color: var(--local-dark-color) !important;
             background-color: var(--local-badge-bg) !important;
             border-radius: 999px;
-            padding: 2px 10px;
+            padding: 1px 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.25;
         }
-        .timer-card.is-finished .finished-end-line {
-            font-size: 0.68rem;
-            line-height: 1.35;
+        .timer-card.is-finished .finished-meta-line {
+            font-size: 0.48rem;
+            line-height: 1.2;
             text-align: center;
             color: var(--text-sub) !important;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .timer-card.is-finished .finished-elapsed-line {
-            font-size: 0.68rem;
-            line-height: 1.35;
-            text-align: center;
-            color: var(--local-dark-color, var(--text-main)) !important;
-            font-weight: bold;
+        .timer-card.is-finished .char-title-badge {
+            font-size: 0.5rem;
+            max-width: 56px;
+            padding: 0 3px;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
+        .timer-card.is-finished .btn-close-circle {
+            width: 13px;
+            height: 13px;
+            font-size: 0.5rem;
+            border-width: 1px;
+        }
 
         .timer-card-inner {
             position: relative;
