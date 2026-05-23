@@ -611,6 +611,32 @@
         let cloudSyncStatus = '';
         let supabaseClient = null;
         let currentUser = null;
+        /** @type {'login'|'forgot'|'newPassword'} */
+        let cloudAuthView = 'login';
+
+        function getCloudAuthRedirectUrl() {
+            if (location.protocol === 'http:' || location.protocol === 'https:') {
+                const path = location.pathname || '/';
+                return location.origin + (path.endsWith('/') ? path : path.replace(/\/[^/]*$/, '/') || '/');
+            }
+            return 'https://sf9600.netlify.app/';
+        }
+
+        function clearCloudAuthHash() {
+            if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+        }
+
+        function showCloudForgotPassword() {
+            cloudAuthView = 'forgot';
+            updateCloudSyncUI('輸入 Email 以收取重設信');
+            renderSidePanel();
+        }
+
+        function cancelCloudForgotPassword() {
+            cloudAuthView = 'login';
+            updateCloudSyncUI('請登入以同步');
+            renderSidePanel();
+        }
 
         function isSupabaseConfigured() {
             const url = String(SUPABASE_URL || '').trim();
