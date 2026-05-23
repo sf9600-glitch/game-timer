@@ -1782,11 +1782,15 @@
             return h > 0 ? `${d}天${h}時` : `${d}天`;
         }
 
-        function getFinishedMetaLine(finishDate) {
+        function getFinishedEndLineCompact(finishDate) {
             const target = new Date(finishDate);
-            const end = `${target.getMonth() + 1}/${target.getDate()} ${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
-            const elapsedSec = Math.max(0, Math.floor((Date.now() - target.getTime()) / 1000));
-            return `${end}·${formatElapsedSinceFinishCompact(elapsedSec)}`;
+            const dateStr = `${target.getMonth() + 1}/${target.getDate()} ${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
+            return `結束 ${dateStr}`;
+        }
+
+        function getFinishedElapsedLineCompact(finishDate) {
+            const elapsedSec = Math.max(0, Math.floor((Date.now() - new Date(finishDate).getTime()) / 1000));
+            return `已過 ${formatElapsedSinceFinishCompact(elapsedSec)}`;
         }
 
         function applyTimerCardColorVars(card, taskHex, spectrum) {
