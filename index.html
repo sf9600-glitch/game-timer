@@ -1936,8 +1936,8 @@
                     const finishTime = new Date(t.finishDate);
                     const endEl = card.querySelector('.finished-end-line');
                     const elapsedEl = card.querySelector('.finished-elapsed-line');
-                    if (endEl) endEl.textContent = getFinishedEndLineCompact(finishTime);
-                    if (elapsedEl) elapsedEl.textContent = getFinishedElapsedLineCompact(finishTime);
+                    if (endEl) endEl.textContent = getFinishedEndLine(finishTime);
+                    if (elapsedEl) elapsedEl.textContent = getFinishedElapsedLine(finishTime);
                     return;
                 }
 
