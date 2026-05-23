@@ -2,8 +2,10 @@
   "runOnSave.commands": [
     {
       "match": "index\\.html$",
-      "cmd": "bash \"${workspaceFolder}/scripts/deploy.sh\"",
-      "runIn": "terminal"
+      "command": "bash \"${workspaceFolder}/scripts/deploy.sh\"",
+      "runIn": "terminal",
+      "runningStatusMessage": "正在部署到 Netlify…",
+      "finishStatusMessage": "部署指令已執行"
     }
   ]
 }
