@@ -170,6 +170,13 @@
             gap: 12px;
             align-items: start;
         }
+        .timer-section-active .timer-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+        .timer-card--active {
+            max-width: 380px;
+            justify-self: start;
+        }
         
         /* 計時器卡片基礎外殼：任務色延伸為整圈邊框（進行中維持原比例，不設固定寬高） */
         .timer-card { 
