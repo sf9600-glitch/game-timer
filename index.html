@@ -610,7 +610,14 @@
         function getSupabase() {
             if (!isSupabaseConfigured()) return null;
             if (!supabaseClient) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL.trim(), SUPABASE_ANON_KEY.trim());
+                supabaseClient = window.supabase.createClient(SUPABASE_URL.trim(), SUPABASE_ANON_KEY.trim(), {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true,
+                        storage: window.localStorage
+                    }
+                });
             }
             return supabaseClient;
         }
