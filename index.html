@@ -990,11 +990,37 @@
                     </div>
                 </div>`;
             }
+            if (cloudAuthView === 'newPassword') {
+                return `<div class="cloud-sync-box">
+                    <div class="cloud-sync-title">☁ 重設密碼</div>
+                    <p class="cloud-sync-hint">你已從信箱連結進入，請設定新密碼（至少 6 字）。</p>
+                    <input type="password" id="cloudNewPassword" placeholder="新密碼" autocomplete="new-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                    <input type="password" id="cloudNewPassword2" placeholder="再輸入一次新密碼" autocomplete="new-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                    <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                    <div class="cloud-auth-row">
+                        <button type="button" class="btn-adjust" onclick="confirmNewPasswordFromUI()">儲存新密碼</button>
+                        <button type="button" class="btn-adjust" onclick="cancelCloudForgotPassword()">取消</button>
+                    </div>
+                </div>`;
+            }
+            if (cloudAuthView === 'forgot') {
+                return `<div class="cloud-sync-box">
+                    <div class="cloud-sync-title">☁ 忘記密碼</div>
+                    <p class="cloud-sync-hint">輸入註冊 Email，我們會寄重設連結到信箱（請一併查看垃圾郵件）。</p>
+                    <input type="email" id="cloudEmail" placeholder="Email" autocomplete="username" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                    <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                    <div class="cloud-auth-row">
+                        <button type="button" class="btn-adjust" onclick="sendPasswordResetFromUI()">寄送重設信</button>
+                        <button type="button" class="btn-adjust" onclick="cancelCloudForgotPassword()">返回登入</button>
+                    </div>
+                </div>`;
+            }
             return `<div class="cloud-sync-box cloud-sync-unconfigured">
                 <div class="cloud-sync-title">☁ 雲端同步</div>
                 <p class="cloud-sync-hint">註冊／登入後，你的帳號、標籤與進行中計時器會保存在雲端，並在所有裝置間同步。</p>
                 <input type="email" id="cloudEmail" placeholder="Email" autocomplete="username" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
                 <input type="password" id="cloudPassword" placeholder="密碼（至少 6 字）" autocomplete="current-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                <button type="button" class="cloud-forgot-link" onclick="showCloudForgotPassword()">忘記密碼？</button>
                 <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
                 <div class="cloud-auth-row">
                     <button type="button" class="btn-adjust" onclick="signInFromUI()">登入</button>
