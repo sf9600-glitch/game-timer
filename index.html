@@ -1746,7 +1746,7 @@
 
         function buildActiveTimerCard(t, index) {
             const card = document.createElement('div');
-            card.className = 'timer-card';
+            card.className = 'timer-card timer-card--active';
             card.id = `t-${t.id}`;
             const taskObj = config.tasks.find(x => x.name === t.taskBase);
             const taskHex = taskObj ? taskObj.color : '#475569';
@@ -1764,7 +1764,7 @@
                         </div>
                         <span class="card-id-badge">#${index + 1}</span>
                     </div>
-                    <div class="date-label" style="font-size:0.75rem; color:var(--text-sub); text-align:right;">--/--</div>
+                    <div class="date-label" style="color:var(--text-sub);">--/--</div>
                     <div class="time-text">00:00:00</div>
                 </div>`;
             return card;
