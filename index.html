@@ -239,12 +239,26 @@
             height: auto;
             text-align: center;
         }
-        .timer-card.is-finished .finished-row-1 {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 6px;
+        .timer-card.is-finished .finished-header {
+            position: relative;
             width: 100%;
+            min-height: 22px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .timer-card.is-finished .finished-header .card-id-badge {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 2;
+        }
+        .timer-card.is-finished .finished-char-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: calc(100% - 34px);
+            margin: 0 auto;
         }
         .timer-card.is-finished .finished-row-2 {
             width: 100%;
