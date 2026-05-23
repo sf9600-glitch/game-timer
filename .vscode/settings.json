@@ -1,0 +1,11 @@
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "index\\.html$",
+        "isAsync": true,
+        "cmd": "bash \"${workspaceFolder}/scripts/deploy.sh\""
+      }
+    ]
+  }
+}

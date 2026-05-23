@@ -1,0 +1,8 @@
+# Netlify 靜態站設定（根目錄就是網站）
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

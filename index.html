@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲計時器 - 活頁極簡穩定版</title>
+    <style>
+        :root {
+            --primary: #4a90e2; --success: #4caf50; --warning: #ffcc00; --danger: #ef5350;
+            --bg: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-sub: #64748b;
+            --panel-bg: #ffffff; --border-color: #e2e8f0;
+            --color-acc: #64748b; --color-task: #475569; --color-system: #475569; --color-start: #3b82f6;
+            --btn-shadow-opacity: 0.12;
+            --btn-active-shadow-opacity: 0.05;
+            
+            /* 已完成狀態底色 */
+            --finished-bg: #fef2f2;      
+            --finished-border: #fca5a5;  
+            --finished-text: #991b1b;    
+            
+            /* 捲軸美化 */
+            --scroll-thumb: rgba(100, 116, 139, 0.2);
+            --scroll-thumb-hover: rgba(100, 116, 139, 0.35);
+        }
+
+        [data-theme="dark"] {
+            --bg: #090d16; --card-bg: #131c2e; --text-main: #f8fafc; --text-sub: #94a3b8;
+            --panel-bg: #131c2e; --border-color: #1e293b;
+            --btn-shadow-opacity: 0.3;
+            --btn-active-shadow-opacity: 0.1;
+            
+            --finished-bg: #2d1515;
+            --finished-border: #7f1d1d;
+            --finished-text: #fca5a5;
+            
+            --scroll-thumb: rgba(148, 163, 184, 0.2);
+            --scroll-thumb-hover: rgba(148, 163, 184, 0.35);
+        }
+        
+        html { scrollbar-gutter: stable; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px; display: flex; gap: 20px; align-items: flex-start; transition: background 0.3s; }
+        button, input, select { outline: none; -webkit-tap-highlight-color: transparent; }
+
+        /* 控制面板外殼 */
+        .control-panel { 
+            box-sizing: border-box;
+            background: var(--panel-bg); 
+            padding: 12px 8px 12px 12px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05); 
+            width: 340px; min-width: 340px; max-width: 340px;
+            flex-shrink: 0; position: sticky; top: 15px; z-index: 100; 
+            max-height: 95vh; overflow-y: auto; border: 1px solid var(--border-color); 
+            scrollbar-gutter: stable; 
+        }
+
+        #mainDisplay { flex-grow: 1; min-width: 0; }
+
+        /* 捲軸設計 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: var(--scroll-thumb); border-radius: 10px; transition: background-color 0.2s; }
+        ::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover); }
+
+        .config-section { margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--section-color); background-color: color-mix(in srgb, var(--section-color) 4%, var(--panel-bg)); transition: border-top-color 0.3s ease, background-color 0.3s ease; }
+        .config-title { font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); padding: 5px 0; cursor: pointer; user-select: none; transition: color 0.3s ease; }
+        .config-title-static { cursor: default; }
+        .color-input {
+            width: 20px; height: 20px; min-width: 20px; min-height: 20px; max-width: 20px; max-height: 20px;
+            padding: 0; margin: 0; border: 1px solid var(--border-color); background: none; cursor: pointer;
+            border-radius: 3px; flex-shrink: 0; box-sizing: border-box;
+            -webkit-appearance: none; appearance: none;
+        }
+        .color-input::-webkit-color-swatch-wrapper { padding: 0; }
+        .color-input::-webkit-color-swatch { border: none; border-radius: 2px; }
+        .color-input::-moz-color-swatch { border: none; border-radius: 2px; }
+        .color-input-sm { width: 16px; height: 16px; min-width: 16px; min-height: 16px; max-width: 16px; max-height: 16px; }
+        .color-input:active { transform: scale(0.92); transition: transform 0.1s; }
+        .tag-item-box.drag-over { transform: scale(1.02); box-shadow: 0 0 8px rgba(0,0,0,0.2); border-left-width: 8px !important; }
+        .sub-tag-item {
+            cursor: grab; display: inline-flex; align-items: center; gap: 3px;
+            padding: 2px 10px; font-size: 0.65rem; font-weight: bold; border-radius: 999px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .sub-tag-item:active { cursor: grabbing; }
+        .sub-tag-item.drag-over { transform: scale(1.06); box-shadow: 0 0 6px rgba(0,0,0,0.25); }
+
+        .collapsible-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        .collapsible-content.active { grid-template-rows: 1fr; margin-top: 10px; }
+        .collapsible-content > div {
+            min-height: 0; visibility: hidden; opacity: 0;
+            transition: opacity 0.28s ease-out, visibility 0s linear 0.28s;
+        }
+        .collapsible-content.active > div {
+            visibility: visible; opacity: 1;
+            transition: opacity 0.28s ease-out 0.04s, visibility 0s;
+        }
+        .sub-edit-panel {
+            display: grid; grid-template-rows: 0fr; overflow: hidden;
+            transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0;
+        }
+        .sub-edit-panel.open { grid-template-rows: 1fr; margin-top: 10px; }
+        .sub-edit-panel > .sub-edit-inner {
+            min-height: 0; overflow: hidden;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.28s ease-out, visibility 0s linear 0.28s;
+        }
+        .sub-edit-panel.open > .sub-edit-inner {
+            opacity: 1; visibility: visible;
+            transition: opacity 0.28s ease-out 0.04s, visibility 0s;
+        }
+
+        input, select { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; padding: 4px; }
+
+        .btn-adjust, .btn-main, .btn-mini {
+            border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-adjust { padding: 6px 0; background-color: var(--card-bg); color: var(--text-main); font-size: 0.7rem; border: 1px solid var(--border-color); box-shadow: 0 3px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent); margin-bottom: 3px; }
+        .btn-adjust:not(:disabled) { transform: translateY(-3px); }
+        .btn-adjust:not(:disabled):active { transform: translateY(0); box-shadow: 0 0 0 transparent; }
+
+        .btn-main { width: 100%; padding: 10px 12px; background-color: var(--section-color); color: white; font-size: 1rem; border: none; margin-top: 10px; margin-bottom: 5px; box-shadow: 0 4px 0 color-mix(in srgb, black 25%, var(--section-color)); text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .btn-main:not(:disabled) { transform: translateY(-4px); }
+        .btn-main:not(:disabled):active { transform: translateY(0); box-shadow: 0 0 0 transparent; }
+
+        .btn-mini { padding: 2px 8px; font-size: 0.65rem; background-color: var(--card-bg); color: var(--text-sub); border: 1px solid var(--border-color); box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent); margin-bottom: 2px; }
+        .tag-item-box { background: color-mix(in srgb, var(--tag-color) 16%, var(--card-bg)); border: 1px solid color-mix(in srgb, var(--tag-color) 28%, var(--border-color)); border-radius: 8px; padding: 8px; margin-bottom: 4px; cursor: pointer; position: relative; border-left: 5px solid var(--tag-color) !important; transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease; }
+
+        .editable-text { cursor: pointer; border-bottom: 1px dashed currentColor; padding-bottom: 1px; transition: opacity 0.2s; }
+        .editable-text:hover { opacity: 0.7; }
+
+        /* 活頁夾外殼結構 */
+        .account-group { margin-bottom: 25px; display: flex; flex-direction: column; padding: 0; position: relative; }
+        
+        .account-tab-item { 
+            background-color: var(--acc-theme); 
+            color: #ffffff; 
+            text-shadow: 0 1px 1px rgba(0,0,0,0.15); 
+            padding: 5px 12px; 
+            font-weight: bold; 
+            font-size: 0.85rem; 
+            border-radius: 8px 8px 0 0; 
+            align-self: flex-start; 
+            box-shadow: 2px -2px 5px rgba(15, 23, 42, 0.04);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            position: relative;
+            z-index: 2;
+        }
+        .account-content { 
+            padding: 16px; 
+            background-color: color-mix(in srgb, var(--acc-theme) 1.5%, var(--card-bg)); 
+            border-radius: 0 14px 14px 14px; 
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.02);
+            position: relative;
+            top: -1px; 
+            z-index: 1;
+        }
+
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+        
+        /* 計時器卡片基礎外殼：任務色延伸為整圈邊框（進行中維持原比例，不設固定寬高） */
+        .timer-card { 
+            position: relative; border-radius: 12px; padding: 0; display: flex; flex-direction: column; 
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.02);
+            background: var(--card-bg);
+            border: 3px solid var(--local-raw-color);
+            overflow: visible;
+            box-sizing: border-box;
+            width: auto;
+            max-width: none;
+            aspect-ratio: auto;
+            align-self: start;
+            justify-self: stretch;
+        }
+        /* 進度條背景 */
+        .timer-card-bg { 
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+            background: conic-gradient(var(--local-progress-color) var(--p, 100%), transparent 0); 
+            border-radius: 9px;
+            z-index: 0; pointer-events: none; 
+        }
+        
+        /* 帳號內分區：進行中 / 已完成 */
+        .timer-section { margin-bottom: 18px; }
+        .timer-section:last-child { margin-bottom: 0; }
+        .timer-section-title {
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
+        }
+        .timer-section-finished .timer-section-title { color: var(--text-sub); }
+        .finished-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(136px, 148px));
+            gap: 10px;
+            align-items: start;
+        }
+        .finished-by-char { display: flex; flex-direction: column; gap: 14px; }
+        .finished-char-group { display: flex; flex-direction: column; gap: 6px; }
+        .finished-char-group-title {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* 已完成卡片：獨立小卡，任務色淡底、標籤字色跟隨任務色 */
+        .timer-card.is-finished {
+            width: 148px;
+            max-width: 148px;
+            height: auto;
+            aspect-ratio: auto;
+            justify-self: start;
+            align-self: start;
+            background: color-mix(in srgb, var(--local-raw-color) 16%, var(--card-bg)) !important;
+            border: 3px solid var(--local-raw-color) !important;
+        }
+        .timer-card.is-finished .timer-card-bg { display: none; }
+        .timer-card.is-finished .finished-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            height: auto;
+            text-align: center;
+        }
+        .timer-card.is-finished .finished-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+        .timer-card.is-finished .finished-row-2 {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .timer-card.is-finished .finished-row-2 .task-title-display {
+            display: inline-block;
+            width: auto;
+            max-width: 100%;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-align: center;
+            color: var(--local-dark-color) !important;
+            background-color: var(--local-badge-bg) !important;
+            border-radius: 999px;
+            padding: 2px 10px;
+        }
+        .timer-card.is-finished .finished-end-line {
+            font-size: 0.68rem;
+            line-height: 1.35;
+            text-align: center;
+            color: var(--text-sub) !important;
+        }
+        .timer-card.is-finished .finished-elapsed-line {
+            font-size: 0.68rem;
+            line-height: 1.35;
+            text-align: center;
+            color: var(--local-dark-color, var(--text-main)) !important;
+            font-weight: bold;
+        }
+        .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
+
+        .timer-card-inner {
+            position: relative;
+            z-index: 1;
+            border-radius: 9px;
+            overflow: hidden;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            box-sizing: border-box;
+        }
+        /* 關閉鈕：疊在右上角圓弧邊框上 */
+        .btn-close-circle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            color: var(--local-raw-color);
+            border: 2px solid var(--local-raw-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            opacity: 0;
+            transform: translate(38%, -38%) scale(0.85) translateY(-2px);
+            transition: opacity 0.2s, transform 0.15s, background-color 0.15s, box-shadow 0.15s;
+            font-size: 0.7rem;
+            line-height: 1;
+            box-shadow: 0 2px 0 color-mix(in srgb, var(--local-raw-color) 55%, black);
+        }
+        .timer-card:hover .btn-close-circle {
+            opacity: 1;
+            transform: translate(38%, -38%) scale(1) translateY(-2px);
+        }
+        .btn-close-circle:active {
+            transform: translate(38%, -38%) scale(1) translateY(0);
+            box-shadow: 0 0 0 transparent;
+            background-color: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        
+        .time-text { font-size: 1.5rem; font-family: monospace; font-weight: bold; text-align: right; letter-spacing: 0.5px; margin-top: 4px; color: var(--text-main); }
+        .card-id-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            background: color-mix(in srgb, var(--local-raw-color) 22%, var(--card-bg));
+            color: var(--local-raw-color);
+            border: 1px solid color-mix(in srgb, var(--local-raw-color) 38%, transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 18px;
+            flex-shrink: 0;
+        }
+        
+        /* 角色標籤 */
+        .char-title-badge { font-size: 0.75rem; border-radius: 4px; padding: 2px 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-weight: bold; text-shadow: 0 1px 1px rgba(0,0,0,0.2); }
+
+        /* 任務標籤：膠囊形、同色系深字 */
+        .task-title-display {
+            font-size: 0.8rem; font-weight: bold; 
+            color: var(--local-dark-color); 
+            background-color: var(--local-badge-bg); 
+            padding: 2px 10px; border-radius: 999px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .char-title-badge.contrast-light { text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .char-title-badge.contrast-dark { text-shadow: none; }
+        .timer-card .time-text, .timer-card .date-label { transition: color 0.25s ease; }
+
+        /* DHMS 輸入區 */
+        .dhms-container { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; gap: 4px; }
+        .dhms-group { display: flex; align-items: center; gap: 2px; font-size: 0.75rem; font-weight: bold; color: var(--text-sub); }
+        .dhms-input { width: 35px; text-align: center; font-family: monospace; font-weight: bold; border-radius: 4px; padding: 2px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); }
+        .dhms-input::-webkit-outer-spin-button, .dhms-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .dhms-input[type=number] { -moz-appearance: textfield; }
+
+        #btn-expand-all-tasks { display: none; margin: 0; padding: 3px 8px; font-weight: bold; font-size: 0.65rem; background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent); transform: translateY(-2px); }
+        #btn-expand-all-tasks:active { transform: translateY(0); box-shadow: 0 0 0 transparent; }
+        .config-section:has(#taskContent.active) #btn-expand-all-tasks { display: block; }
+
+        /* 預警：忽略任務自訂色，統一紅色系（加強閃爍） */
+        .timer-card.is-warning-blinking {
+            border-color: #ef5350 !important;
+            animation: warning-card-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-card-pulse {
+            0%, 100% {
+                border-color: #ef5350;
+                box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.55), 0 4px 10px rgba(15, 23, 42, 0.06);
+            }
+            50% {
+                border-color: #b91c1c;
+                box-shadow: 0 0 0 5px rgba(239, 83, 80, 0.5), 0 0 22px rgba(239, 83, 80, 0.55);
+            }
+        }
+        .timer-card.is-warning-blinking .timer-card-bg {
+            background: conic-gradient(rgba(239, 83, 80, 0.78) var(--p, 100%), transparent 0) !important;
+            animation: warning-progress-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-progress-pulse {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.35; filter: brightness(1.15); }
+        }
+        .timer-card.is-warning-blinking .char-title-badge {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+            animation: warning-badge-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-badge-pulse {
+            0%, 100% { background-color: #dc2626; }
+            50% { background-color: #991b1b; }
+        }
+        .timer-card.is-warning-blinking .task-title-display {
+            color: #991b1b !important;
+            background-color: rgba(239, 83, 80, 0.35) !important;
+        }
+        .timer-card.is-warning-blinking .time-text,
+        .timer-card.is-warning-blinking .date-label {
+            color: #b91c1c !important;
+            animation: warning-text-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-text-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.55; }
+        }
+        .timer-card.is-warning-blinking .card-id-badge {
+            background: rgba(239, 83, 80, 0.35) !important;
+            color: #991b1b !important;
+            border-color: #ef5350 !important;
+        }
+        .timer-card.is-warning-blinking .btn-close-circle {
+            color: #991b1b !important;
+            border-color: #ef5350 !important;
+        }
+        .timer-card.is-warning-blinking .timer-card-inner {
+            animation: pulse-warning 0.85s ease-in-out infinite;
+        }
+        @keyframes pulse-warning {
+            0%, 100% { background-color: rgba(239, 83, 80, 0.1); }
+            50% { background-color: rgba(239, 83, 80, 0.42); }
+        }
+
+        #btn-clear-finished {
+            background-color: transparent;
+            color: var(--text-sub);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            transition: background-color 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+        #btn-clear-finished.has-finished-pending {
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+            border: 2px solid #ef5350 !important;
+            font-weight: 800 !important;
+            animation: clear-finished-attention 1.25s ease-in-out infinite;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 4px 0 #b91c1c, 0 0 14px rgba(239, 83, 80, 0.45) !important;
+        }
+        @keyframes clear-finished-attention {
+            0%, 100% { box-shadow: 0 4px 0 #b91c1c, 0 0 10px rgba(239, 83, 80, 0.35); }
+            50% { box-shadow: 0 4px 0 #b91c1c, 0 0 20px 6px rgba(239, 83, 80, 0.65); }
+        }
+        [data-theme="dark"] #btn-clear-finished.has-finished-pending {
+            background-color: #3f1515 !important;
+            color: #fca5a5 !important;
+            border-color: #f87171 !important;
+            box-shadow: 0 4px 0 #7f1d1d, 0 0 14px rgba(239, 83, 80, 0.4) !important;
+        }
+
+        .undo-toast { position: fixed; bottom: 25px; right: 25px; background-color: var(--text-main); color: var(--card-bg); padding: 12px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+        .undo-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .undo-btn-text { font-weight: bold; font-size: 0.95rem; cursor: pointer; }
+
+        /* 手機版側欄收合 */
+        .panel-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 200;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.12);
+            align-items: center;
+            justify-content: center;
+        }
+        .panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            z-index: 140;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .panel-overlay.show { display: block; opacity: 1; pointer-events: auto; }
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .card-tags-row { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
+        .char-title-badge { flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; padding: 10px; padding-top: 58px; gap: 12px; }
+            .panel-toggle { display: flex; }
+            .control-panel {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: min(320px, 88vw);
+                min-width: unset;
+                max-width: 88vw;
+                max-height: 100vh;
+                border-radius: 0 15px 15px 0;
+                transform: translateX(-105%);
+                transition: transform 0.3s ease;
+                z-index: 150;
+            }
+            .control-panel.panel-open { transform: translateX(0); }
+            .timer-grid { grid-template-columns: 1fr; }
+        }
+
+        .cloud-sync-box {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .cloud-sync-title { font-size: 0.78rem; font-weight: bold; margin-bottom: 6px; }
+        .cloud-sync-hint { font-size: 0.68rem; color: var(--text-sub); line-height: 1.45; margin: 0; }
+        .cloud-user-line { font-size: 0.72rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cloud-status-line { font-size: 0.68rem; color: var(--text-sub); margin-top: 6px; }
+        .cloud-sync-unconfigured { border-color: color-mix(in srgb, var(--danger) 35%, var(--border-color)); }
+        .cloud-auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+        .cloud-auth-row.single { grid-template-columns: 1fr; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <button type="button" class="panel-toggle" id="panelToggle" onclick="toggleSidePanel()" aria-label="開啟設定面板">☰</button>
+    <div class="panel-overlay" id="panelOverlay" onclick="closeSidePanel()"></div>
+
+    <div class="control-panel" id="sidePanel"></div>
+    <div id="mainDisplay"></div>
+
+    <div id="undoToast" class="undo-toast">
+        <div class="undo-btn-text" onclick="undoAction()" id="undoText">↩ 復原</div>
+        <span onclick="dismissUndo()" style="margin-left:10px; cursor:pointer; font-weight: bold;">&times;</span>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'GameTimer_Config_V7';
+        const ACTIVE_TIMERS_KEY = 'GameTimer_Active_Single';
+        const THEME_KEY = 'GameTimer_Theme_Preference';
+        const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
+        const LOCAL_UPDATED_KEY = 'GameTimer_LocalUpdatedAt';
+
+        /* 部署時填入 Supabase 專案的 URL 與 Publishable key（見 DEPLOY.md） */
+        const SUPABASE_URL = 'https://gnfukohkisiknbbnxjce.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_06A2mHaxzTXHx6DhQLI2XQ_zSoaveJv';
+        
+        const defaultAccColors = ['#4a90e2', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
+        let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set() };
+        const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
+        let dragSourceTaskIdx = null;
+        let dragSourceSub = { taskIdx: null, subIdx: null };
+
+        const defaultConfig = {
+            colors: { acc: '#64748b', task: '#475569', start: '#4a90e2', sys: '#475569' },
+            accounts: [
+                { email: '帳號1', characters: ['角色1'], color: '#4a90e2' },
+                { email: '帳號2', characters: ['角色2'], color: '#e28743' }
+            ],
+            tasks: [
+                { name: '訓練', subs: ['盾兵', '矛兵', '射手'], color: '#f6b26b' },
+                { name: '寵物', subs: ['泰坦巨鳥', '劍齒虎', '雪猿', '洞獅', '雪豹', '板齒犀'], color: '#22d3ee' },
+                { name: '建築', subs: ['大熔爐', '盾兵營', '矛兵營', '射手營', '大使館'], color: '#b4a7d6' },
+                { name: '採集', subs: ['生肉', '木材', '煤礦', '鐵礦', '聯盟資源'], color: '#3b82f6' },
+                { name: '研究', subs: ['科技研究所', '戰爭研究所'], color: '#76a5af' },
+                { name: '專家', subs: ['西里爾', '艾格妮絲', '霍爾格', '羅慕路斯', '巴爾德', '法比安', '瓦萊莉亞', '羅妮', '凱西'], color: '#93c47d' },
+                { name: '其他', subs: ['掛機探險', '捐獻'], color: '#a855f7' }
+            ],
+            undoTime: 10
+        };
+
+        let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
+        if (config.undoTime === undefined) config.undoTime = 10;
+        if (!localStorage.getItem(STORAGE_KEY)) config = defaultConfig;
+
+        let undoStack = [];
+        let undoTimerInterval = null; 
+        let undoTimeout = null; 
+        let currentUndoTimeLeft = 0;
+        let isDispatchingTimers = false;
+
+        let cloudSyncTimer = null;
+        let cloudPollInterval = null;
+        let isApplyingCloudData = false;
+        let lastCloudUpdatedAt = 0;
+        let lastCloudUploadAt = 0;
+        let cloudSyncStatus = '';
+        let supabaseClient = null;
+        let currentUser = null;
+
+        function isSupabaseConfigured() {
+            const url = String(SUPABASE_URL || '').trim();
+            const key = String(SUPABASE_ANON_KEY || '').trim();
+            return !!(url && key && url.startsWith('https://') && !url.includes('YOUR_'));
+        }
+
+        function getSupabase() {
+            if (!isSupabaseConfigured()) return null;
+            if (!supabaseClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL.trim(), SUPABASE_ANON_KEY.trim());
+            }
+            return supabaseClient;
+        }
+
+        function isCloudSyncActive() {
+            return !!(getSupabase() && currentUser);
+        }
+
+        async function fetchCloudRecord() {
+            const sb = getSupabase();
+            if (!sb || !currentUser) return null;
+            const { data, error } = await sb
+                .from('timer_snapshots')
+                .select('payload, updated_at')
+                .eq('user_id', currentUser.id)
+                .maybeSingle();
+            if (error) throw new Error(error.message || '讀取失敗');
+            if (!data || !data.payload) return null;
+            const payload = data.payload;
+            const updatedAt = data.updated_at ? new Date(data.updated_at).getTime() : (payload.updatedAt || 0);
+            return { ...payload, updatedAt };
+        }
+
+        async function putCloudRecord(payload) {
+            const sb = getSupabase();
+            if (!sb || !currentUser) return;
+            const updatedAt = new Date(payload.updatedAt || Date.now()).toISOString();
+            const { error } = await sb.from('timer_snapshots').upsert({
+                user_id: currentUser.id,
+                payload,
+                updated_at: updatedAt
+            }, { onConflict: 'user_id' });
+            if (error) throw new Error(error.message || '上傳失敗');
+        }
+
+        function getClientId() {
+            const key = 'GameTimer_ClientId';
+            let id = localStorage.getItem(key);
+            if (!id) {
+                id = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+                localStorage.setItem(key, id);
+            }
+            return id;
+        }
+
+        function touchLocalUpdated() {
+            const t = Date.now();
+            localStorage.setItem(LOCAL_UPDATED_KEY, String(t));
+            return t;
+        }
+
+        function getLocalUpdatedAt() {
+            return parseInt(localStorage.getItem(LOCAL_UPDATED_KEY) || '0', 10) || 0;
+        }
+
+        function getActiveTimers() {
+            return JSON.parse(localStorage.getItem(ACTIVE_TIMERS_KEY) || '[]');
+        }
+
+        function setActiveTimers(data) {
+            localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(data));
+            touchLocalUpdated();
+            scheduleCloudSync();
+        }
+
+        function buildCloudPayload() {
+            return {
+                config,
+                activeTimers: getActiveTimers(),
+                undoStack,
+                theme: localStorage.getItem(THEME_KEY) || 'auto',
+                updatedAt: Math.max(getLocalUpdatedAt(), Date.now()),
+                clientId: getClientId()
+            };
+        }
+
+        function updateCloudSyncUI(text) {
+            if (text !== undefined) cloudSyncStatus = text;
+            const el = document.getElementById('cloudSyncStatus');
+            if (el) el.textContent = cloudSyncStatus;
+        }
+
+        function applyCloudPayload(data) {
+            if (!data) return;
+            isApplyingCloudData = true;
+            try {
+                if (data.config) {
+                    config = data.config;
+                    if (config.undoTime === undefined) config.undoTime = 10;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+                }
+                if (data.activeTimers) {
+                    localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(data.activeTimers));
+                }
+                if (data.undoStack) {
+                    undoStack = Array.isArray(data.undoStack) ? data.undoStack : [];
+                    persistUndoStack({ skipCloud: true });
+                }
+                if (data.theme) {
+                    localStorage.setItem(THEME_KEY, data.theme);
+                    setTheme(data.theme, { skipCloud: true });
+                }
+                if (data.updatedAt) {
+                    localStorage.setItem(LOCAL_UPDATED_KEY, String(data.updatedAt));
+                    lastCloudUpdatedAt = data.updatedAt;
+                }
+                renderSidePanel();
+                refreshMainDisplay();
+                dispatchTimersToDOM();
+            } finally {
+                isApplyingCloudData = false;
+            }
+        }
+
+        async function uploadToCloud() {
+            if (!isCloudSyncActive() || isApplyingCloudData) return;
+            const payload = buildCloudPayload();
+            await putCloudRecord(payload);
+            lastCloudUploadAt = Date.now();
+            lastCloudUpdatedAt = payload.updatedAt;
+            updateCloudSyncUI('已同步至雲端');
+        }
+
+        function scheduleCloudSync() {
+            if (!isCloudSyncActive() || isApplyingCloudData) return;
+            updateCloudSyncUI('同步中…');
+            clearTimeout(cloudSyncTimer);
+            cloudSyncTimer = setTimeout(() => {
+                uploadToCloud().catch(err => {
+                    console.error(err);
+                    updateCloudSyncUI('同步失敗');
+                });
+            }, 900);
+        }
+
+        function flushCloudSyncNow() {
+            if (!isCloudSyncActive() || isApplyingCloudData) return;
+            clearTimeout(cloudSyncTimer);
+            return uploadToCloud().catch(err => {
+                console.error(err);
+                updateCloudSyncUI('同步失敗');
+            });
+        }
+
+        async function mergeCloudFromRemote() {
+            if (!isCloudSyncActive()) return;
+            updateCloudSyncUI('正在載入雲端…');
+            const cloudPayload = await fetchCloudRecord();
+            const localPayload = buildCloudPayload();
+
+            if (!cloudPayload) {
+                await uploadToCloud();
+                updateCloudSyncUI('已將本機資料上傳至雲端');
+                return;
+            }
+
+            lastCloudUpdatedAt = cloudPayload.updatedAt || 0;
+            if (cloudPayload.updatedAt > localPayload.updatedAt) {
+                applyCloudPayload(cloudPayload);
+                updateCloudSyncUI('已從雲端還原較新資料');
+            } else if (localPayload.updatedAt > cloudPayload.updatedAt) {
+                await uploadToCloud();
+            } else {
+                updateCloudSyncUI('已與雲端一致');
+            }
+        }
+
+        function stopCloudPoll() {
+            if (cloudPollInterval) {
+                clearInterval(cloudPollInterval);
+                cloudPollInterval = null;
+            }
+        }
+
+        function startCloudPoll() {
+            stopCloudPoll();
+            if (!isCloudSyncActive()) return;
+            cloudPollInterval = setInterval(async () => {
+                if (isApplyingCloudData || document.visibilityState === 'hidden') return;
+                try {
+                    const cloudPayload = await fetchCloudRecord();
+                    if (!cloudPayload || !cloudPayload.updatedAt) return;
+                    if (cloudPayload.clientId === getClientId() && cloudPayload.updatedAt <= lastCloudUploadAt + 2000) return;
+                    if (cloudPayload.updatedAt <= lastCloudUpdatedAt) return;
+                    if (cloudPayload.updatedAt > getLocalUpdatedAt()) {
+                        applyCloudPayload(cloudPayload);
+                        updateCloudSyncUI('已從其他裝置更新');
+                    }
+                } catch (e) { /* 輪詢失敗時靜默 */ }
+            }, 20000);
+        }
+
+        async function syncNowCloud() {
+            if (!isCloudSyncActive()) {
+                alert('請先登入帳號');
+                return;
+            }
+            try {
+                await mergeCloudFromRemote();
+            } catch (e) {
+                console.error(e);
+                updateCloudSyncUI('同步失敗');
+                alert('同步失敗：' + (e.message || e));
+            }
+        }
+
+        async function signInFromUI() {
+            const sb = getSupabase();
+            if (!sb) { alert('尚未設定 Supabase，請見 DEPLOY.md'); return; }
+            const email = document.getElementById('cloudEmail')?.value.trim();
+            const password = document.getElementById('cloudPassword')?.value;
+            if (!email || !password) { alert('請輸入 Email 與密碼'); return; }
+            updateCloudSyncUI('登入中…');
+            const { error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) {
+                updateCloudSyncUI('登入失敗');
+                alert(error.message);
+                return;
+            }
+            const { data: { session } } = await sb.auth.getSession();
+            currentUser = session?.user ?? null;
+            await mergeCloudFromRemote();
+            startCloudPoll();
+            renderSidePanel();
+        }
+
+        async function signUpFromUI() {
+            const sb = getSupabase();
+            if (!sb) { alert('尚未設定 Supabase，請見 DEPLOY.md'); return; }
+            const email = document.getElementById('cloudEmail')?.value.trim();
+            const password = document.getElementById('cloudPassword')?.value;
+            if (!email || !password) { alert('請輸入 Email 與密碼'); return; }
+            if (password.length < 6) { alert('密碼至少 6 個字元'); return; }
+            updateCloudSyncUI('註冊中…');
+            const { data, error } = await sb.auth.signUp({ email, password });
+            if (error) {
+                updateCloudSyncUI('註冊失敗');
+                alert(error.message);
+                return;
+            }
+            if (data.session) {
+                currentUser = data.user;
+                await mergeCloudFromRemote();
+                startCloudPoll();
+                renderSidePanel();
+                return;
+            }
+            alert('註冊成功！若 Supabase 有開啟 Email 驗證，請先到信箱點確認連結再登入。');
+            updateCloudSyncUI('請至信箱完成驗證後登入');
+        }
+
+        async function signOutCloud() {
+            const sb = getSupabase();
+            if (sb) await sb.auth.signOut();
+            currentUser = null;
+            stopCloudPoll();
+            updateCloudSyncUI('已登出（本機資料仍保留）');
+            renderSidePanel();
+        }
+
+        function renderCloudSyncHtml() {
+            if (!isSupabaseConfigured()) {
+                return `<div class="cloud-sync-box cloud-sync-unconfigured">
+                    <div class="cloud-sync-title">☁ 雲端同步</div>
+                    <p class="cloud-sync-hint">請先在 index.html 填入 SUPABASE_URL 與 SUPABASE_ANON_KEY，並依 DEPLOY.md 建立資料庫後再部署上線。</p>
+                    <div class="cloud-status-line" id="cloudSyncStatus">後端未設定</div>
+                </div>`;
+            }
+            const loggedIn = !!currentUser;
+            const email = loggedIn ? (currentUser.email || '已登入') : '';
+            const status = cloudSyncStatus || (loggedIn ? '已登入' : '請登入以同步');
+            const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+            if (loggedIn) {
+                return `<div class="cloud-sync-box">
+                    <div class="cloud-sync-title">☁ 雲端同步</div>
+                    <p class="cloud-sync-hint">已登入帳號的設定與計時器會自動同步；手機、平板、電腦登入同一帳號即可共用。</p>
+                    <div class="cloud-user-line" title="${esc(email)}">${esc(email)}</div>
+                    <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                    <div class="cloud-auth-row" style="margin-top:8px;">
+                        <button type="button" class="btn-adjust" onclick="syncNowCloud()">立即同步</button>
+                        <button type="button" class="btn-adjust" onclick="signOutCloud()" style="color:var(--danger);">登出</button>
+                    </div>
+                </div>`;
+            }
+            return `<div class="cloud-sync-box cloud-sync-unconfigured">
+                <div class="cloud-sync-title">☁ 雲端同步</div>
+                <p class="cloud-sync-hint">註冊／登入後，你的帳號、標籤與進行中計時器會保存在雲端，並在所有裝置間同步。</p>
+                <input type="email" id="cloudEmail" placeholder="Email" autocomplete="username" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                <input type="password" id="cloudPassword" placeholder="密碼（至少 6 字）" autocomplete="current-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                <div class="cloud-auth-row">
+                    <button type="button" class="btn-adjust" onclick="signInFromUI()">登入</button>
+                    <button type="button" class="btn-adjust" onclick="signUpFromUI()">註冊</button>
+                </div>
+            </div>`;
+        }
+
+        async function initCloudSync() {
+            const sb = getSupabase();
+            if (!sb) {
+                cloudSyncStatus = '後端未設定';
+                return;
+            }
+            const { data: { session } } = await sb.auth.getSession();
+            currentUser = session?.user ?? null;
+            if (currentUser) {
+                try {
+                    await mergeCloudFromRemote();
+                    startCloudPoll();
+                } catch (err) {
+                    console.error(err);
+                    updateCloudSyncUI('雲端載入失敗');
+                }
+            }
+            sb.auth.onAuthStateChange(async (event, session) => {
+                currentUser = session?.user ?? null;
+                if (event === 'SIGNED_IN' && currentUser) {
+                    try {
+                        await mergeCloudFromRemote();
+                        startCloudPoll();
+                    } catch (e) {
+                        console.error(e);
+                        updateCloudSyncUI('雲端載入失敗');
+                    }
+                    renderSidePanel();
+                } else if (event === 'SIGNED_OUT') {
+                    stopCloudPoll();
+                    renderSidePanel();
+                }
+            });
+        }
+
+        function getLiteColorSpectrum(hex) {
+            if(!hex) hex = '#475569';
+            hex = hex.replace('#', '');
+            if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+            let r = parseInt(hex.substring(0,2), 16), g = parseInt(hex.substring(2,4), 16), b = parseInt(hex.substring(4,6), 16);
+            
+            let lr = Math.round(r + (255 - r) * 0.65); let lg = Math.round(g + (255 - g) * 0.65); let lb = Math.round(b + (255 - b) * 0.65);
+            let br = Math.round(r + (255 - r) * 0.85); let bg = Math.round(g + (255 - g) * 0.85); let bb = Math.round(b + (255 - b) * 0.85);
+            /* 進度條：降低漂向白色的比例，讓底色更深、更易辨識 */
+            let pr = Math.round(r + (255 - r) * 0.52); let pg = Math.round(g + (255 - g) * 0.52); let pb = Math.round(b + (255 - b) * 0.52);
+            let dr = Math.round(r * 0.7), dg = Math.round(g * 0.7), db = Math.round(b * 0.7);
+            
+            const badgeBg = `rgb(${br}, ${bg}, ${bb})`;
+            const progress = `rgb(${pr}, ${pg}, ${pb})`;
+            const badgeL = getRelativeLuminance(br, bg, bb);
+            const rawL = getRelativeLuminance(r, g, b);
+            let subText = `rgb(${dr}, ${dg}, ${db})`;
+            let subBorder = `color-mix(in srgb, rgb(${r}, ${g}, ${b}) 48%, #64748b)`;
+            if (badgeL > 0.68 || rawL > 0.58) {
+                const shade = 0.38;
+                const edge = 0.52;
+                subText = `rgb(${Math.round(r * shade)}, ${Math.round(g * shade)}, ${Math.round(b * shade)})`;
+                subBorder = `rgb(${Math.round(r * edge)}, ${Math.round(g * edge)}, ${Math.round(b * edge)})`;
+            }
+            return {
+                raw: `rgb(${r}, ${g}, ${b})`, lite: `rgb(${lr}, ${lg}, ${lb})`,
+                badgeBg, progress, dark: `rgb(${dr}, ${dg}, ${db})`,
+                subText, subBorder,
+                badgeText: getContrastTextColor(badgeBg),
+                progressText: getContrastTextColor(progress)
+            };
+        }
+
+        function parseColorToRgb(color) {
+            if (!color) return { r: 128, g: 128, b: 128 };
+            if (color.startsWith('#')) {
+                let hex = color.replace('#', '');
+                if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+                return { r: parseInt(hex.slice(0,2), 16), g: parseInt(hex.slice(2,4), 16), b: parseInt(hex.slice(4,6), 16) };
+            }
+            const m = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+            if (m) return { r: +m[1], g: +m[2], b: +m[3] };
+            return { r: 128, g: 128, b: 128 };
+        }
+
+        function getRelativeLuminance(r, g, b) {
+            const lin = [r, g, b].map(c => {
+                c /= 255;
+                return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+        }
+
+        /** 依背景亮度回傳深色或淺色字（WCAG 相對亮度） */
+        function getContrastTextColor(bgColor, opts = {}) {
+            const { r, g, b } = parseColorToRgb(bgColor);
+            const L = getRelativeLuminance(r, g, b);
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+            const lightText = '#ffffff';
+            const darkText = isDarkTheme ? '#f8fafc' : '#0f172a';
+            if (opts.muted) {
+                return L > 0.52
+                    ? (isDarkTheme ? '#94a3b8' : '#475569')
+                    : 'rgba(255,255,255,0.85)';
+            }
+            return L > 0.52 ? darkText : lightText;
+        }
+
+        function getCardSurfaceRgb() {
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDarkTheme ? { r: 19, g: 28, b: 46 } : { r: 255, g: 255, b: 255 };
+        }
+
+        function blendRgb(a, b, ratio) {
+            return {
+                r: Math.round(a.r * (1 - ratio) + b.r * ratio),
+                g: Math.round(a.g * (1 - ratio) + b.g * ratio),
+                b: Math.round(a.b * (1 - ratio) + b.b * ratio)
+            };
+        }
+
+        function applyTimerCardReadableText(card, taskHex, pPercent, isFinished) {
+            const timeEl = card.querySelector('.time-text');
+            const dateEl = card.querySelector('.date-label');
+            if (!timeEl || !dateEl) return;
+            if (isFinished || card.classList.contains('is-finished') || card.classList.contains('is-warning-blinking')) {
+                timeEl.style.color = '';
+                dateEl.style.color = '';
+                return;
+            }
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const progressRgb = parseColorToRgb(spectrum.progress);
+            const cardRgb = getCardSurfaceRgb();
+            const blendRatio = Math.min(1, (pPercent / 100) * 0.9);
+            const surface = blendRgb(cardRgb, progressRgb, blendRatio);
+            const surfaceStr = `rgb(${surface.r}, ${surface.g}, ${surface.b})`;
+            timeEl.style.color = getContrastTextColor(surfaceStr);
+            dateEl.style.color = getContrastTextColor(surfaceStr, { muted: true });
+        }
+
+        function setTheme(theme, opts = {}) {
+            theme === 'auto' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem(THEME_KEY, theme);
+            if (!opts.skipCloud) {
+                touchLocalUpdated();
+                scheduleCloudSync();
+            }
+            updateTimersDataTicker();
+        }
+        if (localStorage.getItem(THEME_KEY)) setTheme(localStorage.getItem(THEME_KEY), { skipCloud: true });
+
+        function syncCollapsibleClasses() {
+            SECTION_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('active', uiState.openSection === id);
+            });
+        }
+
+        function smartToggle(id) {
+            if (!SECTION_IDS.includes(id)) return;
+
+            const prevSection = uiState.openSection;
+            const leavingTask = prevSection === 'taskContent' && id !== 'taskContent';
+            const hadOpenTaskSubs = uiState.allTasksExpanded || uiState.editingTaskIdx !== null
+                || !!document.querySelector('.sub-edit-panel.open');
+
+            uiState.openSection = (uiState.openSection === id) ? null : id;
+            if (!uiState.openSection) uiState.openSection = 'startContent';
+
+            if (uiState.openSection !== 'taskContent') {
+                uiState.allTasksExpanded = false;
+                uiState.editingTaskIdx = null;
+                uiState.collapsedTaskIndices.clear();
+            }
+
+            syncCollapsibleClasses();
+
+            if (leavingTask || hadOpenTaskSubs) {
+                document.querySelectorAll('.sub-edit-panel.open').forEach(el => el.classList.remove('open'));
+            }
+
+            if (hadOpenTaskSubs && uiState.openSection !== 'taskContent') {
+                setTimeout(() => renderSidePanel(), 320);
+            }
+        }
+
+        function isTaskSubPanelOpen(i) {
+            if (uiState.allTasksExpanded) return !uiState.collapsedTaskIndices.has(i);
+            return uiState.editingTaskIdx === i;
+        }
+
+        function syncSubEditPanels() {
+            document.querySelectorAll('.sub-edit-panel').forEach(el => {
+                const m = el.id.match(/^sub-edit-(\d+)$/);
+                if (!m) return;
+                const i = parseInt(m[1], 10);
+                el.classList.toggle('open', isTaskSubPanelOpen(i));
+            });
+        }
+
+        function updateExpandAllButtonLabel() {
+            const btn = document.getElementById('btn-expand-all-tasks');
+            if (btn) btn.textContent = uiState.allTasksExpanded ? '收合全部' : '展開全部';
+        }
+
+        function toggleExpandAllTasks() {
+            uiState.allTasksExpanded = !uiState.allTasksExpanded;
+            uiState.collapsedTaskIndices.clear();
+            if (uiState.allTasksExpanded) uiState.editingTaskIdx = null;
+            syncSubEditPanels();
+            updateExpandAllButtonLabel();
+        }
+
+        function toggleEditTask(i) {
+            if (uiState.allTasksExpanded) {
+                if (uiState.collapsedTaskIndices.has(i)) uiState.collapsedTaskIndices.delete(i);
+                else uiState.collapsedTaskIndices.add(i);
+                syncSubEditPanels();
+                return;
+            }
+            uiState.editingTaskIdx = (uiState.editingTaskIdx === i) ? null : i;
+            syncSubEditPanels();
+        }
+
+        function updateCharColor(accIdx, charIdx, color) {
+            let char = config.accounts[accIdx].characters[charIdx];
+            if (typeof char === 'string') config.accounts[accIdx].characters[charIdx] = { name: char, color: color };
+            else char.color = color;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            touchLocalUpdated();
+            scheduleCloudSync();
+            renderSidePanel(); refreshMainDisplay(); 
+        }
+
+        function getCharColor(accEmail, charName) {
+            let acc = config.accounts.find(a => a.email === accEmail);
+            if (!acc) return '#94a3b8';
+            let char = acc.characters.find(c => (typeof c === 'string' ? c : c.name) === charName);
+            return char && char.color ? char.color : '#94a3b8';
+        }
+
+        function handleDragStart(e, index) {
+            if (e.target.closest('.sub-tag-item')) return;
+            dragSourceTaskIdx = index;
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => { e.currentTarget.style.opacity = '0.4'; }, 0);
+        }
+        function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+        function handleDragEnter(e) { let box = e.target.closest('.tag-item-box'); if(box && !e.target.closest('.sub-tag-item')) box.classList.add('drag-over'); }
+        function handleDragLeave(e) { let box = e.target.closest('.tag-item-box'); if(box) box.classList.remove('drag-over'); }
+        function handleDrop(e, targetIndex) {
+            e.preventDefault();
+            if (e.target.closest('.sub-tag-item')) return false;
+            let box = e.target.closest('.tag-item-box');
+            if(box) box.classList.remove('drag-over');
+            if (dragSourceTaskIdx !== null && dragSourceTaskIdx !== targetIndex) {
+                let tasks = config.tasks;
+                let dragged = tasks.splice(dragSourceTaskIdx, 1)[0];
+                tasks.splice(targetIndex, 0, dragged);
+                saveConfig();
+            }
+            return false;
+        }
+        function handleDragEnd(e) {
+            if (e.target.closest('.sub-tag-item')) return;
+            e.currentTarget.style.opacity = '1';
+            dragSourceTaskIdx = null;
+            document.querySelectorAll('.tag-item-box').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function handleSubDragStart(e, taskIdx, subIdx) {
+            e.stopPropagation();
+            dragSourceSub = { taskIdx, subIdx };
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => { e.currentTarget.style.opacity = '0.4'; }, 0);
+        }
+        function handleSubDragOver(e) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'move'; return false; }
+        function handleSubDragEnter(e) {
+            e.stopPropagation();
+            const el = e.target.closest('.sub-tag-item');
+            if (el) el.classList.add('drag-over');
+        }
+        function handleSubDragLeave(e) {
+            e.stopPropagation();
+            const el = e.target.closest('.sub-tag-item');
+            if (el) el.classList.remove('drag-over');
+        }
+        function handleSubDrop(e, taskIdx, targetSubIdx) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll('.sub-tag-item').forEach(el => el.classList.remove('drag-over'));
+            const { taskIdx: srcTask, subIdx: srcSub } = dragSourceSub;
+            if (srcTask === null || srcSub === null || srcTask !== taskIdx || srcSub === targetSubIdx) return false;
+            const subs = config.tasks[taskIdx].subs;
+            const dragged = subs.splice(srcSub, 1)[0];
+            subs.splice(targetSubIdx, 0, dragged);
+            saveConfig();
+            return false;
+        }
+        function handleSubDragEnd(e) {
+            e.stopPropagation();
+            e.currentTarget.style.opacity = '1';
+            dragSourceSub = { taskIdx: null, subIdx: null };
+            document.querySelectorAll('.sub-tag-item').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function renderSidePanel() {
+            const panel = document.getElementById('sidePanel');
+            panel.innerHTML = `
+                <div class="config-section" id="sec-acc" style="--section-color: ${config.colors.acc};">
+                    <div class="config-title" onclick="smartToggle('accContent')"><span>帳號管理</span><input type="color" class="color-input" value="${config.colors.acc}" onclick="event.stopPropagation()" onchange="updateSectionColor('acc', this.value)"></div>
+                    <div id="accContent" class="collapsible-content ${uiState.openSection === 'accContent' ? 'active' : ''}"><div>
+                        <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="帳號名稱" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">新增</button></div>
+                        <div id="emailList">${config.accounts.map((acc, i) => `
+                            <div style="background-color:var(--bg); padding:8px; border-radius:8px; margin-bottom:4px; border:1px solid var(--border-color);">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span class="editable-text" style="font-weight:bold;" onclick="renameAccount(${i})">${acc.email}</span>
+                                    <div style="display:flex; gap:5px; align-items:center;">
+                                        <input type="color" class="color-input" value="${acc.color || defaultAccColors[i%6]}" onchange="updateAccountColor(${i}, this.value)">
+                                        <button class="btn-mini" onclick="removeAcc(${i})">×</button>
+                                    </div>
+                                </div>
+                                <div style="margin-top:5px; display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
+                                    ${acc.characters.map((c, ci) => {
+                                        let cName = typeof c === 'string' ? c : c.name;
+                                        let cColor = typeof c === 'string' ? '#94a3b8' : (c.color || '#94a3b8');
+                                        return `<div class="btn-mini" style="display:inline-flex; align-items:center; gap:4px; padding: 2px 6px;">
+                                            <span class="editable-text" onclick="renameChar(${i},${ci})">${cName}</span> 
+                                            <input type="color" class="color-input color-input-sm" value="${cColor}" onchange="updateCharColor(${i},${ci},this.value)">
+                                            <span onclick="removeChar(${i},${ci})" style="color:var(--danger); cursor:pointer; font-weight:bold; padding-left:2px;">×</span>
+                                        </div>`;
+                                    }).join('')}
+                                    <button class="btn-mini" onclick="addCharacter(${i})" style="height:22px;">+</button>
+                                </div>
+                            </div>`).join('')}</div>
+                    </div></div>
+                </div>
+
+                <div class="config-section" id="sec-task" style="--section-color: ${config.colors.task};">
+                    <div class="config-title" onclick="smartToggle('taskContent')">
+                        <span>全部標籤</span>
+                        <div style="display:flex; gap:8px; align-items:center;" onclick="event.stopPropagation()">
+                            <button id="btn-expand-all-tasks" class="btn-mini" onclick="toggleExpandAllTasks()">
+                                ${uiState.allTasksExpanded ? '收合全部' : '展開全部'}
+                            </button>
+                            <input type="color" class="color-input" value="${config.colors.task}" onchange="updateSectionColor('task', this.value)">
+                        </div>
+                    </div>
+                    <div id="taskContent" class="collapsible-content ${uiState.openSection === 'taskContent' ? 'active' : ''}"><div>
+                        <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newTaskInput" placeholder="任務名稱" style="flex:1;" onkeyup="if(event.key==='Enter') saveTask()"><button class="btn-adjust" onclick="saveTask()" style="width: 60px;">新增</button></div>
+                        <div id="taskList">${config.tasks.map((t, i) => {
+                            const isDisplay = isTaskSubPanelOpen(i);
+                            const tagHex = t.color || config.colors.task;
+                            const tagSpec = getLiteColorSpectrum(tagHex);
+                            return `
+                            <div class="tag-item-box" style="--tag-color: ${tagHex}" 
+                                 title="拖拉可排列順序"
+                                 onclick="toggleEditTask(${i})"
+                                 draggable="true" 
+                                 ondragstart="handleDragStart(event, ${i})" 
+                                 ondragover="handleDragOver(event)" 
+                                 ondragenter="handleDragEnter(event)" 
+                                 ondragleave="handleDragLeave(event)" 
+                                 ondrop="handleDrop(event, ${i})" 
+                                 ondragend="handleDragEnd(event)">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span class="editable-text" style="font-weight:bold;" onclick="event.stopPropagation(); renameTask(${i});">${t.name}</span>
+                                    <div style="display:flex; gap:5px;">
+                                        <input type="color" class="color-input" value="${t.color || config.colors.task}" onclick="event.stopPropagation()" onchange="updateTaskColorItem(${i}, this.value)">
+                                        <button class="btn-mini" onclick="event.stopPropagation(); removeTask(${i})">×</button>
+                                    </div>
+                                </div>
+                                <div id="sub-edit-${i}" class="sub-edit-panel ${isDisplay ? 'open' : ''}" onclick="event.stopPropagation()">
+                                    <div class="sub-edit-inner">
+                                    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">${t.subs.map((s, si) => `<span class="sub-tag-item" draggable="true" title="拖拉可排列順序" style="background-color:${tagSpec.badgeBg}; color:${tagSpec.subText}; border:1px solid ${tagSpec.subBorder};" ondragstart="handleSubDragStart(event, ${i}, ${si})" ondragover="handleSubDragOver(event)" ondragenter="handleSubDragEnter(event)" ondragleave="handleSubDragLeave(event)" ondrop="handleSubDrop(event, ${i}, ${si})" ondragend="handleSubDragEnd(event)"><span class="editable-text" onclick="renameSubTask(${i},${si})">${s}</span> <span onclick="removeSubTask(${i},${si})" style="cursor:pointer;">×</span></span>`).join('')}</div>
+                                    <div style="display:flex; gap:3px;"><input type="text" id="subIn-${i}" style="flex:1;" onkeyup="if(event.key==='Enter') addSubTask(${i})"><button class="btn-mini" onclick="addSubTask(${i})">+</button></div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')}</div>
+                    </div></div>
+                </div>
+
+                <div class="config-section" id="sec-start" style="--section-color: ${(config.tasks[0] && config.tasks[0].color) || config.colors.task};">
+                    <div class="config-title" onclick="smartToggle('startContent')"><span>任務啟動</span></div>
+                    <div id="startContent" class="collapsible-content ${uiState.openSection === 'startContent' ? 'active' : ''}"><div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;"><select id="accSelect" onchange="updateCharSelect()">${config.accounts.map(a => `<option value="${a.email}">${a.email}</option>`).join('')}</select><select id="charSelect"></select></div>
+                        <select id="taskSelect" style="width:100%; margin-bottom:5px;" onchange="updateSubTaskSelect()">${config.tasks.map((t,i) => `<option value="${i}">${t.name}</option>`).join('')}</select>
+                        <select id="subTaskSelect" style="width:100%; margin-bottom:5px; display:none;"></select>
+                        
+                        <div id="timeDisplay" style="text-align:center; background:var(--bg); padding:10px; border-radius:10px; margin:5px 0 6px 0; font-size:1.8rem; font-family:monospace; font-weight:bold; color:var(--section-color);">00:00:00</div>
+                        
+                        <div class="dhms-container">
+                            <div class="dhms-group"><input type="number" id="in-d" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>D</span></div>
+                            <div class="dhms-group"><input type="number" id="in-h" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>H</span></div>
+                            <div class="dhms-group"><input type="number" id="in-m" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>M</span></div>
+                            <div class="dhms-group"><input type="number" id="in-s" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>S</span></div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:6px;">
+                            <button class="btn-adjust" onclick="adj(86400)">+1d</button><button class="btn-adjust" onclick="adj(43200)">+12h</button><button class="btn-adjust" onclick="adj(3600)">+1h</button>
+                            <button class="btn-adjust" onclick="adj(600)">+10m</button><button class="btn-adjust" onclick="adj(60)">+1m</button><button class="btn-adjust" onclick="adj(30)">+30s</button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr; gap:6px;">
+                            <button class="btn-adjust" onclick="resetTime()" style="color:var(--danger);">重置時間</button>
+                        </div>
+                        <div style="margin-top:15px; font-size:0.75rem; background-color:var(--bg); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:2px;">預警閃爍: <input type="number" id="fMin" value="0" style="width:28px; text-align:center;">:<input type="number" id="fSec" value="30" style="width:28px; text-align:center;"></div>
+                        <button class="btn-main" id="btnStartTask" onclick="startTask()">啟動任務</button>
+                        <button class="btn-main" id="btn-clear-finished" onclick="clearFinishedTasks()">清除已完成計時器</button>
+                    </div></div>
+                </div>
+
+                <div class="config-section" id="sec-sys" style="--section-color: ${config.colors.sys};">
+                    <div class="config-title" onclick="smartToggle('sysContent')">系統與主題</div>
+                    <div id="sysContent" class="collapsible-content ${uiState.openSection === 'sysContent' ? 'active' : ''}"><div>
+                        ${renderCloudSyncHtml()}
+                        <button class="btn-adjust" onclick="resetDefaultTasks()" style="width:100%; margin-bottom:10px; font-size:0.68rem; color:var(--danger);">↺ 還原預設標籤</button>
+                        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px;"><button class="btn-adjust" onclick="setTheme('light')">淺色</button><button class="btn-adjust" onclick="setTheme('dark')">深色</button><button class="btn-adjust" onclick="setTheme('auto')">自動</button></div>
+                        <div style="margin-bottom:12px; font-size:0.75rem; padding:8px; background:var(--bg); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <span>復原顯示時間(秒):</span>
+                            <input type="number" id="undoTimeInput" value="${config.undoTime}" style="width:40px; text-align:center;" onchange="config.undoTime=parseInt(this.value)||10; saveConfig();">
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;"><button class="btn-main" style="font-size:0.8rem; margin:0;" onclick="exportConfig()">匯出(完整備份)</button><button class="btn-main" style="background:transparent; color:var(--text-main); border:1px solid var(--border-color); font-size:0.8rem; margin:0;" onclick="document.getElementById('importFile').click()">匯入</button></div>
+                        <input type="file" id="importFile" style="display:none" onchange="importConfig(event)">
+                    </div></div>
+                </div>
+            `;
+            updateCharSelect(); updateSubTaskSelect(); updateStartSectionTheme();
+            updateClearFinishedButtonHighlight();
+            refreshMainDisplay(); 
+        }
+
+        function getFinishDateLabel(targetDate) {
+            const now = new Date(); const target = new Date(targetDate); const diffMs = target - now;
+            let dateStr = `${target.getMonth() + 1}/${target.getDate()}`;
+            if (diffMs <= 0) return `${dateStr} (已結束)`;
+            if (diffMs < 60000) return `${dateStr} (即將結束)`;
+            if (diffMs < 3600000) return `${dateStr} (${Math.ceil(diffMs / 60000)}分鐘後)`;
+            if (diffMs < 86400000) return `${dateStr} (${Math.ceil(diffMs / 3600000)}小時後)`;
+            const d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const d2 = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+            return `${dateStr} (${Math.round((d2 - d1) / 86400000)}天後)`;
+        }
+
+        function formatElapsedSinceFinish(elapsedSec) {
+            if (elapsedSec < 60) return '剛剛';
+            if (elapsedSec < 3600) return `${Math.floor(elapsedSec / 60)} 分鐘`;
+            if (elapsedSec < 86400) {
+                const h = Math.floor(elapsedSec / 3600);
+                const m = Math.floor((elapsedSec % 3600) / 60);
+                return m > 0 ? `${h} 小時 ${m} 分鐘` : `${h} 小時`;
+            }
+            const d = Math.floor(elapsedSec / 86400);
+            const h = Math.floor((elapsedSec % 86400) / 3600);
+            return h > 0 ? `${d} 天 ${h} 小時` : `${d} 天`;
+        }
+
+        function getFinishedEndLine(finishDate) {
+            const target = new Date(finishDate);
+            const dateStr = `${target.getMonth() + 1}/${target.getDate()} ${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
+            return `結束 ${dateStr}`;
+        }
+
+        function getFinishedElapsedLine(finishDate) {
+            const elapsedSec = Math.max(0, Math.floor((Date.now() - new Date(finishDate).getTime()) / 1000));
+            return `已過 ${formatElapsedSinceFinish(elapsedSec)}`;
+        }
+
+        function applyTimerCardColorVars(card, taskHex, spectrum) {
+            card.dataset.taskColor = taskHex;
+            card.style.setProperty('--local-raw-color', spectrum.raw);
+            card.style.setProperty('--local-progress-color', spectrum.progress);
+            card.style.setProperty('--local-dark-color', spectrum.dark);
+            card.style.setProperty('--local-badge-bg', spectrum.badgeBg);
+            card.style.setProperty('--local-badge-text', spectrum.badgeText);
+        }
+
+        function getCharBadgeHtml(accEmail, charName) {
+            if (!charName) return '';
+            const charColor = getCharColor(accEmail, charName);
+            const charRgb = parseColorToRgb(charColor);
+            const charTextColor = getContrastTextColor(charColor);
+            const charContrastClass = getRelativeLuminance(charRgb.r, charRgb.g, charRgb.b) > 0.52 ? 'contrast-dark' : 'contrast-light';
+            return `<span class="char-title-badge ${charContrastClass}" style="background-color:${charColor}; color:${charTextColor};">${charName}</span>`;
+        }
+
+        function buildActiveTimerCard(t, index) {
+            const card = document.createElement('div');
+            card.className = 'timer-card';
+            card.id = `t-${t.id}`;
+            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const charName = t.char || '';
+            applyTimerCardColorVars(card, taskHex, spectrum);
+            card.innerHTML = `
+                <div class="timer-card-bg"></div>
+                <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
+                <div class="timer-card-inner">
+                    <div class="card-header-row">
+                        <div class="card-tags-row">
+                            ${getCharBadgeHtml(t.email, charName)}
+                            <div class="task-title-display">${t.taskName}</div>
+                        </div>
+                        <span class="card-id-badge">#${index + 1}</span>
+                    </div>
+                    <div class="date-label" style="font-size:0.75rem; color:var(--text-sub); text-align:right;">--/--</div>
+                    <div class="time-text">00:00:00</div>
+                </div>`;
+            return card;
+        }
+
+        function getFinishedCharGroups(finishedTimers, acc) {
+            const grouped = new Map();
+            finishedTimers.forEach(t => {
+                const key = (t.char && String(t.char).trim()) ? String(t.char).trim() : '（未指定角色）';
+                if (!grouped.has(key)) grouped.set(key, []);
+                grouped.get(key).push(t);
+            });
+            const order = [];
+            if (acc && acc.characters) {
+                acc.characters.forEach(c => {
+                    const name = typeof c === 'string' ? c : c.name;
+                    if (name && grouped.has(name)) order.push(name);
+                });
+            }
+            grouped.forEach((_, key) => { if (!order.includes(key)) order.push(key); });
+            return order.map(charName => ({ charName, timers: grouped.get(charName) }));
+        }
+
+        function safeDomIdPart(s) {
+            return String(s).replace(/[@.\s\u3000]/g, '_').replace(/[^\w\u4e00-\u9fff-]/g, '_');
+        }
+
+        function buildFinishedTimerCard(t, index, opts = {}) {
+            const card = document.createElement('div');
+            card.className = 'timer-card is-finished';
+            card.id = `t-${t.id}`;
+            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const charName = t.char || '';
+            const finishTime = new Date(t.finishDate);
+            const showCharOnCard = opts.showCharOnCard !== false;
+            applyTimerCardColorVars(card, taskHex, spectrum);
+            card.style.setProperty('--p', '0%');
+            const charCell = showCharOnCard ? (getCharBadgeHtml(t.email, charName) || '<span></span>') : '<span></span>';
+            card.innerHTML = `
+                <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
+                <div class="timer-card-inner finished-layout">
+                    <div class="finished-row-1">
+                        <div class="card-tags-row">${charCell}</div>
+                        <span class="card-id-badge">#${index + 1}</span>
+                    </div>
+                    <div class="finished-row-2"><div class="task-title-display">${t.taskName}</div></div>
+                    <div class="finished-end-line">${getFinishedEndLine(finishTime)}</div>
+                    <div class="finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</div>
+                </div>`;
+            return card;
+        }
+
+        function refreshMainDisplay() { 
+            const main = document.getElementById('mainDisplay'); main.innerHTML = ''; 
+            config.accounts.forEach((acc, i) => { 
+                const div = document.createElement('div'); div.className = 'account-group'; 
+                div.style.setProperty('--acc-theme', acc.color || defaultAccColors[i%6]); 
+                div.innerHTML = `
+                    <div class="account-tab-item">${acc.email}</div>
+                    <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
+                `; 
+                main.appendChild(div); 
+            }); 
+            dispatchTimersToDOM();
+        }
+
+        function hasAnyFinishedTimers() {
+            const now = Date.now();
+            return getActiveTimers().some(t => new Date(t.finishDate).getTime() <= now);
+        }
+
+        function updateClearFinishedButtonHighlight() {
+            const btn = document.getElementById('btn-clear-finished');
+            if (!btn) return;
+            btn.classList.toggle('has-finished-pending', hasAnyFinishedTimers());
+        }
+
+        function dispatchTimersToDOM() {
+            if (isDispatchingTimers) return;
+            isDispatchingTimers = true;
+            const allSavedData = getActiveTimers();
+            const now = Date.now();
+            config.accounts.forEach(acc => {
+                const safeId = acc.email.replace(/[@.\s]/g, '_');
+                const container = document.getElementById(`content-acc-${acc.email.replace(/[@.]/g, '_')}`);
+                if (!container) return;
+
+                const timers = allSavedData.filter(t => t.email === acc.email);
+                const activeTimers = timers.filter(t => new Date(t.finishDate).getTime() > now);
+                const finishedTimers = timers.filter(t => new Date(t.finishDate).getTime() <= now);
+
+                activeTimers.sort((a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime());
+                finishedTimers.sort((a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime());
+                const finishedCharGroups = finishedTimers.length ? getFinishedCharGroups(finishedTimers, acc) : [];
+
+                let html = '';
+                if (activeTimers.length) {
+                    html += `<div class="timer-section timer-section-active">
+                        <div class="timer-section-title">進行中</div>
+                        <div class="timer-grid" id="grid-active-${safeId}"></div>
+                    </div>`;
+                }
+                if (finishedCharGroups.length) {
+                    html += `<div class="timer-section timer-section-finished">
+                        <div class="timer-section-title">已完成</div>
+                        <div class="finished-by-char" id="finished-by-char-${safeId}"></div>
+                    </div>`;
+                }
+                container.innerHTML = html || '<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">尚無計時器</div>';
+
+                const activeGrid = container.querySelector(`#grid-active-${safeId}`);
+                activeTimers.forEach((t, i) => activeGrid && activeGrid.appendChild(buildActiveTimerCard(t, i)));
+
+                const finishedByChar = container.querySelector(`#finished-by-char-${safeId}`);
+                if (finishedByChar) {
+                    finishedCharGroups.forEach(({ charName, timers: groupTimers }) => {
+                        const charSafe = safeDomIdPart(charName);
+                        const groupEl = document.createElement('div');
+                        groupEl.className = 'finished-char-group';
+                        const titleHtml = charName === '（未指定角色）'
+                            ? `<span>${charName}</span>`
+                            : (getCharBadgeHtml(acc.email, charName) || `<span>${charName}</span>`);
+                        groupEl.innerHTML = `
+                            <div class="finished-char-group-title">${titleHtml}</div>
+                            <div class="timer-grid finished-grid" id="grid-finished-${safeId}-${charSafe}"></div>`;
+                        finishedByChar.appendChild(groupEl);
+                        const grid = groupEl.querySelector('.finished-grid');
+                        groupTimers.forEach((t, i) => grid.appendChild(buildFinishedTimerCard(t, i, { showCharOnCard: false })));
+                    });
+                }
+            });
+            isDispatchingTimers = false;
+            updateClearFinishedButtonHighlight();
+            updateTimersDataTicker(true);
+        }
+
+        function updateTimersDataTicker(skipRelayout = false) {
+            const allSavedData = getActiveTimers();
+            const accountEmails = new Set(config.accounts.map(a => a.email));
+            const now = Date.now();
+            let needsRelayout = false;
+
+            allSavedData.filter(t => accountEmails.has(t.email)).forEach(t => {
+                const card = document.getElementById(`t-${t.id}`);
+                if (!card) return;
+
+                const finishMs = new Date(t.finishDate).getTime();
+                if (Number.isNaN(finishMs)) return;
+
+                const totalRemSec = (finishMs - now) / 1000;
+                const isFinished = totalRemSec <= 0;
+                const inFinishedGrid = !!card.closest('.finished-grid');
+
+                if (isFinished !== inFinishedGrid) {
+                    needsRelayout = true;
+                    return;
+                }
+
+                const taskHex = card.dataset.taskColor || '#475569';
+
+                if (isFinished) {
+                    const finishTime = new Date(t.finishDate);
+                    const endEl = card.querySelector('.finished-end-line');
+                    const elapsedEl = card.querySelector('.finished-elapsed-line');
+                    if (endEl) endEl.textContent = getFinishedEndLine(finishTime);
+                    if (elapsedEl) elapsedEl.textContent = getFinishedElapsedLine(finishTime);
+                    return;
+                }
+
+                const timeEl = card.querySelector('.time-text');
+                const dateEl = card.querySelector('.date-label');
+                if (!timeEl || !dateEl) return;
+
+                const pPercent = Math.max(0, Math.min(100, (totalRemSec / parseInt(t.dur)) * 100));
+                card.style.setProperty('--p', `${pPercent}%`);
+                card.classList.toggle('is-warning-blinking', totalRemSec <= parseInt(t.fThres));
+                const h = Math.floor(totalRemSec / 3600), m = Math.floor((totalRemSec % 3600) / 60), s = Math.floor(totalRemSec % 60);
+                timeEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                dateEl.textContent = getFinishDateLabel(new Date(t.finishDate));
+                applyTimerCardReadableText(card, taskHex, pPercent, false);
+            });
+
+            if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
+            else updateClearFinishedButtonHighlight();
+        }
+
+        function runGlobalClockTick() { updateTimersDataTicker(); requestAnimationFrame(runGlobalClockTick); }
+
+        function clearFinishedTasks() {
+            const allSavedData = getActiveTimers();
+            const now = Date.now();
+            const finished = allSavedData.filter(t => new Date(t.finishDate).getTime() <= now);
+            if (!finished.length) return;
+            triggerUndo('已完成計時器', finished.map(t => JSON.parse(JSON.stringify(t))),
+                finished.length === 1 ? (finished[0].taskName || '已完成計時器') : `已完成計時器(${finished.length})`);
+            const active = allSavedData.filter(t => new Date(t.finishDate).getTime() > now);
+            setActiveTimers(active);
+            dispatchTimersToDOM();
+        }
+
+        function persistUndoStack(opts = {}) {
+            if (undoStack.length) localStorage.setItem(UNDO_TEMP_KEY, JSON.stringify(undoStack));
+            else localStorage.removeItem(UNDO_TEMP_KEY);
+            if (!opts.skipCloud) {
+                touchLocalUpdated();
+                scheduleCloudSync();
+            }
+        }
+
+        function getUndoDisplayName(entry) {
+            if (!entry) return '操作';
+            if (entry.detail) return entry.detail;
+            if (entry.label === '已完成計時器') return '清除已完成';
+            if (entry.label === '計時器') return '計時器';
+            return '設定';
+        }
+
+        function updateUndoToastText() {
+            const undoTextEl = document.getElementById('undoText');
+            const n = undoStack.length;
+            const top = undoStack[n - 1];
+            const name = getUndoDisplayName(top);
+            if (n > 1) undoTextEl.textContent = `↩ 復原「${name}」等 ${n} 項 (剩餘 ${currentUndoTimeLeft}s)`;
+            else undoTextEl.textContent = `↩ 復原「${name}」 (剩餘 ${currentUndoTimeLeft}s)`;
+        }
+
+        function loadUndoStackFromStorage() {
+            try {
+                const raw = localStorage.getItem(UNDO_TEMP_KEY) || localStorage.getItem('GameTimer_Undo_Temp');
+                if (!raw) return;
+                const parsed = JSON.parse(raw);
+                undoStack = Array.isArray(parsed) ? parsed : [parsed];
+                if (undoStack.length) {
+                    document.getElementById('undoToast').classList.add('show');
+                    startUndoCountdown();
+                }
+            } catch (e) {
+                undoStack = [];
+                localStorage.removeItem(UNDO_TEMP_KEY);
+            }
+        }
+
+        function triggerUndo(label, actionData, detail) {
+            undoStack.push({ label, data: actionData, startTime: Date.now(), detail: detail || '' });
+            persistUndoStack();
+            document.getElementById('undoToast').classList.add('show');
+            startUndoCountdown();
+        }
+
+        function startUndoCountdown() {
+            const undoTextEl = document.getElementById('undoText');
+            if (undoTimerInterval) clearInterval(undoTimerInterval);
+            currentUndoTimeLeft = config.undoTime || 10;
+            updateUndoToastText();
+            undoTimerInterval = setInterval(() => {
+                currentUndoTimeLeft--;
+                if (currentUndoTimeLeft <= 0) {
+                    clearInterval(undoTimerInterval);
+                    undoTimerInterval = null;
+                    dismissUndo();
+                } else {
+                    updateUndoToastText();
+                }
+            }, 1000);
+        }
+
+        function dismissUndo() {
+            document.getElementById('undoToast').classList.remove('show');
+            undoStack = [];
+            localStorage.removeItem(UNDO_TEMP_KEY);
+            localStorage.removeItem('GameTimer_Undo_Temp');
+            if (undoTimerInterval) { clearInterval(undoTimerInterval); undoTimerInterval = null; }
+            touchLocalUpdated();
+            scheduleCloudSync();
+        }
+
+        function undoAction() {
+            if (!undoStack.length) return;
+            const last = undoStack.pop();
+            if (last.label === '計時器') {
+                const allSavedData = getActiveTimers();
+                if (!allSavedData.some(t => String(t.id) === String(last.data.id))) {
+                    allSavedData.push(last.data);
+                    setActiveTimers(allSavedData);
+                }
+            } else if (last.label === '已完成計時器') {
+                const allSavedData = getActiveTimers();
+                const toRestore = Array.isArray(last.data) ? last.data : [last.data];
+                toRestore.forEach(t => {
+                    if (!allSavedData.some(x => String(x.id) === String(t.id))) allSavedData.push(t);
+                });
+                setActiveTimers(allSavedData);
+                dispatchTimersToDOM();
+            } else {
+                config = last.data;
+                saveConfig();
+            }
+            persistUndoStack();
+            if (undoStack.length) {
+                document.getElementById('undoToast').classList.add('show');
+                startUndoCountdown();
+            } else {
+                document.getElementById('undoToast').classList.remove('show');
+                if (undoTimerInterval) { clearInterval(undoTimerInterval); undoTimerInterval = null; }
+            }
+            dispatchTimersToDOM();
+        }
+
+        function exportConfig() {
+            const b = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `timer_config.json`; a.click();
+        }
+
+        function importConfig(e) {
+            const r = new FileReader();
+            r.onload = (x) => { config = JSON.parse(x.target.result); saveConfig(); location.reload(); };
+            r.readAsText(e.target.files[0]);
+        }
+
+        function delTask(id) { 
+            const allSavedData = getActiveTimers();
+            const target = allSavedData.find(t => String(t.id) === String(id));
+            if(target) triggerUndo('計時器', target, target.taskName || '計時器');
+            setActiveTimers(allSavedData.filter(t => String(t.id) !== String(id)));
+            dispatchTimersToDOM();
+        }
+        
+        function removeAcc(i) {
+            const acc = config.accounts[i];
+            if (!acc) return;
+            if (!confirm(`確定刪除帳號「${acc.email}」？\n（該帳號下所有進行中計時器也會一併移除）`)) return;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), acc.email);
+            const email = acc.email;
+            config.accounts.splice(i, 1);
+            const allSavedData = getActiveTimers();
+            setActiveTimers(allSavedData.filter(t => t.email !== email));
+            saveConfig();
+            refreshMainDisplay();
+        }
+        function removeChar(ai, ci) {
+            const c = config.accounts[ai].characters[ci];
+            const charName = typeof c === 'string' ? c : c.name;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), charName);
+            config.accounts[ai].characters.splice(ci, 1);
+            saveConfig(); refreshMainDisplay();
+        }
+        function removeTask(i) {
+            const taskName = config.tasks[i].name;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), taskName);
+            config.tasks.splice(i, 1);
+            saveConfig(); refreshMainDisplay();
+        }
+        function removeSubTask(ti, si) {
+            const subName = config.tasks[ti].subs[si];
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), subName);
+            config.tasks[ti].subs.splice(si, 1);
+            saveConfig(); refreshMainDisplay();
+        }
+
+        function startTask() { 
+            if(totalSec <= 0) return; 
+            const acc = document.getElementById('accSelect').value;
+            const char = document.getElementById('charSelect').value; 
+            const tObj = config.tasks[document.getElementById('taskSelect').value]; 
+            const ts = (tObj.subs.length && document.getElementById('subTaskSelect').value) ? document.getElementById('subTaskSelect').value : ''; 
+            const fThres = parseInt(document.getElementById('fMin').value)*60 + parseInt(document.getElementById('fSec').value); 
+            const newTimerData = { id: Date.now(), email: acc, char: char, taskName: tObj.name + (ts ? ` (${ts})` : ''), dur: totalSec, fThres: fThres, finishDate: new Date(Date.now() + totalSec * 1000).toISOString(), taskBase: tObj.name };
+            const allSavedData = getActiveTimers();
+            allSavedData.push(newTimerData);
+            setActiveTimers(allSavedData);
+            resetTime(); dispatchTimersToDOM();
+            if (window.innerWidth <= 768) closeSidePanel();
+        }
+
+        function toggleSidePanel() {
+            const panel = document.getElementById('sidePanel');
+            const overlay = document.getElementById('panelOverlay');
+            const btn = document.getElementById('panelToggle');
+            const isOpen = panel.classList.toggle('panel-open');
+            overlay.classList.toggle('show', isOpen);
+            btn.textContent = isOpen ? '✕' : '☰';
+            btn.setAttribute('aria-label', isOpen ? '關閉設定面板' : '開啟設定面板');
+        }
+        function closeSidePanel() {
+            document.getElementById('sidePanel').classList.remove('panel-open');
+            document.getElementById('panelOverlay').classList.remove('show');
+            const btn = document.getElementById('panelToggle');
+            btn.textContent = '☰';
+            btn.setAttribute('aria-label', '開啟設定面板');
+        }
+        
+        function saveConfig() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            touchLocalUpdated();
+            scheduleCloudSync();
+            renderSidePanel();
+        }
+        function renameAccount(i) {
+            const oldEmail = config.accounts[i].email;
+            const newVal = prompt("修改帳號", oldEmail);
+            if (!newVal || newVal === oldEmail) return;
+            config.accounts[i].email = newVal;
+            const allSavedData = getActiveTimers();
+            allSavedData.forEach(t => { if (t.email === oldEmail) t.email = newVal; });
+            setActiveTimers(allSavedData);
+            saveConfig();
+            refreshMainDisplay();
+        }
+        function renameChar(ai, ci) {
+            const c = config.accounts[ai].characters[ci];
+            const oldName = typeof c === 'string' ? c : c.name;
+            const newVal = prompt("修改角色名稱", oldName);
+            if (!newVal || newVal === oldName) return;
+            if (typeof c === 'string') config.accounts[ai].characters[ci] = newVal;
+            else c.name = newVal;
+            const email = config.accounts[ai].email;
+            const allSavedData = getActiveTimers();
+            allSavedData.forEach(t => { if (t.email === email && t.char === oldName) t.char = newVal; });
+            setActiveTimers(allSavedData);
+            saveConfig();
+            refreshMainDisplay();
+        }
+        function renameSubTask(ti, si) {
+            const newVal = prompt("修改子項目", config.tasks[ti].subs[si]);
+            if (newVal) { config.tasks[ti].subs[si] = newVal; saveConfig(); }
+        }
+        function addCharacter(i) { const n = prompt("輸入角色名稱"); if(n){ config.accounts[i].characters.push(n); saveConfig(); } }
+        function renameTask(i) { const newVal = prompt("任務標籤", config.tasks[i].name); if(newVal){ config.tasks[i].name = newVal; saveConfig(); renderSidePanel(); } }
+        
+        function updateSectionColor(k, v) { config.colors[k] = v; saveConfig(); } 
+        function updateTaskColorItem(i, v) { config.tasks[i].color = v; saveConfig(); renderSidePanel(); } 
+        function updateAccountColor(i, v) { config.accounts[i].color = v; saveConfig(); refreshMainDisplay(); }
+        
+        function addAccount() { const n = document.getElementById('newEmailInput').value; if(n){ config.accounts.push({email:n, characters:[], color:defaultAccColors[config.accounts.length%6]}); saveConfig(); } }
+        function saveTask() { const n = document.getElementById('newTaskInput').value; if(n){ config.tasks.push({name:n, subs:[], color:config.colors.task}); saveConfig(); } }
+
+        function resetDefaultTasks() {
+            if (!confirm('確定還原為預設任務標籤？\n\n現有自訂標籤與子項目將被覆蓋。\n帳號、進行中計時器不受影響，可用「復原」還原此操作。')) return;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), '任務標籤');
+            config.tasks = JSON.parse(JSON.stringify(defaultConfig.tasks));
+            uiState.editingTaskIdx = null;
+            uiState.allTasksExpanded = false;
+            uiState.collapsedTaskIndices.clear();
+            saveConfig();
+            updateStartSectionTheme();
+        }
+
+        function addSubTask(i) { const n = document.getElementById(`subIn-${i}`).value; if(n){ config.tasks[i].subs.push(n); saveConfig(); } }
+
+        function adj(s) { totalSec += s; updateDisp(); }
+        function resetTime() { totalSec = 0; updateDisp(); }
+        
+        function updateDisp() { 
+            const dispH = Math.floor(totalSec / 3600), dispM = Math.floor((totalSec % 3600) / 60), dispS = totalSec % 60;
+            document.getElementById('timeDisplay').textContent = `${String(dispH).padStart(2,'0')}:${String(dispM).padStart(2,'0')}:${String(dispS).padStart(2,'0')}`; 
+            let rem = totalSec; const d = Math.floor(rem / 86400); rem %= 86400; const h = Math.floor(rem / 3600); rem %= 3600; const m = Math.floor(rem / 60); const s = rem % 60;
+            document.getElementById('in-d').value = d; document.getElementById('in-h').value = h; document.getElementById('in-m').value = m; document.getElementById('in-s').value = s;
+        }
+
+        function updateSecFromDhms() {
+            const d = parseInt(document.getElementById('in-d').value) || 0, h = parseInt(document.getElementById('in-h').value) || 0, m = parseInt(document.getElementById('in-m').value) || 0, s = parseInt(document.getElementById('in-s').value) || 0;
+            totalSec = (d * 86400) + (h * 3600) + (m * 60) + s;
+            document.getElementById('timeDisplay').textContent = `${String(Math.floor(totalSec / 3600)).padStart(2,'0')}:${String(Math.floor((totalSec % 3600) / 60)).padStart(2,'0')}:${String(totalSec % 60).padStart(2,'0')}`;
+        }
+
+        function updateCharSelect() { 
+            const a = config.accounts.find(x=>x.email===document.getElementById('accSelect').value); 
+            document.getElementById('charSelect').innerHTML = a ? a.characters.map(c => {
+                const name = typeof c === 'string' ? c : c.name;
+                return `<option value="${name}">${name}</option>`;
+            }).join('') : ''; 
+        }
+
+        function getSelectedTaskColor() {
+            const el = document.getElementById('taskSelect');
+            if (!el || !config.tasks.length) return config.colors.task;
+            const t = config.tasks[parseInt(el.value, 10)];
+            return (t && t.color) ? t.color : config.colors.task;
+        }
+
+        function updateStartSectionTheme() {
+            const sec = document.getElementById('sec-start');
+            if (!sec) return;
+            const color = getSelectedTaskColor();
+            sec.style.setProperty('--section-color', color);
+        }
+
+        function updateSubTaskSelect() {
+            const tIdx = document.getElementById('taskSelect').value;
+            const t = config.tasks[tIdx];
+            const sSelect = document.getElementById('subTaskSelect');
+            if (t && t.subs.length) {
+                sSelect.style.display = 'block';
+                sSelect.innerHTML = t.subs.map(x => `<option value="${x}">${x}</option>`).join('');
+            } else {
+                sSelect.style.display = 'none';
+            }
+            updateStartSectionTheme();
+        }
+        
+        let totalSec = 0;
+        
+        if (!localStorage.getItem(LOCAL_UPDATED_KEY) && (localStorage.getItem(STORAGE_KEY) || localStorage.getItem(ACTIVE_TIMERS_KEY))) {
+            touchLocalUpdated();
+        }
+        loadUndoStackFromStorage();
+        initCloudSync();
+        window.addEventListener('beforeunload', () => { if (isCloudSyncActive()) flushCloudSyncNow(); });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && isCloudSyncActive()) flushCloudSyncNow();
+        });
+        renderSidePanel();
+        runGlobalClockTick();
+    </script>
+</body>
+</html>
