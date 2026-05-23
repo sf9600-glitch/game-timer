@@ -35,4 +35,5 @@ MSG="deploy: $(date '+%Y-%m-%d %H:%M:%S')"
 git commit -m "$MSG"
 git push origin "$BRANCH"
 
-echo "✓ 已推送到 GitHub，Netlify 約 30–60 秒內會更新 https://sf9600.netlify.app"
+echo "✓ 已推送到 GitHub，GitHub Pages 約 1–3 分鐘內會更新："
+echo "   https://sf9600-glitch.github.io/game-timer/"
