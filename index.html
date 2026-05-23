@@ -1930,13 +1930,15 @@
             touchLocalUpdated();
         }
         loadUndoStackFromStorage();
-        initCloudSync();
         window.addEventListener('beforeunload', () => { if (isCloudSyncActive()) flushCloudSyncNow(); });
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden' && isCloudSyncActive()) flushCloudSyncNow();
         });
-        renderSidePanel();
-        runGlobalClockTick();
+        (async () => {
+            await initCloudSync();
+            renderSidePanel();
+            runGlobalClockTick();
+        })();
     </script>
 </body>
 </html>
