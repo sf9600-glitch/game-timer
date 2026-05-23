@@ -540,24 +540,110 @@
         .char-title-badge { flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         @media (max-width: 768px) {
-            body { flex-direction: column; padding: 10px; padding-top: 58px; gap: 12px; }
-            .panel-toggle { display: flex; }
+            body {
+                flex-direction: column;
+                padding: 10px;
+                padding-top: calc(56px + env(safe-area-inset-top, 0px));
+                padding-left: max(10px, env(safe-area-inset-left, 0px));
+                padding-right: max(10px, env(safe-area-inset-right, 0px));
+                padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+                gap: 12px;
+            }
+            body.side-panel-open { overflow: hidden; touch-action: none; }
+            .panel-toggle {
+                display: flex;
+                top: max(10px, env(safe-area-inset-top, 0px));
+                left: max(10px, env(safe-area-inset-left, 0px));
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
             .control-panel {
                 position: fixed;
                 left: 0;
                 top: 0;
                 bottom: 0;
-                width: min(320px, 88vw);
+                width: min(340px, 92vw);
                 min-width: unset;
-                max-width: 88vw;
+                max-width: 92vw;
                 max-height: 100vh;
-                border-radius: 0 15px 15px 0;
+                max-height: 100dvh;
+                border-radius: 0 16px 16px 0;
                 transform: translateX(-105%);
                 transition: transform 0.3s ease;
                 z-index: 150;
+                padding-left: max(12px, env(safe-area-inset-left, 0px));
+                padding-top: max(12px, env(safe-area-inset-top, 0px));
+                padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
             }
             .control-panel.panel-open { transform: translateX(0); }
-            .timer-grid { grid-template-columns: 1fr; }
+            #mainDisplay { width: 100%; min-width: 0; }
+            .timer-grid { grid-template-columns: 1fr; gap: 10px; }
+            .finished-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+            .timer-card.is-finished {
+                width: 100%;
+                max-width: none;
+            }
+            .account-group { margin-bottom: 18px; }
+            .account-content { padding: 12px; border-radius: 0 12px 12px 12px; }
+            .account-tab-item { font-size: 0.8rem; padding: 6px 12px; }
+            .timer-section-title { font-size: 0.75rem; margin-bottom: 6px; }
+            .time-text { font-size: 1.35rem; }
+            .btn-main {
+                min-height: 48px;
+                font-size: 1.05rem;
+                padding: 12px;
+            }
+            .btn-adjust {
+                min-height: 40px;
+                font-size: 0.75rem;
+                padding: 8px 4px;
+            }
+            .config-title {
+                min-height: 40px;
+                padding: 8px 0;
+                font-size: 0.85rem;
+            }
+            input, select, textarea,
+            .cloud-sync-box input {
+                font-size: 16px;
+                min-height: 40px;
+                padding: 8px 10px;
+                box-sizing: border-box;
+            }
+            .cloud-auth-row { gap: 8px; }
+            .cloud-forgot-link {
+                font-size: 0.75rem;
+                padding: 6px 0;
+                min-height: 32px;
+            }
+            .undo-toast {
+                left: max(12px, env(safe-area-inset-left, 0px));
+                right: max(12px, env(safe-area-inset-right, 0px));
+                bottom: max(16px, env(safe-area-inset-bottom, 0px));
+                max-width: calc(100vw - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+            }
+        }
+
+        @media (max-width: 390px) {
+            body { padding-top: calc(52px + env(safe-area-inset-top, 0px)); }
+            .finished-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+            .timer-card.is-finished .finished-row-2 .task-title-display { font-size: 0.58rem; }
+            .timer-card.is-finished .finished-meta-line { font-size: 0.54rem; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .timer-card .btn-close-circle {
+                opacity: 1;
+                transform: translate(38%, -38%) scale(0.92);
+            }
+            .editable-text { border-bottom-width: 0; }
+            .config-title { -webkit-tap-highlight-color: transparent; }
         }
 
         .cloud-sync-box {
