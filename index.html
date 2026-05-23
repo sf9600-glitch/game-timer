@@ -627,50 +627,79 @@
                 border-width: 2px;
             }
             .timer-card--active .timer-card-inner {
+                padding: 8px 10px 6px;
+            }
+            .timer-card--active .active-layout {
                 display: grid;
-                grid-template-columns: 1fr auto;
-                grid-template-rows: auto auto;
-                gap: 2px 10px;
-                padding: 8px 10px;
-                align-items: center;
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "char"
+                    "task"
+                    "time"
+                    "date";
+                gap: 5px;
+                padding-top: 2px;
             }
-            .timer-card--active .card-header-row {
-                grid-column: 1 / -1;
-                grid-row: 1;
-                margin-bottom: 0;
+            .timer-card--active .active-row-tags {
+                display: contents;
             }
-            .timer-card--active .card-tags-row {
-                flex-wrap: wrap;
+            .timer-card--active .active-slot-id {
+                position: absolute;
+                left: 6px;
+                top: 6px;
+                right: auto;
+                font-size: 0.52rem;
+                height: 13px;
+                padding: 0 3px;
             }
-            .timer-card--active .task-title-display {
+            .timer-card--active .active-slot-char {
+                grid-area: char;
+                justify-self: start;
+                padding-top: 12px;
+            }
+            .timer-card--active .active-slot-char .char-title-badge {
+                font-size: 0.68rem;
+                max-width: none;
+            }
+            .timer-card--active .active-slot-task {
+                grid-area: task;
+                justify-self: stretch;
+                width: 100%;
+                min-width: 0;
+            }
+            .timer-card--active .active-slot-task .task-title-display {
+                display: inline-block;
+                width: auto;
                 max-width: 100%;
-                font-size: 0.72rem;
-                padding: 2px 8px;
+                font-size: 0.74rem;
+                padding: 2px 10px;
+                text-align: left;
+                white-space: normal;
+                word-break: break-word;
+                line-height: 1.3;
+                overflow: visible;
+                text-overflow: unset;
             }
-            .timer-card--active .char-title-badge {
-                font-size: 0.65rem;
-                max-width: 64px;
+            .timer-card--active .active-slot-time {
+                grid-area: time;
+                width: 100%;
+                text-align: center;
             }
-            .timer-card--active .card-id-badge {
-                font-size: 0.55rem;
-                height: 14px;
-                padding: 0 4px;
-            }
-            .timer-card--active .date-label {
-                grid-column: 1;
-                grid-row: 2;
-                text-align: left !important;
-                font-size: 0.65rem !important;
+            .timer-card--active .active-slot-time .time-text {
+                text-align: center;
+                font-size: 1.2rem;
                 margin: 0;
+                letter-spacing: 0.5px;
             }
-            .timer-card--active .time-text {
-                grid-column: 2;
-                grid-row: 2;
+            .timer-card--active .active-slot-date {
+                grid-area: date;
+                width: 100%;
                 text-align: right;
-                font-size: 1.05rem;
+            }
+            .timer-card--active .active-slot-date .date-label {
+                text-align: right;
+                font-size: 0.68rem;
                 margin: 0;
-                letter-spacing: 0;
-                white-space: nowrap;
             }
             .finished-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
