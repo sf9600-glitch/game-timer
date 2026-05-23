@@ -1990,8 +1990,10 @@
 
                 if (isFinished) {
                     const finishTime = new Date(t.finishDate);
-                    const metaEl = card.querySelector('.finished-meta-line');
-                    if (metaEl) metaEl.textContent = getFinishedMetaLine(finishTime);
+                    const endEl = card.querySelector('.finished-end-line');
+                    const elapsedEl = card.querySelector('.finished-elapsed-line');
+                    if (endEl) endEl.textContent = getFinishedEndLineCompact(finishTime);
+                    if (elapsedEl) elapsedEl.textContent = getFinishedElapsedLineCompact(finishTime);
                     return;
                 }
 
