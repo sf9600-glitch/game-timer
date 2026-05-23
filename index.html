@@ -1683,15 +1683,10 @@
                         const charSafe = safeDomIdPart(charName);
                         const groupEl = document.createElement('div');
                         groupEl.className = 'finished-char-group';
-                        const titleHtml = charName === '（未指定角色）'
-                            ? `<span>${charName}</span>`
-                            : (getCharBadgeHtml(acc.email, charName) || `<span>${charName}</span>`);
-                        groupEl.innerHTML = `
-                            <div class="finished-char-group-title">${titleHtml}</div>
-                            <div class="timer-grid finished-grid" id="grid-finished-${safeId}-${charSafe}"></div>`;
+                        groupEl.innerHTML = `<div class="timer-grid finished-grid" id="grid-finished-${safeId}-${charSafe}"></div>`;
                         finishedByChar.appendChild(groupEl);
                         const grid = groupEl.querySelector('.finished-grid');
-                        groupTimers.forEach((t, i) => grid.appendChild(buildFinishedTimerCard(t, i, { showCharOnCard: false })));
+                        groupTimers.forEach((t, i) => grid.appendChild(buildFinishedTimerCard(t, i)));
                     });
                 }
             });
