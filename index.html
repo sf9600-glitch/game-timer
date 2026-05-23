@@ -632,7 +632,14 @@
             renderSidePanel();
         }
 
-        function cancelCloudForgotPassword() {
+        async function cancelCloudForgotPassword() {
+            if (cloudAuthView === 'newPassword') {
+                const sb = getSupabase();
+                if (sb) await sb.auth.signOut();
+                currentUser = null;
+                stopCloudPoll();
+                clearCloudAuthHash();
+            }
             cloudAuthView = 'login';
             updateCloudSyncUI('請登入以同步');
             renderSidePanel();
