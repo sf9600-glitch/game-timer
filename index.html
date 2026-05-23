@@ -231,28 +231,43 @@
         }
         .timer-card.is-finished .timer-card-bg { display: none; }
         .timer-card.is-finished .finished-layout {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            padding: 8px 10px;
+            padding: 8px 10px 8px 28px;
             height: auto;
+            min-height: 88px;
             text-align: center;
+            box-sizing: border-box;
         }
-        .timer-card.is-finished .finished-row-1 {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 6px;
+        .timer-card.is-finished .finished-seq-badge {
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            margin: 0;
+        }
+        .timer-card.is-finished .finished-char-row {
             width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
         }
-        .timer-card.is-finished .finished-row-2 {
+        .timer-card.is-finished .finished-char-row .card-tags-row {
+            justify-content: center;
+        }
+        .timer-card.is-finished .finished-task-row {
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        .timer-card.is-finished .finished-row-2 .task-title-display {
+        .timer-card.is-finished .finished-task-row .task-title-display {
             display: inline-block;
             width: auto;
             max-width: 100%;
