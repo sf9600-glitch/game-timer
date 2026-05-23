@@ -177,6 +177,35 @@
             max-width: 380px;
             justify-self: start;
         }
+        .timer-card--active .active-layout {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .timer-card--active .active-row-tags {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .timer-card--active .active-slot-id {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 2;
+        }
+        .timer-card--active .active-slot-task .task-title-display {
+            text-align: left;
+        }
+        .timer-card--active .active-slot-time .time-text {
+            text-align: right;
+            margin-top: 2px;
+        }
+        .timer-card--active .active-slot-date .date-label {
+            text-align: right;
+            font-size: 0.75rem;
+        }
         
         /* 計時器卡片基礎外殼：任務色延伸為整圈邊框（進行中維持原比例，不設固定寬高） */
         .timer-card { 
