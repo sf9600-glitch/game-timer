@@ -1550,6 +1550,26 @@
             return `已過 ${formatElapsedSinceFinish(elapsedSec)}`;
         }
 
+        function formatElapsedSinceFinishCompact(elapsedSec) {
+            if (elapsedSec < 60) return '剛剛';
+            if (elapsedSec < 3600) return `${Math.floor(elapsedSec / 60)}分`;
+            if (elapsedSec < 86400) {
+                const h = Math.floor(elapsedSec / 3600);
+                const m = Math.floor((elapsedSec % 3600) / 60);
+                return m > 0 ? `${h}時${m}分` : `${h}時`;
+            }
+            const d = Math.floor(elapsedSec / 86400);
+            const h = Math.floor((elapsedSec % 86400) / 3600);
+            return h > 0 ? `${d}天${h}時` : `${d}天`;
+        }
+
+        function getFinishedMetaLine(finishDate) {
+            const target = new Date(finishDate);
+            const end = `${target.getMonth() + 1}/${target.getDate()} ${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
+            const elapsedSec = Math.max(0, Math.floor((Date.now() - target.getTime()) / 1000));
+            return `${end}·${formatElapsedSinceFinishCompact(elapsedSec)}`;
+        }
+
         function applyTimerCardColorVars(card, taskHex, spectrum) {
             card.dataset.taskColor = taskHex;
             card.style.setProperty('--local-raw-color', spectrum.raw);
