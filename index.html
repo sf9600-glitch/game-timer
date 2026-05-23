@@ -1387,7 +1387,7 @@
             const timeEl = card.querySelector('.time-text');
             const dateEl = card.querySelector('.date-label');
             if (!timeEl || !dateEl) return;
-            if (isFinished || card.classList.contains('is-finished') || card.classList.contains('is-warning-blinking')) {
+            if (isFinished || card.classList.contains('is-finished') || card.classList.contains('is-warning-blinking') || card.classList.contains('timer-card--active')) {
                 timeEl.style.color = '';
                 dateEl.style.color = '';
                 return;
