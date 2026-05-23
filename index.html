@@ -2071,12 +2071,14 @@
             const btn = document.getElementById('panelToggle');
             const isOpen = panel.classList.toggle('panel-open');
             overlay.classList.toggle('show', isOpen);
+            document.body.classList.toggle('side-panel-open', isOpen);
             btn.textContent = isOpen ? '✕' : '☰';
             btn.setAttribute('aria-label', isOpen ? '關閉設定面板' : '開啟設定面板');
         }
         function closeSidePanel() {
             document.getElementById('sidePanel').classList.remove('panel-open');
             document.getElementById('panelOverlay').classList.remove('show');
+            document.body.classList.remove('side-panel-open');
             const btn = document.getElementById('panelToggle');
             btn.textContent = '☰';
             btn.setAttribute('aria-label', '開啟設定面板');
