@@ -218,33 +218,33 @@
             flex-wrap: wrap;
         }
 
-        /* 已完成卡片：極小面積 */
+        /* 已完成卡片：精簡（比進行中小，但可讀） */
         .timer-card.is-finished {
-            width: 84px;
-            max-width: 84px;
+            width: 112px;
+            max-width: 112px;
             height: auto;
             aspect-ratio: auto;
             justify-self: start;
             align-self: start;
-            background: color-mix(in srgb, var(--local-raw-color) 14%, var(--card-bg)) !important;
+            background: color-mix(in srgb, var(--local-raw-color) 15%, var(--card-bg)) !important;
             border: 2px solid var(--local-raw-color) !important;
         }
         .timer-card.is-finished .timer-card-bg { display: none; }
         .timer-card.is-finished .timer-card-inner.finished-layout {
-            padding: 3px 4px 4px;
+            padding: 5px 6px 6px;
         }
         .timer-card.is-finished .finished-layout {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
             height: auto;
             text-align: center;
         }
         .timer-card.is-finished .finished-header {
             position: relative;
             width: 100%;
-            min-height: 13px;
+            min-height: 17px;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -254,20 +254,19 @@
             left: 0;
             top: 0;
             z-index: 2;
-            font-size: 0.45rem;
-            padding: 0 2px;
-            height: 11px;
+            font-size: 0.52rem;
+            padding: 0 3px;
+            height: 13px;
             min-width: 0;
-            border-radius: 2px;
-            line-height: 11px;
+            border-radius: 3px;
+            line-height: 13px;
             font-weight: 700;
-            letter-spacing: -0.02em;
         }
         .timer-card.is-finished .finished-char-center {
             display: flex;
             justify-content: center;
             align-items: center;
-            max-width: calc(100% - 18px);
+            max-width: calc(100% - 24px);
             margin: 0 auto;
         }
         .timer-card.is-finished .finished-row-2 {
@@ -281,21 +280,21 @@
             display: block;
             width: 100%;
             max-width: 100%;
-            font-size: 0.52rem;
+            font-size: 0.62rem;
             font-weight: 800;
             text-align: center;
             color: var(--local-dark-color) !important;
             background-color: var(--local-badge-bg) !important;
             border-radius: 999px;
-            padding: 1px 4px;
+            padding: 2px 6px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            line-height: 1.25;
+            line-height: 1.3;
         }
         .timer-card.is-finished .finished-meta-line {
-            font-size: 0.48rem;
-            line-height: 1.2;
+            font-size: 0.58rem;
+            line-height: 1.3;
             text-align: center;
             color: var(--text-sub) !important;
             width: 100%;
@@ -304,19 +303,19 @@
             white-space: nowrap;
         }
         .timer-card.is-finished .char-title-badge {
-            font-size: 0.5rem;
-            max-width: 56px;
-            padding: 0 3px;
-            line-height: 1.2;
+            font-size: 0.6rem;
+            max-width: 68px;
+            padding: 1px 4px;
+            line-height: 1.25;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         .timer-card.is-finished .btn-close-circle {
-            width: 13px;
-            height: 13px;
-            font-size: 0.5rem;
-            border-width: 1px;
+            width: 16px;
+            height: 16px;
+            font-size: 0.58rem;
+            border-width: 1.5px;
         }
 
         .timer-card-inner {
