@@ -692,11 +692,16 @@
             }
         }
 
+        @media (max-width: 900px) {
+            .timer-section-active .timer-grid { grid-template-columns: 1fr; }
+        }
+
         @media (max-width: 390px) {
             body { padding-top: calc(52px + env(safe-area-inset-top, 0px)); }
             .finished-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
             .timer-card.is-finished .finished-row-2 .task-title-display { font-size: 0.58rem; }
             .timer-card.is-finished .finished-meta-line { font-size: 0.54rem; }
+            .timer-card--active .time-text { font-size: 0.95rem; }
         }
 
         @media (hover: none) and (pointer: coarse) {
