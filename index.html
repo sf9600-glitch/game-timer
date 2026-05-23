@@ -921,32 +921,38 @@
                 cloudSyncStatus = '後端未設定';
                 return;
             }
-            const { data: { session } } = await sb.auth.getSession();
+            const { data: { session }, error } = await sb.auth.getSession();
+            if (error) console.error('getSession', error);
             currentUser = session?.user ?? null;
             if (currentUser) {
                 try {
                     await mergeCloudFromRemote();
                     startCloudPoll();
+                    updateCloudSyncUI('已登入');
                 } catch (err) {
                     console.error(err);
                     updateCloudSyncUI('雲端載入失敗');
                 }
+            } else {
+                updateCloudSyncUI('請登入以同步');
             }
+
             sb.auth.onAuthStateChange(async (event, session) => {
                 currentUser = session?.user ?? null;
-                if (event === 'SIGNED_IN' && currentUser) {
+                if (event === 'SIGNED_OUT') {
+                    stopCloudPoll();
+                    updateCloudSyncUI('已登出（本機資料仍保留）');
+                } else if (currentUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
                     try {
                         await mergeCloudFromRemote();
                         startCloudPoll();
+                        if (event === 'SIGNED_IN') updateCloudSyncUI('已登入');
                     } catch (e) {
                         console.error(e);
                         updateCloudSyncUI('雲端載入失敗');
                     }
-                    renderSidePanel();
-                } else if (event === 'SIGNED_OUT') {
-                    stopCloudPoll();
-                    renderSidePanel();
                 }
+                renderSidePanel();
             });
         }
 
