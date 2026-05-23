@@ -1590,7 +1590,7 @@
             return String(s).replace(/[@.\s\u3000]/g, '_').replace(/[^\w\u4e00-\u9fff-]/g, '_');
         }
 
-        function buildFinishedTimerCard(t, index, opts = {}) {
+        function buildFinishedTimerCard(t, index) {
             const card = document.createElement('div');
             card.className = 'timer-card is-finished';
             card.id = `t-${t.id}`;
@@ -1599,16 +1599,15 @@
             const spectrum = getLiteColorSpectrum(taskHex);
             const charName = t.char || '';
             const finishTime = new Date(t.finishDate);
-            const showCharOnCard = opts.showCharOnCard !== false;
             applyTimerCardColorVars(card, taskHex, spectrum);
             card.style.setProperty('--p', '0%');
-            const charCell = showCharOnCard ? (getCharBadgeHtml(t.email, charName) || '<span></span>') : '<span></span>';
+            const charCell = getCharBadgeHtml(t.email, charName) || '<span class="finished-char-placeholder"></span>';
             card.innerHTML = `
                 <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
                 <div class="timer-card-inner finished-layout">
-                    <div class="finished-row-1">
-                        <div class="card-tags-row">${charCell}</div>
+                    <div class="finished-header">
                         <span class="card-id-badge">#${index + 1}</span>
+                        <div class="finished-char-center">${charCell}</div>
                     </div>
                     <div class="finished-row-2"><div class="task-title-display">${t.taskName}</div></div>
                     <div class="finished-end-line">${getFinishedEndLine(finishTime)}</div>
