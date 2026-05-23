@@ -1766,10 +1766,8 @@
 
                 if (isFinished) {
                     const finishTime = new Date(t.finishDate);
-                    const endEl = card.querySelector('.finished-end-line');
-                    const elapsedEl = card.querySelector('.finished-elapsed-line');
-                    if (endEl) endEl.textContent = getFinishedEndLine(finishTime);
-                    if (elapsedEl) elapsedEl.textContent = getFinishedElapsedLine(finishTime);
+                    const metaEl = card.querySelector('.finished-meta-line');
+                    if (metaEl) metaEl.textContent = getFinishedMetaLine(finishTime);
                     return;
                 }
 
