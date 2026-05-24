@@ -1188,7 +1188,7 @@
             lastCloudUpdatedAt = cloudPayload.updatedAt || 0;
             if (cloudPayload.updatedAt > localPayload.updatedAt) {
                 applyCloudPayload(cloudPayload);
-                updateCloudSyncUI('已從雲端還原較新資料');
+                updateCloudSyncUI('cloudRestoredNewer');
             } else if (localPayload.updatedAt > cloudPayload.updatedAt) {
                 await uploadToCloud();
             } else {
