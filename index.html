@@ -1318,6 +1318,42 @@
             if (params) Object.keys(params).forEach(k => { s = s.split('{' + k + '}').join(String(params[k])); });
             return s;
         }
+
+        const TUTORIAL_MD_FILE = '新手教學.md';
+        let tutorialMarkdownCache = null;
+
+        function updateTutorialModalChrome() {
+            const titleEl = document.getElementById('tutorialModalTitle');
+            const closeBtn = document.querySelector('.tutorial-modal-close');
+            if (titleEl) titleEl.textContent = t('tutorialModalTitle');
+            if (closeBtn) closeBtn.setAttribute('aria-label', t('closeTutorial'));
+        }
+
+        async function openTutorialModal() {
+            const modal = document.getElementById('tutorialModal');
+            const body = document.getElementById('tutorialModalBody');
+            if (!modal || !body) return;
+            updateTutorialModalChrome();
+            modal.classList.add('show');
+            body.innerHTML = `<p>${t('tutorialLoading')}</p>`;
+            try {
+                if (!tutorialMarkdownCache) {
+                    const res = await fetch(TUTORIAL_MD_FILE);
+                    if (!res.ok) throw new Error(String(res.status));
+                    tutorialMarkdownCache = await res.text();
+                }
+                body.innerHTML = typeof marked !== 'undefined'
+                    ? marked.parse(tutorialMarkdownCache)
+                    : tutorialMarkdownCache.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+            } catch (e) {
+                body.innerHTML = `<p>${t('tutorialLoadFailed')}</p>`;
+            }
+        }
+
+        function closeTutorialModal() {
+            document.getElementById('tutorialModal')?.classList.remove('show');
+        }
+
         function setLang(lang, opts = {}) {
             if (!I18N[lang]) return;
             currentLang = lang;
