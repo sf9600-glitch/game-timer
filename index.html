@@ -503,7 +503,7 @@
                 0 6px 22px rgba(0, 0, 0, 0.55);
         }
         @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
+            html.neon-glow-enabled:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
                 border-color: color-mix(in srgb, var(--local-raw-color) 92%, #ffffff 14%);
                 box-shadow:
                     0 0 10px color-mix(in srgb, var(--local-raw-color) 96%, transparent),
