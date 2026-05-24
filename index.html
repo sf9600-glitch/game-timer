@@ -994,11 +994,10 @@
     <div class="panel-overlay" id="panelOverlay" onclick="closeSidePanel()"></div>
 
     <div class="control-panel" id="sidePanel">
+        <button type="button" class="panel-close-bar" id="panelCloseBar" onclick="closeSidePanel()"></button>
         <div class="control-panel-inner" id="sidePanelContent"></div>
     </div>
-    <button type="button" class="panel-tab" id="panelTab" onclick="toggleSidePanel()" aria-label="">
-        <span class="panel-tab-arrow" aria-hidden="true"></span>
-    </button>
+    <button type="button" class="panel-fab" id="panelFab" onclick="toggleSidePanel()"></button>
     <div id="mainDisplay"></div>
 
     <div id="undoToast" class="undo-toast">
