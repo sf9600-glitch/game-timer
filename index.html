@@ -384,8 +384,22 @@
         }
         .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
 
-        /* 深色主題：霓虹邊框光（計時器、左側面板；預警閃爍維持紅色動畫） */
-        [data-theme="dark"] .control-panel {
+        .sys-block { margin-bottom: 4px; }
+        .sys-block-title {
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin: 0 0 10px 0;
+            letter-spacing: 0.02em;
+        }
+        .sys-block-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 14px 0;
+        }
+
+        /* 深色霓虹光暈（可於設定關閉；html.neon-glow-enabled） */
+        html.neon-glow-enabled[data-theme="dark"] .control-panel {
             border-color: color-mix(in srgb, var(--primary) 72%, #ffffff 10%);
             box-shadow:
                 0 0 10px color-mix(in srgb, var(--primary) 78%, transparent),
