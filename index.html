@@ -820,9 +820,69 @@
                 -webkit-overflow-scrolling: touch;
                 overscroll-behavior: contain;
             }
-            .control-panel.panel-open {
-                transform: translateX(0);
-                padding-left: calc(36px + max(12px, env(safe-area-inset-left, 0px)));
+            .control-panel.panel-open { transform: translateX(0); }
+            /* 設定面板：緊湊排版（僅手機） */
+            .control-panel .config-section {
+                margin-bottom: 5px;
+                padding: 5px 7px;
+                border-top-width: 3px;
+                border-radius: 8px;
+            }
+            .control-panel .config-title {
+                min-height: 0;
+                padding: 1px 0;
+                font-size: 0.74rem;
+            }
+            .control-panel .collapsible-content.active { margin-top: 5px; }
+            .control-panel .btn-main {
+                min-height: 0;
+                padding: 6px 8px;
+                font-size: 0.74rem;
+                margin-top: 5px;
+                margin-bottom: 2px;
+                box-shadow: 0 2px 0 color-mix(in srgb, black 22%, var(--section-color));
+            }
+            .control-panel .btn-main:not(:disabled) { transform: translateY(-2px); }
+            .control-panel .btn-main:not(:disabled):active { transform: translateY(0); }
+            .control-panel #btnStartTask.btn-main {
+                padding: 7px 8px;
+                font-size: 0.8rem;
+            }
+            .control-panel .btn-adjust {
+                min-height: 0;
+                padding: 4px 2px;
+                font-size: 0.64rem;
+                margin-bottom: 2px;
+                box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent);
+            }
+            .control-panel .btn-adjust:not(:disabled) { transform: translateY(-2px); }
+            .control-panel .cloud-sync-box {
+                padding: 6px 7px;
+                margin-bottom: 6px;
+            }
+            .control-panel .cloud-sync-title { font-size: 0.7rem; margin-bottom: 4px; }
+            .control-panel .cloud-sync-hint { font-size: 0.62rem; line-height: 1.35; }
+            .control-panel .cloud-auth-row { gap: 4px; margin-top: 4px !important; }
+            .control-panel .cloud-forgot-link {
+                font-size: 0.62rem;
+                min-height: 0;
+                padding: 2px 0 4px;
+            }
+            .control-panel .sys-block-divider { margin: 8px 0; }
+            .control-panel .sys-block-title { margin-bottom: 5px; font-size: 0.66rem; }
+            .control-panel .tag-item-box { padding: 5px 6px; margin-bottom: 3px; }
+            .control-panel .dhms-container { margin-bottom: 6px; padding: 4px 6px; }
+            .control-panel #timeDisplay {
+                padding: 6px !important;
+                margin: 4px 0 5px 0 !important;
+                font-size: 1.35rem !important;
+            }
+            .control-panel input,
+            .control-panel select,
+            .control-panel .cloud-sync-box input {
+                min-height: 34px;
+                padding: 5px 7px;
+                font-size: 16px;
             }
             #mainDisplay { width: 100%; min-width: 0; }
             .timer-grid { grid-template-columns: 1fr; gap: 10px; }
