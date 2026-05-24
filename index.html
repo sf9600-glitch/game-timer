@@ -1174,7 +1174,10 @@
         function setNeonGlow(on) {
             config.neonGlow = !!on;
             applyNeonGlow();
-            saveConfig();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            touchLocalUpdated();
+            scheduleCloudSync();
+            renderSidePanel();
         }
 
         function getUserDefaultTasks() {
