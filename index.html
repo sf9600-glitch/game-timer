@@ -2343,8 +2343,8 @@
             const newVal = prompt(t('promptRenameSub'), config.tasks[ti].subs[si]);
             if (newVal) { config.tasks[ti].subs[si] = newVal; saveConfig(); }
         }
-        function addCharacter(i) { const n = prompt("輸入角色名稱"); if(n){ config.accounts[i].characters.push(n); saveConfig(); } }
-        function renameTask(i) { const newVal = prompt("任務標籤", config.tasks[i].name); if(newVal){ config.tasks[i].name = newVal; saveConfig(); renderSidePanel(); } }
+        function addCharacter(i) { const n = prompt(t('promptCharName')); if(n){ config.accounts[i].characters.push(n); saveConfig(); } }
+        function renameTask(i) { const newVal = prompt(t('promptTaskTag'), config.tasks[i].name); if(newVal){ config.tasks[i].name = newVal; saveConfig(); renderSidePanel(); } }
         
         function updateSectionColor(k, v) { config.colors[k] = v; saveConfig(); } 
         function updateTaskColorItem(i, v) { config.tasks[i].color = v; saveConfig(); renderSidePanel(); } 
