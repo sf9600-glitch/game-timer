@@ -2759,9 +2759,11 @@
             if (document.visibilityState === 'hidden' && isCloudSyncActive()) flushCloudSyncNow();
         });
         applyLangFromStorage();
+        window.addEventListener('resize', () => { if (!isMobileLayout()) setSidePanelOpen(false); });
         (async () => {
             await initCloudSync();
             renderSidePanel();
+            syncPanelMobileControls();
             initMobilePanelState();
             runGlobalClockTick();
         })();
