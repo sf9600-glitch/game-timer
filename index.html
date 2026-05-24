@@ -3029,6 +3029,8 @@
             if (document.visibilityState === 'hidden' && isCloudSyncActive()) flushCloudSyncNow();
         });
         applyLangFromStorage();
+        updateTutorialModalChrome();
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTutorialModal(); });
         window.addEventListener('resize', () => { if (!isMobileLayout()) setSidePanelOpen(false); });
         (async () => {
             await initCloudSync();
