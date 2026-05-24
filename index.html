@@ -2125,11 +2125,11 @@
         }
 
         function getUndoDisplayName(entry) {
-            if (!entry) return '操作';
+            if (!entry) return t('undoOp');
             if (entry.detail) return entry.detail;
-            if (entry.label === '已完成計時器') return '清除已完成';
-            if (entry.label === '計時器') return '計時器';
-            return '設定';
+            if (entry.label === '已完成計時器') return t('undoClearFinished');
+            if (entry.label === '計時器') return t('undoTimer');
+            return t('undoSettings');
         }
 
         function updateUndoToastText() {
@@ -2137,8 +2137,8 @@
             const n = undoStack.length;
             const top = undoStack[n - 1];
             const name = getUndoDisplayName(top);
-            if (n > 1) undoTextEl.textContent = `↩ 復原「${name}」等 ${n} 項 (剩餘 ${currentUndoTimeLeft}s)`;
-            else undoTextEl.textContent = `↩ 復原「${name}」 (剩餘 ${currentUndoTimeLeft}s)`;
+            if (n > 1) undoTextEl.textContent = tp('undoMany', { name, n, sec: currentUndoTimeLeft });
+            else undoTextEl.textContent = tp('undoOne', { name, sec: currentUndoTimeLeft });
         }
 
         function loadUndoStackFromStorage() {
