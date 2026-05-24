@@ -938,27 +938,49 @@
         let dragSourceTaskIdx = null;
         let dragSourceSub = { taskIdx: null, subIdx: null };
 
+        const BUILTIN_DEFAULT_TASKS = [
+            { name: '訓練', subs: ['盾兵', '矛兵', '射手'], color: '#f6b26b' },
+            { name: '寵物', subs: ['泰坦巨鳥', '劍齒虎', '雪猿', '洞獅', '雪豹', '板齒犀'], color: '#22d3ee' },
+            { name: '建築', subs: ['大熔爐', '盾兵營', '矛兵營', '射手營', '大使館'], color: '#b4a7d6' },
+            { name: '採集', subs: ['生肉', '木材', '煤礦', '鐵礦', '聯盟資源'], color: '#3b82f6' },
+            { name: '研究', subs: ['科技研究所', '戰爭研究所'], color: '#76a5af' },
+            { name: '專家', subs: ['西里爾', '艾格妮絲', '霍爾格', '羅慕路斯', '巴爾德', '法比安', '瓦萊莉亞', '羅妮', '凱西'], color: '#93c47d' },
+            { name: '其他', subs: ['掛機探險', '捐獻'], color: '#a855f7' }
+        ];
+
+        function cloneTasks(tasks) {
+            return JSON.parse(JSON.stringify(tasks));
+        }
+
+        function normalizeConfig() {
+            if (!config.tasks || !Array.isArray(config.tasks)) {
+                config.tasks = cloneTasks(BUILTIN_DEFAULT_TASKS);
+            }
+            if (!config.defaultTasks || !Array.isArray(config.defaultTasks) || !config.defaultTasks.length) {
+                config.defaultTasks = cloneTasks(config.tasks.length ? config.tasks : BUILTIN_DEFAULT_TASKS);
+            }
+        }
+
+        function getUserDefaultTasks() {
+            normalizeConfig();
+            return cloneTasks(config.defaultTasks);
+        }
+
         const defaultConfig = {
             colors: { acc: '#64748b', task: '#475569', start: '#4a90e2', sys: '#475569' },
             accounts: [
                 { email: '帳號1', characters: ['角色1'], color: '#4a90e2' },
                 { email: '帳號2', characters: ['角色2'], color: '#e28743' }
             ],
-            tasks: [
-                { name: '訓練', subs: ['盾兵', '矛兵', '射手'], color: '#f6b26b' },
-                { name: '寵物', subs: ['泰坦巨鳥', '劍齒虎', '雪猿', '洞獅', '雪豹', '板齒犀'], color: '#22d3ee' },
-                { name: '建築', subs: ['大熔爐', '盾兵營', '矛兵營', '射手營', '大使館'], color: '#b4a7d6' },
-                { name: '採集', subs: ['生肉', '木材', '煤礦', '鐵礦', '聯盟資源'], color: '#3b82f6' },
-                { name: '研究', subs: ['科技研究所', '戰爭研究所'], color: '#76a5af' },
-                { name: '專家', subs: ['西里爾', '艾格妮絲', '霍爾格', '羅慕路斯', '巴爾德', '法比安', '瓦萊莉亞', '羅妮', '凱西'], color: '#93c47d' },
-                { name: '其他', subs: ['掛機探險', '捐獻'], color: '#a855f7' }
-            ],
+            tasks: cloneTasks(BUILTIN_DEFAULT_TASKS),
+            defaultTasks: cloneTasks(BUILTIN_DEFAULT_TASKS),
             undoTime: 10
         };
 
         let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
         if (config.undoTime === undefined) config.undoTime = 10;
-        if (!localStorage.getItem(STORAGE_KEY)) config = defaultConfig;
+        if (!localStorage.getItem(STORAGE_KEY)) config = cloneTasks(defaultConfig) && defaultConfig;
+        normalizeConfig();
 
         let undoStack = [];
         let undoTimerInterval = null; 
