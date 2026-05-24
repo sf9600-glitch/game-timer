@@ -1169,7 +1169,7 @@
             clearTimeout(cloudSyncTimer);
             return uploadToCloud().catch(err => {
                 console.error(err);
-                updateCloudSyncUI('同步失敗');
+                updateCloudSyncUI('cloudSyncFailed');
             });
         }
 
@@ -1230,7 +1230,7 @@
                 await mergeCloudFromRemote();
             } catch (e) {
                 console.error(e);
-                updateCloudSyncUI('同步失敗');
+                updateCloudSyncUI('cloudSyncFailed');
                 alert('同步失敗：' + (e.message || e));
             }
         }
