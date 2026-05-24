@@ -784,19 +784,6 @@
                 border-radius: 12px 0 0 12px;
                 box-shadow: -2px 0 14px rgba(15, 23, 42, 0.14);
             }
-            [data-theme="dark"] .panel-tab,
-            @media (prefers-color-scheme: dark) {
-                :root:not([data-theme="light"]) .panel-tab {
-                    box-shadow:
-                        2px 0 10px color-mix(in srgb, var(--primary) 45%, transparent),
-                        2px 0 20px color-mix(in srgb, var(--primary) 25%, transparent);
-                }
-                :root:not([data-theme="light"]) .panel-tab.is-panel-open {
-                    box-shadow:
-                        -2px 0 10px color-mix(in srgb, var(--primary) 45%, transparent),
-                        -2px 0 20px color-mix(in srgb, var(--primary) 25%, transparent);
-                }
-            }
             [data-theme="dark"] .panel-tab {
                 box-shadow:
                     2px 0 10px color-mix(in srgb, var(--primary) 45%, transparent),
