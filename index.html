@@ -2802,18 +2802,33 @@
 
         function adj(s) { totalSec += s; updateDisp(); }
         function resetTime() { totalSec = 0; updateDisp(); }
+
+        function triggerTimeValueFlash(ids) {
+            const targets = ids || ['timeDisplay', 'in-d', 'in-h', 'in-m', 'in-s'];
+            targets.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.remove('time-value-flash');
+                void el.offsetWidth;
+                el.classList.add('time-value-flash');
+                const clear = () => el.classList.remove('time-value-flash');
+                el.addEventListener('animationend', clear, { once: true });
+            });
+        }
         
         function updateDisp() { 
             const dispH = Math.floor(totalSec / 3600), dispM = Math.floor((totalSec % 3600) / 60), dispS = totalSec % 60;
             document.getElementById('timeDisplay').textContent = `${String(dispH).padStart(2,'0')}:${String(dispM).padStart(2,'0')}:${String(dispS).padStart(2,'0')}`; 
             let rem = totalSec; const d = Math.floor(rem / 86400); rem %= 86400; const h = Math.floor(rem / 3600); rem %= 3600; const m = Math.floor(rem / 60); const s = rem % 60;
             document.getElementById('in-d').value = d; document.getElementById('in-h').value = h; document.getElementById('in-m').value = m; document.getElementById('in-s').value = s;
+            triggerTimeValueFlash();
         }
 
         function updateSecFromDhms() {
             const d = parseInt(document.getElementById('in-d').value) || 0, h = parseInt(document.getElementById('in-h').value) || 0, m = parseInt(document.getElementById('in-m').value) || 0, s = parseInt(document.getElementById('in-s').value) || 0;
             totalSec = (d * 86400) + (h * 3600) + (m * 60) + s;
             document.getElementById('timeDisplay').textContent = `${String(Math.floor(totalSec / 3600)).padStart(2,'0')}:${String(Math.floor((totalSec % 3600) / 60)).padStart(2,'0')}:${String(totalSec % 60).padStart(2,'0')}`;
+            triggerTimeValueFlash();
         }
 
         function updateCharSelect() { 
