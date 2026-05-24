@@ -2016,16 +2016,15 @@
         }
 
         function syncPanelMobileControls() {
-            const fab = document.getElementById('panelFab');
             const closeBar = document.getElementById('panelCloseBar');
-            if (fab) {
-                fab.textContent = t('panelFabOpen');
-                fab.setAttribute('aria-label', t('openPanel'));
-            }
             if (closeBar) {
                 closeBar.textContent = t('panelCloseBar');
                 closeBar.setAttribute('aria-label', t('closePanel'));
             }
+            document.querySelectorAll('.main-settings-btn').forEach(btn => {
+                btn.textContent = t('panelFabOpen');
+                btn.setAttribute('aria-label', t('openPanel'));
+            });
         }
 
         function setSidePanelOpen(open) {
