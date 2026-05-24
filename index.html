@@ -2383,10 +2383,17 @@
         function addAccount() { const n = document.getElementById('newEmailInput').value; if(n){ config.accounts.push({email:n, characters:[], color:defaultAccColors[config.accounts.length%6]}); saveConfig(); } }
         function saveTask() { const n = document.getElementById('newTaskInput').value; if(n){ config.tasks.push({name:n, subs:[], color:config.colors.task}); saveConfig(); } }
 
+        function saveCurrentTasksAsDefault() {
+            normalizeConfig();
+            config.defaultTasks = cloneTasks(config.tasks);
+            saveConfig();
+            alert(t('alertDefaultTagsSaved'));
+        }
+
         function resetDefaultTasks() {
             if (!confirm(t('confirmResetTasks'))) return;
             triggerUndo('設定', JSON.parse(JSON.stringify(config)), '任務標籤');
-            config.tasks = JSON.parse(JSON.stringify(defaultConfig.tasks));
+            config.tasks = getUserDefaultTasks();
             uiState.editingTaskIdx = null;
             uiState.allTasksExpanded = false;
             uiState.collapsedTaskIndices.clear();
