@@ -2153,9 +2153,9 @@
                                 <span>${t('undoDisplaySec')}</span>
                                 <input type="number" id="undoTimeInput" value="${config.undoTime}" style="width:40px; text-align:center;" onchange="config.undoTime=parseInt(this.value)||10; saveConfig();">
                             </div>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-                                <button class="btn-main" style="font-size:0.8rem; margin:0;" onclick="exportConfig()">${t('exportBackup')}</button>
-                                <button class="btn-main" style="background:transparent; color:var(--text-main); border:1px solid var(--border-color); font-size:0.8rem; margin:0;" onclick="document.getElementById('importFile').click()">${t('importBtn')}</button>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
+                                <button class="btn-main btn-compact-main" onclick="exportConfig()">${t('exportBackup')}</button>
+                                <button class="btn-main btn-compact-main btn-secondary-main" onclick="document.getElementById('importFile').click()">${t('importBtn')}</button>
                             </div>
                             <input type="file" id="importFile" style="display:none" onchange="importConfig(event)">
                         </div>
