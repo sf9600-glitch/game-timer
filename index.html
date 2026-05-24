@@ -1429,20 +1429,20 @@
                 currentUser = session?.user ?? null;
                 if (event === 'PASSWORD_RECOVERY') {
                     cloudAuthView = 'newPassword';
-                    updateCloudSyncUI('請設定新密碼');
+                    updateCloudSyncUI('cloudSetNewPassword');
                 } else if (event === 'SIGNED_OUT') {
                     stopCloudPoll();
                     cloudAuthView = 'login';
-                    updateCloudSyncUI('已登出（本機資料仍保留）');
+                    updateCloudSyncUI('cloudSignedOut');
                 } else if (currentUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
                     if (cloudAuthView !== 'newPassword') {
                         try {
                             await mergeCloudFromRemote();
                             startCloudPoll();
-                            if (event === 'SIGNED_IN') updateCloudSyncUI('已登入');
+                            if (event === 'SIGNED_IN') updateCloudSyncUI('cloudLoggedIn');
                         } catch (e) {
                             console.error(e);
-                            updateCloudSyncUI('雲端載入失敗');
+                            updateCloudSyncUI('cloudLoadFailed');
                         }
                     }
                 }
