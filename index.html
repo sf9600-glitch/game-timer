@@ -1299,7 +1299,7 @@
             const redirectTo = getCloudAuthRedirectUrl();
             const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
             if (error) {
-                updateCloudSyncUI('寄送失敗');
+                updateCloudSyncUI('cloudSendResetFailed');
                 alert(error.message);
                 return;
             }
