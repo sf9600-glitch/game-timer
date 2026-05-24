@@ -2245,7 +2245,7 @@
         function removeAcc(i) {
             const acc = config.accounts[i];
             if (!acc) return;
-            if (!confirm(`確定刪除帳號「${acc.email}」？\n（該帳號下所有進行中計時器也會一併移除）`)) return;
+            if (!confirm(tp('confirmDeleteAcc', { name: acc.email }))) return;
             triggerUndo('設定', JSON.parse(JSON.stringify(config)), acc.email);
             const email = acc.email;
             config.accounts.splice(i, 1);
