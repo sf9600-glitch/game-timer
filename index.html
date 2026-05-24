@@ -2259,20 +2259,20 @@
                             <div class="sys-block-title">${t('sysSectionTheme')}</div>
                             <div style="margin-bottom:8px; font-size:0.75rem;">${t('langLabel')}</div>
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
-                                <button class="btn-adjust" onclick="setLang('zh-TW')" style="${currentLang === 'zh-TW' ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('langZhTW')}</button>
-                                <button class="btn-adjust" onclick="setLang('zh-CN')" style="${currentLang === 'zh-CN' ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('langZhCN')}</button>
+                                <button class="btn-adjust${currentLang === 'zh-TW' ? ' btn-toggle-selected' : ''}" onclick="setLang('zh-TW')">${t('langZhTW')}</button>
+                                <button class="btn-adjust${currentLang === 'zh-CN' ? ' btn-toggle-selected' : ''}" onclick="setLang('zh-CN')">${t('langZhCN')}</button>
                             </div>
                             <div style="margin-bottom:8px; font-size:0.75rem;">${t('themeLabel')}</div>
                             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px;">
-                                <button class="btn-adjust" onclick="setTheme('light')">${t('themeLight')}</button>
-                                <button class="btn-adjust" onclick="setTheme('dark')">${t('themeDark')}</button>
-                                <button class="btn-adjust" onclick="setTheme('auto')">${t('themeAuto')}</button>
+                                <button class="btn-adjust${currentTheme === 'light' ? ' btn-toggle-selected' : ''}" onclick="setTheme('light')">${t('themeLight')}</button>
+                                <button class="btn-adjust${currentTheme === 'dark' ? ' btn-toggle-selected' : ''}" onclick="setTheme('dark')">${t('themeDark')}</button>
+                                <button class="btn-adjust${currentTheme === 'auto' ? ' btn-toggle-selected' : ''}" onclick="setTheme('auto')">${t('themeAuto')}</button>
                             </div>
                             <div style="margin-bottom:6px; font-size:0.75rem;">${t('neonGlowLabel')}</div>
                             <p style="margin:0 0 8px; font-size:0.65rem; color:var(--text-sub); line-height:1.4;">${t('neonGlowHint')}</p>
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                                <button class="btn-adjust" onclick="setNeonGlow(true)" style="${config.neonGlow !== false ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('neonGlowOn')}</button>
-                                <button class="btn-adjust" onclick="setNeonGlow(false)" style="${config.neonGlow === false ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('neonGlowOff')}</button>
+                                <button class="btn-adjust${config.neonGlow !== false ? ' btn-toggle-selected' : ''}" onclick="setNeonGlow(true)">${t('neonGlowOn')}</button>
+                                <button class="btn-adjust${config.neonGlow === false ? ' btn-toggle-selected' : ''}" onclick="setNeonGlow(false)">${t('neonGlowOff')}</button>
                             </div>
                         </div>
                     </div></div>
