@@ -760,26 +760,31 @@
                 gap: 12px;
             }
             body.side-panel-open { overflow: hidden; touch-action: none; }
-            .panel-fab {
-                display: flex;
+            .main-settings-btn {
+                display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                position: fixed;
-                z-index: 125;
-                right: max(12px, env(safe-area-inset-right, 0px));
-                bottom: max(14px, env(safe-area-inset-bottom, 0px));
-                padding: 7px 12px;
+                position: absolute;
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%);
+                z-index: 3;
+                padding: 4px 14px;
                 border-radius: 999px;
                 border: 1px solid var(--border-color);
-                background: var(--panel-bg);
+                background: var(--card-bg);
                 color: var(--text-main);
                 font-size: 0.72rem;
                 font-weight: bold;
+                line-height: 1.2;
                 cursor: pointer;
-                box-shadow: 0 2px 10px rgba(15, 23, 42, 0.18);
+                box-shadow: 0 1px 6px rgba(15, 23, 42, 0.12);
                 -webkit-tap-highlight-color: transparent;
             }
-            body.side-panel-open .panel-fab { display: none !important; }
+            body.side-panel-open .main-settings-btn {
+                visibility: hidden;
+                pointer-events: none;
+            }
             .panel-close-bar {
                 display: none;
                 flex-shrink: 0;
