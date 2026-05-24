@@ -1125,6 +1125,12 @@
                     localStorage.setItem(THEME_KEY, data.theme);
                     setTheme(data.theme, { skipCloud: true });
                 }
+                if (data.lang && I18N[data.lang]) {
+                    currentLang = data.lang;
+                    localStorage.setItem(LANG_KEY, data.lang);
+                    document.documentElement.lang = data.lang;
+                    document.title = t('appTitle');
+                }
                 if (data.updatedAt) {
                     localStorage.setItem(LOCAL_UPDATED_KEY, String(data.updatedAt));
                     lastCloudUpdatedAt = data.updatedAt;
