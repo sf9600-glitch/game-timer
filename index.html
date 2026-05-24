@@ -1849,37 +1849,37 @@
 
         function getFinishDateLabel(targetDate) {
             const now = new Date(); const target = new Date(targetDate); const diffMs = target - now;
-            let dateStr = `${target.getMonth() + 1}/${target.getDate()}`;
-            if (diffMs <= 0) return `${dateStr} (已結束)`;
-            if (diffMs < 60000) return `${dateStr} (即將結束)`;
-            if (diffMs < 3600000) return `${dateStr} (${Math.ceil(diffMs / 60000)}分鐘後)`;
-            if (diffMs < 86400000) return `${dateStr} (${Math.ceil(diffMs / 3600000)}小時後)`;
+            const dateStr = `${target.getMonth() + 1}/${target.getDate()}`;
+            if (diffMs <= 0) return tp('dateEnded', { date: dateStr });
+            if (diffMs < 60000) return tp('dateSoon', { date: dateStr });
+            if (diffMs < 3600000) return tp('dateMinLater', { date: dateStr, n: Math.ceil(diffMs / 60000) });
+            if (diffMs < 86400000) return tp('dateHourLater', { date: dateStr, n: Math.ceil(diffMs / 3600000) });
             const d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const d2 = new Date(target.getFullYear(), target.getMonth(), target.getDate());
-            return `${dateStr} (${Math.round((d2 - d1) / 86400000)}天後)`;
+            return tp('dateDayLater', { date: dateStr, n: Math.round((d2 - d1) / 86400000) });
         }
 
         function formatElapsedSinceFinish(elapsedSec) {
-            if (elapsedSec < 60) return '剛剛';
-            if (elapsedSec < 3600) return `${Math.floor(elapsedSec / 60)} 分鐘`;
+            if (elapsedSec < 60) return t('elapsedJust');
+            if (elapsedSec < 3600) return tp('elapsedMin', { n: Math.floor(elapsedSec / 60) });
             if (elapsedSec < 86400) {
                 const h = Math.floor(elapsedSec / 3600);
                 const m = Math.floor((elapsedSec % 3600) / 60);
-                return m > 0 ? `${h} 小時 ${m} 分鐘` : `${h} 小時`;
+                return m > 0 ? tp('elapsedHourMin', { h, m }) : tp('elapsedHour', { h });
             }
             const d = Math.floor(elapsedSec / 86400);
             const h = Math.floor((elapsedSec % 86400) / 3600);
-            return h > 0 ? `${d} 天 ${h} 小時` : `${d} 天`;
+            return h > 0 ? tp('elapsedDayHour', { d, h }) : tp('elapsedDay', { d });
         }
 
         function getFinishedEndLine(finishDate) {
             const target = new Date(finishDate);
             const dateStr = `${target.getMonth() + 1}/${target.getDate()} ${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
-            return `結束 ${dateStr}`;
+            return tp('finishedEnd', { date: dateStr });
         }
 
         function getFinishedElapsedLine(finishDate) {
             const elapsedSec = Math.max(0, Math.floor((Date.now() - new Date(finishDate).getTime()) / 1000));
-            return `已過 ${formatElapsedSinceFinish(elapsedSec)}`;
+            return tp('finishedElapsed', { elapsed: formatElapsedSinceFinish(elapsedSec) });
         }
 
         function applyTimerCardColorVars(card, taskHex, spectrum) {
