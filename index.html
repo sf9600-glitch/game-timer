@@ -724,43 +724,9 @@
         .undo-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
         .undo-btn-text { font-weight: bold; font-size: 0.95rem; cursor: pointer; }
 
-        /* 手機版側欄收合：活頁標籤（不遮擋頂部內容） */
-        .panel-tab {
-            display: none;
-            position: fixed;
-            z-index: 160;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            width: 32px;
-            min-height: 52px;
-            height: auto;
-            padding: 12px 0;
-            margin: 0;
-            border: 1px solid var(--border-color);
-            border-left: none;
-            border-radius: 0 12px 12px 0;
-            background: var(--panel-bg);
-            color: var(--text-main);
-            cursor: pointer;
-            box-shadow: 2px 0 14px rgba(15, 23, 42, 0.14);
-            align-items: center;
-            justify-content: center;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .panel-tab-arrow {
-            display: block;
-            font-size: 1.15rem;
-            font-weight: 800;
-            line-height: 1;
-            pointer-events: none;
-        }
-        .panel-tab:not(.is-panel-open) .panel-tab-arrow::before { content: '›'; }
-        .panel-tab.is-panel-open .panel-tab-arrow::before { content: '‹'; }
-        .control-panel-inner {
-            min-height: 0;
-        }
+        /* 手機版側欄：浮動開啟鈕 + 面板內收起列（不佔版面寬度） */
+        .panel-fab, .panel-close-bar { display: none; }
+        .control-panel-inner { min-height: 0; }
         .panel-overlay {
             display: none;
             position: fixed;
