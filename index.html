@@ -818,7 +818,10 @@
                 -webkit-overflow-scrolling: touch;
                 overscroll-behavior: contain;
             }
-            .control-panel.panel-open { transform: translateX(0); }
+            .control-panel.panel-open {
+                transform: translateX(0);
+                padding-left: calc(36px + max(12px, env(safe-area-inset-left, 0px)));
+            }
             #mainDisplay { width: 100%; min-width: 0; }
             .timer-grid { grid-template-columns: 1fr; gap: 10px; }
             .timer-section-active .timer-grid {
