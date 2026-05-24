@@ -2541,25 +2541,6 @@
             if (window.innerWidth <= 768) closeSidePanel();
         }
 
-        function toggleSidePanel() {
-            const panel = document.getElementById('sidePanel');
-            const overlay = document.getElementById('panelOverlay');
-            const btn = document.getElementById('panelToggle');
-            const isOpen = panel.classList.toggle('panel-open');
-            overlay.classList.toggle('show', isOpen);
-            document.body.classList.toggle('side-panel-open', isOpen);
-            btn.textContent = isOpen ? '✕' : '☰';
-            btn.setAttribute('aria-label', isOpen ? t('closePanel') : t('openPanel'));
-        }
-        function closeSidePanel() {
-            document.getElementById('sidePanel').classList.remove('panel-open');
-            document.getElementById('panelOverlay').classList.remove('show');
-            document.body.classList.remove('side-panel-open');
-            const btn = document.getElementById('panelToggle');
-            btn.textContent = '☰';
-            btn.setAttribute('aria-label', t('openPanel'));
-        }
-        
         function saveConfig() {
             normalizeConfig();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
