@@ -2246,7 +2246,7 @@
                             </div>
                             <div style="margin-bottom:12px; font-size:0.75rem; padding:8px; background:var(--bg); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
                                 <span>${t('undoDisplaySec')}</span>
-                                <input type="number" id="undoTimeInput" value="${config.undoTime}" style="width:40px; text-align:center;" onchange="config.undoTime=parseInt(this.value)||10; saveConfig();">
+                                <input type="number" id="undoTimeInput" class="undo-time-input" value="${config.undoTime}" min="1" max="120" onchange="config.undoTime=parseInt(this.value)||10; saveConfig();">
                             </div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
                                 <button class="btn-main btn-compact-main" onclick="exportConfig()">${t('exportBackup')}</button>
