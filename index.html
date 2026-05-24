@@ -753,24 +753,46 @@
                 gap: 12px;
             }
             body.side-panel-open { overflow: hidden; touch-action: none; }
-            .panel-tab {
+            .panel-fab {
                 display: flex;
-                left: max(0px, env(safe-area-inset-left, 0px));
-                z-index: 165;
+                align-items: center;
+                justify-content: center;
+                position: fixed;
+                z-index: 125;
+                left: max(12px, env(safe-area-inset-left, 0px));
+                bottom: max(14px, env(safe-area-inset-bottom, 0px));
+                padding: 7px 12px;
+                border-radius: 999px;
+                border: 1px solid var(--border-color);
+                background: var(--panel-bg);
+                color: var(--text-main);
+                font-size: 0.72rem;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 2px 10px rgba(15, 23, 42, 0.18);
+                -webkit-tap-highlight-color: transparent;
             }
-            .panel-tab.is-panel-open {
-                border-color: color-mix(in srgb, var(--primary) 45%, var(--border-color));
+            body.side-panel-open .panel-fab { display: none !important; }
+            .panel-close-bar {
+                display: none;
+                flex-shrink: 0;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                width: 100%;
+                padding: 5px 8px;
+                margin: 0 0 4px 0;
+                border: none;
+                border-bottom: 1px solid var(--border-color);
+                border-radius: 0;
+                background: color-mix(in srgb, var(--bg) 55%, var(--panel-bg));
+                color: var(--text-sub);
+                font-size: 0.68rem;
+                font-weight: bold;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
             }
-            html.neon-glow-enabled[data-theme="dark"] .panel-tab {
-                box-shadow:
-                    2px 0 10px color-mix(in srgb, var(--primary) 45%, transparent),
-                    2px 0 20px color-mix(in srgb, var(--primary) 25%, transparent);
-            }
-            html.neon-glow-enabled[data-theme="dark"] .panel-tab.is-panel-open {
-                box-shadow:
-                    2px 0 12px color-mix(in srgb, var(--primary) 58%, transparent),
-                    2px 0 24px color-mix(in srgb, var(--primary) 38%, transparent);
-            }
+            .control-panel.panel-open .panel-close-bar { display: flex; }
             .control-panel {
                 position: fixed;
                 left: 0;
