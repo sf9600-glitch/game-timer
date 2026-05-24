@@ -1136,6 +1136,7 @@
                 if (data.config) {
                     config = data.config;
                     if (config.undoTime === undefined) config.undoTime = 10;
+                    normalizeConfig();
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
                 }
                 if (data.activeTimers) {
