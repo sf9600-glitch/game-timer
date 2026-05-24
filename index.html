@@ -138,7 +138,11 @@
 
         /* 活頁夾外殼結構 */
         .account-group { margin-bottom: 25px; display: flex; flex-direction: column; padding: 0; position: relative; }
-        
+        .account-group-header {
+            position: relative;
+            display: block;
+            line-height: 0;
+        }
         .account-tab-item { 
             background-color: var(--acc-theme); 
             color: #ffffff; 
@@ -147,13 +151,16 @@
             font-weight: bold; 
             font-size: 0.85rem; 
             border-radius: 8px 8px 0 0; 
-            align-self: flex-start; 
+            display: inline-block;
+            vertical-align: bottom;
             box-shadow: 2px -2px 5px rgba(15, 23, 42, 0.04);
             border: 1px solid var(--border-color);
             border-bottom: none;
             position: relative;
             z-index: 2;
+            line-height: normal;
         }
+        .main-settings-btn { display: none; }
         .account-content { 
             padding: 16px; 
             background-color: color-mix(in srgb, var(--acc-theme) 1.5%, var(--card-bg)); 
