@@ -1001,7 +1001,7 @@
                 clearCloudAuthHash();
             }
             cloudAuthView = 'login';
-            updateCloudSyncUI('請登入以同步');
+            updateCloudSyncUI('cloudLoginPrompt');
             renderSidePanel();
         }
 
@@ -1422,7 +1422,7 @@
                     updateCloudSyncUI('雲端載入失敗');
                 }
             } else {
-                updateCloudSyncUI('請登入以同步');
+                updateCloudSyncUI('cloudLoginPrompt');
             }
 
             sb.auth.onAuthStateChange(async (event, session) => {
