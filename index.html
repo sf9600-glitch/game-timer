@@ -1155,7 +1155,7 @@
             if (lang && I18N[lang]) currentLang = lang;
             document.documentElement.lang = currentLang;
             document.title = t('appTitle');
-            syncPanelTabState();
+            syncPanelMobileControls();
             const undoEl = document.getElementById('undoText');
             if (undoEl) undoEl.textContent = t('undo');
         }
