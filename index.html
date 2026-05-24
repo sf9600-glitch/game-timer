@@ -2334,16 +2334,24 @@
 
         function refreshMainDisplay() { 
             const main = document.getElementById('mainDisplay'); main.innerHTML = ''; 
+            const mobile = isMobileLayout();
             config.accounts.forEach((acc, i) => { 
                 const div = document.createElement('div'); div.className = 'account-group'; 
                 div.style.setProperty('--acc-theme', acc.color || defaultAccColors[i%6]); 
+                const settingsBtn = (mobile && i === 0)
+                    ? `<button type="button" class="main-settings-btn" onclick="toggleSidePanel()"></button>`
+                    : '';
                 div.innerHTML = `
-                    <div class="account-tab-item">${acc.email}</div>
+                    <div class="account-group-header">
+                        <div class="account-tab-item">${acc.email}</div>
+                        ${settingsBtn}
+                    </div>
                     <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
                 `; 
                 main.appendChild(div); 
             }); 
             dispatchTimersToDOM();
+            syncPanelMobileControls();
         }
 
         function hasAnyFinishedTimers() {
