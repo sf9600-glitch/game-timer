@@ -384,7 +384,90 @@
         }
         .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
 
-        /* 深色主題：計時器邊框霓虹光（依任務色；預警閃爍維持紅色動畫） */
+        /* 深色主題：霓虹邊框光（計時器、左側面板；預警閃爍維持紅色動畫） */
+        [data-theme="dark"] .control-panel {
+            border-color: color-mix(in srgb, var(--primary) 58%, var(--border-color));
+            box-shadow:
+                0 0 6px color-mix(in srgb, var(--primary) 55%, transparent),
+                0 0 16px color-mix(in srgb, var(--primary) 32%, transparent),
+                0 4px 24px rgba(0, 0, 0, 0.5);
+        }
+        [data-theme="dark"] .config-section {
+            border-color: color-mix(in srgb, var(--section-color) 52%, var(--border-color));
+            border-top-color: color-mix(in srgb, var(--section-color) 88%, #ffffff 12%);
+            box-shadow:
+                0 0 4px color-mix(in srgb, var(--section-color) 88%, transparent),
+                0 0 12px color-mix(in srgb, var(--section-color) 58%, transparent),
+                0 0 20px color-mix(in srgb, var(--section-color) 34%, transparent),
+                inset 0 0 12px color-mix(in srgb, var(--section-color) 10%, transparent);
+        }
+        [data-theme="dark"] .cloud-sync-box {
+            border-color: color-mix(in srgb, var(--primary) 55%, var(--border-color));
+            box-shadow:
+                0 0 4px color-mix(in srgb, var(--primary) 75%, transparent),
+                0 0 12px color-mix(in srgb, var(--primary) 42%, transparent);
+        }
+        [data-theme="dark"] .cloud-sync-unconfigured {
+            border-color: color-mix(in srgb, var(--danger) 75%, #ffffff 8%) !important;
+            box-shadow:
+                0 0 4px color-mix(in srgb, var(--danger) 80%, transparent),
+                0 0 12px color-mix(in srgb, var(--danger) 48%, transparent);
+        }
+        [data-theme="dark"] .tag-item-box {
+            border-color: color-mix(in srgb, var(--tag-color) 48%, var(--border-color));
+            box-shadow:
+                0 0 4px color-mix(in srgb, var(--tag-color) 82%, transparent),
+                0 0 10px color-mix(in srgb, var(--tag-color) 50%, transparent),
+                inset 0 0 8px color-mix(in srgb, var(--tag-color) 8%, transparent);
+        }
+        [data-theme="dark"] #timeDisplay {
+            box-shadow:
+                0 0 6px color-mix(in srgb, var(--section-color) 70%, transparent),
+                0 0 14px color-mix(in srgb, var(--section-color) 40%, transparent);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .control-panel {
+                border-color: color-mix(in srgb, var(--primary) 58%, var(--border-color));
+                box-shadow:
+                    0 0 6px color-mix(in srgb, var(--primary) 55%, transparent),
+                    0 0 16px color-mix(in srgb, var(--primary) 32%, transparent),
+                    0 4px 24px rgba(0, 0, 0, 0.5);
+            }
+            :root:not([data-theme="light"]) .config-section {
+                border-color: color-mix(in srgb, var(--section-color) 52%, var(--border-color));
+                border-top-color: color-mix(in srgb, var(--section-color) 88%, #ffffff 12%);
+                box-shadow:
+                    0 0 4px color-mix(in srgb, var(--section-color) 88%, transparent),
+                    0 0 12px color-mix(in srgb, var(--section-color) 58%, transparent),
+                    0 0 20px color-mix(in srgb, var(--section-color) 34%, transparent),
+                    inset 0 0 12px color-mix(in srgb, var(--section-color) 10%, transparent);
+            }
+            :root:not([data-theme="light"]) .cloud-sync-box {
+                border-color: color-mix(in srgb, var(--primary) 55%, var(--border-color));
+                box-shadow:
+                    0 0 4px color-mix(in srgb, var(--primary) 75%, transparent),
+                    0 0 12px color-mix(in srgb, var(--primary) 42%, transparent);
+            }
+            :root:not([data-theme="light"]) .cloud-sync-unconfigured {
+                border-color: color-mix(in srgb, var(--danger) 75%, #ffffff 8%) !important;
+                box-shadow:
+                    0 0 4px color-mix(in srgb, var(--danger) 80%, transparent),
+                    0 0 12px color-mix(in srgb, var(--danger) 48%, transparent);
+            }
+            :root:not([data-theme="light"]) .tag-item-box {
+                border-color: color-mix(in srgb, var(--tag-color) 48%, var(--border-color));
+                box-shadow:
+                    0 0 4px color-mix(in srgb, var(--tag-color) 82%, transparent),
+                    0 0 10px color-mix(in srgb, var(--tag-color) 50%, transparent),
+                    inset 0 0 8px color-mix(in srgb, var(--tag-color) 8%, transparent);
+            }
+            :root:not([data-theme="light"]) #timeDisplay {
+                box-shadow:
+                    0 0 6px color-mix(in srgb, var(--section-color) 70%, transparent),
+                    0 0 14px color-mix(in srgb, var(--section-color) 40%, transparent);
+            }
+        }
+
         [data-theme="dark"] .timer-card:not(.is-warning-blinking) {
             border-color: color-mix(in srgb, var(--local-raw-color) 88%, #ffffff 12%);
             box-shadow:
