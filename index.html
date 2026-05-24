@@ -1162,6 +1162,19 @@
             if (!config.defaultTasks || !Array.isArray(config.defaultTasks) || !config.defaultTasks.length) {
                 config.defaultTasks = cloneTasks(config.tasks.length ? config.tasks : BUILTIN_DEFAULT_TASKS);
             }
+            if (config.neonGlow === undefined) config.neonGlow = true;
+            applyNeonGlow();
+        }
+
+        function applyNeonGlow() {
+            const on = config.neonGlow !== false;
+            document.documentElement.classList.toggle('neon-glow-enabled', on);
+        }
+
+        function setNeonGlow(on) {
+            config.neonGlow = !!on;
+            applyNeonGlow();
+            saveConfig();
         }
 
         function getUserDefaultTasks() {
