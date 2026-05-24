@@ -2338,6 +2338,7 @@
         }
         
         function saveConfig() {
+            normalizeConfig();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
             touchLocalUpdated();
             scheduleCloudSync();
