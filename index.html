@@ -1094,9 +1094,7 @@
             localStorage.setItem(LANG_KEY, lang);
             document.documentElement.lang = lang;
             document.title = t('appTitle');
-            const panel = document.getElementById('sidePanel');
-            const btn = document.getElementById('panelToggle');
-            if (btn) btn.setAttribute('aria-label', panel && panel.classList.contains('panel-open') ? t('closePanel') : t('openPanel'));
+            syncPanelTabState();
             updateCloudSyncUI();
             if (undoStack.length) updateUndoToastText();
             else { const el = document.getElementById('undoText'); if (el) el.textContent = t('undo'); }
