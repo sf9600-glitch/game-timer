@@ -844,6 +844,13 @@
             }
             .control-panel .btn-main:not(:disabled) { transform: translateY(-2px); }
             .control-panel .btn-main:not(:disabled):active { transform: translateY(0); }
+            .control-panel .btn-secondary-main {
+                background: transparent !important;
+                color: var(--text-main) !important;
+                border: 1px solid var(--border-color) !important;
+                box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent) !important;
+                text-shadow: none !important;
+            }
             .control-panel #btnStartTask.btn-main {
                 padding: 7px 8px;
                 font-size: 0.8rem;
