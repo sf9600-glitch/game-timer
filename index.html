@@ -1750,10 +1750,10 @@
 
                 <div class="config-section" id="sec-task" style="--section-color: ${config.colors.task};">
                     <div class="config-title" onclick="smartToggle('taskContent')">
-                        <span>全部標籤</span>
+                        <span>${t('allTags')}</span>
                         <div style="display:flex; gap:8px; align-items:center;" onclick="event.stopPropagation()">
                             <button id="btn-expand-all-tasks" class="btn-mini" onclick="toggleExpandAllTasks()">
-                                ${uiState.allTasksExpanded ? '收合全部' : '展開全部'}
+                                ${uiState.allTasksExpanded ? t('collapseAll') : t('expandAll')}
                             </button>
                             <input type="color" class="color-input" value="${config.colors.task}" onchange="updateSectionColor('task', this.value)">
                         </div>
