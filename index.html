@@ -1759,7 +1759,7 @@
                         </div>
                     </div>
                     <div id="taskContent" class="collapsible-content ${uiState.openSection === 'taskContent' ? 'active' : ''}"><div>
-                        <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newTaskInput" placeholder="任務名稱" style="flex:1;" onkeyup="if(event.key==='Enter') saveTask()"><button class="btn-adjust" onclick="saveTask()" style="width: 60px;">新增</button></div>
+                        <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newTaskInput" placeholder="${t('taskNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') saveTask()"><button class="btn-adjust" onclick="saveTask()" style="width: 60px;">${t('add')}</button></div>
                         <div id="taskList">${config.tasks.map((t, i) => {
                             const isDisplay = isTaskSubPanelOpen(i);
                             const tagHex = t.color || config.colors.task;
