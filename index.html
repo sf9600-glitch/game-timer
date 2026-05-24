@@ -1406,7 +1406,7 @@
         async function initCloudSync() {
             const sb = getSupabase();
             if (!sb) {
-                cloudSyncStatus = '後端未設定';
+                updateCloudSyncUI('cloudBackendNotConfigured');
                 return;
             }
             const { data: { session }, error } = await sb.auth.getSession();
