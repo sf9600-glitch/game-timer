@@ -1080,8 +1080,81 @@
             border: none;
             padding: 0;
         }
+
+        .tutorial-modal {
+            position: fixed; inset: 0; z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+            background: rgba(0, 0, 0, 0.45);
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+        .tutorial-modal.show { opacity: 1; visibility: visible; pointer-events: auto; }
+        .tutorial-modal-card {
+            width: min(640px, 100%);
+            max-height: min(88vh, 720px);
+            display: flex; flex-direction: column;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        .tutorial-modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .tutorial-modal-title { font-size: 0.95rem; font-weight: bold; color: var(--text-main); margin: 0; }
+        .tutorial-modal-close {
+            border: none; background: var(--bg); color: var(--text-sub);
+            width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+            font-size: 1.2rem; line-height: 1; flex-shrink: 0;
+        }
+        .tutorial-modal-close:hover { color: var(--text-main); }
+        .tutorial-modal-body {
+            padding: 14px 16px 18px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            font-size: 0.8rem;
+            line-height: 1.55;
+            color: var(--text-main);
+        }
+        .tutorial-modal-body h1 { font-size: 1.15rem; margin: 0 0 12px; line-height: 1.35; }
+        .tutorial-modal-body h2 { font-size: 0.95rem; margin: 18px 0 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+        .tutorial-modal-body h3 { font-size: 0.88rem; margin: 14px 0 6px; }
+        .tutorial-modal-body p { margin: 0 0 10px; }
+        .tutorial-modal-body ul, .tutorial-modal-body ol { margin: 0 0 10px; padding-left: 1.25rem; }
+        .tutorial-modal-body li { margin-bottom: 4px; }
+        .tutorial-modal-body hr { border: none; border-top: 1px solid var(--border-color); margin: 16px 0; }
+        .tutorial-modal-body table {
+            width: 100%; border-collapse: collapse; margin: 0 0 12px;
+            font-size: 0.75rem;
+        }
+        .tutorial-modal-body th, .tutorial-modal-body td {
+            border: 1px solid var(--border-color);
+            padding: 6px 8px; text-align: left; vertical-align: top;
+        }
+        .tutorial-modal-body th { background: var(--bg); }
+        .tutorial-modal-body code {
+            font-family: ui-monospace, monospace;
+            font-size: 0.9em;
+            background: var(--bg);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .tutorial-modal-body blockquote {
+            margin: 0 0 10px;
+            padding: 8px 10px;
+            border-left: 3px solid var(--primary);
+            background: var(--bg);
+            color: var(--text-sub);
+        }
+        .tutorial-modal-body a { color: var(--primary); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
