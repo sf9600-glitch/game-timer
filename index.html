@@ -1852,7 +1852,10 @@
                     <div class="config-title" onclick="smartToggle('sysContent')">${t('sysTheme')}</div>
                     <div id="sysContent" class="collapsible-content ${uiState.openSection === 'sysContent' ? 'active' : ''}"><div>
                         ${renderCloudSyncHtml()}
-                        <button class="btn-adjust" onclick="resetDefaultTasks()" style="width:100%; margin-bottom:10px; font-size:0.68rem; color:var(--danger);">${t('restoreDefaultTags')}</button>
+                        <div style="display:grid; grid-template-columns:1fr; gap:6px; margin-bottom:10px;">
+                            <button class="btn-adjust" onclick="saveCurrentTasksAsDefault()" style="font-size:0.68rem;">${t('saveDefaultTags')}</button>
+                            <button class="btn-adjust" onclick="resetDefaultTasks()" style="font-size:0.68rem; color:var(--danger);">${t('restoreDefaultTags')}</button>
+                        </div>
                         <div style="margin-bottom:8px; font-size:0.75rem;">${t('langLabel')}</div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
                             <button class="btn-adjust" onclick="setLang('zh-TW')" style="${currentLang === 'zh-TW' ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('langZhTW')}</button>
