@@ -2034,6 +2034,7 @@
             panel.classList.toggle('panel-open', !!open);
             if (overlay) overlay.classList.toggle('show', !!open);
             document.body.classList.toggle('side-panel-open', !!open);
+            syncPanelMobileControls();
         }
 
         function toggleSidePanel() {
