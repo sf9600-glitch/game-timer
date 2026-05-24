@@ -1927,8 +1927,46 @@
             document.querySelectorAll('.sub-tag-item').forEach(el => el.classList.remove('drag-over'));
         }
 
-        function renderSidePanel() {
+        function isMobileLayout() {
+            return window.innerWidth <= 768;
+        }
+
+        function syncPanelTabState() {
             const panel = document.getElementById('sidePanel');
+            const tab = document.getElementById('panelTab');
+            if (!panel || !tab) return;
+            const isOpen = panel.classList.contains('panel-open');
+            tab.classList.toggle('is-panel-open', isOpen);
+            tab.setAttribute('aria-label', isOpen ? t('closePanel') : t('openPanel'));
+        }
+
+        function setSidePanelOpen(open) {
+            const panel = document.getElementById('sidePanel');
+            const overlay = document.getElementById('panelOverlay');
+            if (!panel) return;
+            panel.classList.toggle('panel-open', !!open);
+            if (overlay) overlay.classList.toggle('show', !!open);
+            document.body.classList.toggle('side-panel-open', !!open);
+            syncPanelTabState();
+        }
+
+        function toggleSidePanel() {
+            const panel = document.getElementById('sidePanel');
+            setSidePanelOpen(!panel.classList.contains('panel-open'));
+        }
+
+        function closeSidePanel() {
+            setSidePanelOpen(false);
+        }
+
+        function initMobilePanelState() {
+            if (!isMobileLayout()) return;
+            if (!getActiveTimers().length) setSidePanelOpen(true);
+        }
+
+        function renderSidePanel() {
+            const panel = document.getElementById('sidePanelContent');
+            if (!panel) return;
             panel.innerHTML = `
                 <div class="config-section" id="sec-acc" style="--section-color: ${config.colors.acc};">
                     <div class="config-title" onclick="smartToggle('accContent')"><span>${t('accMgmt')}</span><input type="color" class="color-input" value="${config.colors.acc}" onclick="event.stopPropagation()" onchange="updateSectionColor('acc', this.value)"></div>
