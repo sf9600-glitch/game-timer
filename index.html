@@ -1286,16 +1286,16 @@
             currentUser = null;
             cloudAuthView = 'login';
             stopCloudPoll();
-            updateCloudSyncUI('已登出（本機資料仍保留）');
+            updateCloudSyncUI('cloudSignedOut');
             renderSidePanel();
         }
 
         async function sendPasswordResetFromUI() {
             const sb = getSupabase();
-            if (!sb) { alert('尚未設定 Supabase，請見 DEPLOY.md'); return; }
+            if (!sb) { alert(t('alertSupabaseNotSet')); return; }
             const email = document.getElementById('cloudEmail')?.value.trim();
-            if (!email) { alert('請輸入註冊時使用的 Email'); return; }
-            updateCloudSyncUI('寄送重設信中…');
+            if (!email) { alert(t('alertEnterRegisteredEmail')); return; }
+            updateCloudSyncUI('cloudSendingReset');
             const redirectTo = getCloudAuthRedirectUrl();
             const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
             if (error) {
