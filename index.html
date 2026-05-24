@@ -2328,7 +2328,7 @@
         function renameChar(ai, ci) {
             const c = config.accounts[ai].characters[ci];
             const oldName = typeof c === 'string' ? c : c.name;
-            const newVal = prompt("修改角色名稱", oldName);
+            const newVal = prompt(t('promptRenameChar'), oldName);
             if (!newVal || newVal === oldName) return;
             if (typeof c === 'string') config.accounts[ai].characters[ci] = newVal;
             else c.name = newVal;
