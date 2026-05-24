@@ -1107,8 +1107,7 @@
             if (lang && I18N[lang]) currentLang = lang;
             document.documentElement.lang = currentLang;
             document.title = t('appTitle');
-            const btn = document.getElementById('panelToggle');
-            if (btn) btn.setAttribute('aria-label', t('openPanel'));
+            syncPanelTabState();
             const undoEl = document.getElementById('undoText');
             if (undoEl) undoEl.textContent = t('undo');
         }
