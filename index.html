@@ -1231,7 +1231,7 @@
             } catch (e) {
                 console.error(e);
                 updateCloudSyncUI('cloudSyncFailed');
-                alert('同步失敗：' + (e.message || e));
+                alert(tp('alertSyncFailed', { msg: e.message || e }));
             }
         }
 
