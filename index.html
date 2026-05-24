@@ -1192,7 +1192,7 @@
             } else if (localPayload.updatedAt > cloudPayload.updatedAt) {
                 await uploadToCloud();
             } else {
-                updateCloudSyncUI('已與雲端一致');
+                updateCloudSyncUI('cloudInSync');
             }
         }
 
