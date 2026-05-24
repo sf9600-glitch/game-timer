@@ -1366,6 +1366,7 @@
             else { const el = document.getElementById('undoText'); if (el) el.textContent = t('undo'); }
             renderSidePanel();
             refreshMainDisplay();
+            if (document.getElementById('tutorialModal')?.classList.contains('show')) updateTutorialModalChrome();
             if (!opts.skipCloud) scheduleCloudSync();
         }
         function applyLangFromStorage() {
