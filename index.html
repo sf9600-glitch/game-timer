@@ -1154,7 +1154,7 @@
 
         function scheduleCloudSync() {
             if (!isCloudSyncActive() || isApplyingCloudData) return;
-            updateCloudSyncUI('同步中…');
+            updateCloudSyncUI('cloudSyncing');
             clearTimeout(cloudSyncTimer);
             cloudSyncTimer = setTimeout(() => {
                 uploadToCloud().catch(err => {
