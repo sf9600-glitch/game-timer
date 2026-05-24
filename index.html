@@ -1159,7 +1159,7 @@
             cloudSyncTimer = setTimeout(() => {
                 uploadToCloud().catch(err => {
                     console.error(err);
-                    updateCloudSyncUI('同步失敗');
+                    updateCloudSyncUI('cloudSyncFailed');
                 });
             }, 900);
         }
