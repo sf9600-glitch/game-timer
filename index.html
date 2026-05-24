@@ -383,6 +383,52 @@
         }
         .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
 
+        /* 深色主題：計時器邊框霓虹光（依任務色；預警閃爍維持紅色動畫） */
+        [data-theme="dark"] .timer-card:not(.is-warning-blinking) {
+            border-color: color-mix(in srgb, var(--local-raw-color) 88%, #ffffff 12%);
+            box-shadow:
+                0 0 5px color-mix(in srgb, var(--local-raw-color) 92%, transparent),
+                0 0 14px color-mix(in srgb, var(--local-raw-color) 68%, transparent),
+                0 0 26px color-mix(in srgb, var(--local-raw-color) 42%, transparent),
+                inset 0 0 14px color-mix(in srgb, var(--local-raw-color) 14%, transparent),
+                0 6px 18px rgba(0, 0, 0, 0.5);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
+                border-color: color-mix(in srgb, var(--local-raw-color) 88%, #ffffff 12%);
+                box-shadow:
+                    0 0 5px color-mix(in srgb, var(--local-raw-color) 92%, transparent),
+                    0 0 14px color-mix(in srgb, var(--local-raw-color) 68%, transparent),
+                    0 0 26px color-mix(in srgb, var(--local-raw-color) 42%, transparent),
+                    inset 0 0 14px color-mix(in srgb, var(--local-raw-color) 14%, transparent),
+                    0 6px 18px rgba(0, 0, 0, 0.5);
+            }
+        }
+        [data-theme="dark"] .timer-card.is-warning-blinking {
+            animation: warning-card-pulse-dark 0.85s ease-in-out infinite;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .timer-card.is-warning-blinking {
+                animation: warning-card-pulse-dark 0.85s ease-in-out infinite;
+            }
+        }
+        @keyframes warning-card-pulse-dark {
+            0%, 100% {
+                border-color: #f87171;
+                box-shadow:
+                    0 0 6px rgba(248, 113, 113, 0.9),
+                    0 0 16px rgba(239, 83, 80, 0.65),
+                    0 0 28px rgba(239, 83, 80, 0.4);
+            }
+            50% {
+                border-color: #fecaca;
+                box-shadow:
+                    0 0 10px rgba(254, 202, 202, 0.95),
+                    0 0 22px rgba(239, 83, 80, 0.85),
+                    0 0 36px rgba(239, 83, 80, 0.55);
+            }
+        }
+
         .timer-card-inner {
             position: relative;
             z-index: 1;
