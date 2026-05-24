@@ -948,10 +948,14 @@
 </head>
 <body>
 
-    <button type="button" class="panel-toggle" id="panelToggle" onclick="toggleSidePanel()" aria-label="">☰</button>
     <div class="panel-overlay" id="panelOverlay" onclick="closeSidePanel()"></div>
 
-    <div class="control-panel" id="sidePanel"></div>
+    <div class="control-panel" id="sidePanel">
+        <div class="control-panel-inner" id="sidePanelContent"></div>
+    </div>
+    <button type="button" class="panel-tab" id="panelTab" onclick="toggleSidePanel()" aria-label="">
+        <span class="panel-tab-arrow" aria-hidden="true"></span>
+    </button>
     <div id="mainDisplay"></div>
 
     <div id="undoToast" class="undo-toast">
