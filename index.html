@@ -2354,7 +2354,7 @@
         function saveTask() { const n = document.getElementById('newTaskInput').value; if(n){ config.tasks.push({name:n, subs:[], color:config.colors.task}); saveConfig(); } }
 
         function resetDefaultTasks() {
-            if (!confirm('確定還原為預設任務標籤？\n\n現有自訂標籤與子項目將被覆蓋。\n帳號、進行中計時器不受影響，可用「復原」還原此操作。')) return;
+            if (!confirm(t('confirmResetTasks'))) return;
             triggerUndo('設定', JSON.parse(JSON.stringify(config)), '任務標籤');
             config.tasks = JSON.parse(JSON.stringify(defaultConfig.tasks));
             uiState.editingTaskIdx = null;
