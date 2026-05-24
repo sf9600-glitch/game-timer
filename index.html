@@ -1416,10 +1416,10 @@
                 try {
                     await mergeCloudFromRemote();
                     startCloudPoll();
-                    updateCloudSyncUI('已登入');
+                    updateCloudSyncUI('cloudLoggedIn');
                 } catch (err) {
                     console.error(err);
-                    updateCloudSyncUI('雲端載入失敗');
+                    updateCloudSyncUI('cloudLoadFailed');
                 }
             } else {
                 updateCloudSyncUI('cloudLoginPrompt');
