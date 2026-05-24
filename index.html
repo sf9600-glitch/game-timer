@@ -2427,6 +2427,7 @@
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden' && isCloudSyncActive()) flushCloudSyncNow();
         });
+        applyLangFromStorage();
         (async () => {
             await initCloudSync();
             renderSidePanel();
