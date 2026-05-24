@@ -1996,13 +1996,17 @@
             return window.innerWidth <= 768;
         }
 
-        function syncPanelTabState() {
-            const panel = document.getElementById('sidePanel');
-            const tab = document.getElementById('panelTab');
-            if (!panel || !tab) return;
-            const isOpen = panel.classList.contains('panel-open');
-            tab.classList.toggle('is-panel-open', isOpen);
-            tab.setAttribute('aria-label', isOpen ? t('closePanel') : t('openPanel'));
+        function syncPanelMobileControls() {
+            const fab = document.getElementById('panelFab');
+            const closeBar = document.getElementById('panelCloseBar');
+            if (fab) {
+                fab.textContent = t('panelFabOpen');
+                fab.setAttribute('aria-label', t('openPanel'));
+            }
+            if (closeBar) {
+                closeBar.textContent = t('panelCloseBar');
+                closeBar.setAttribute('aria-label', t('closePanel'));
+            }
         }
 
         function setSidePanelOpen(open) {
@@ -2012,7 +2016,6 @@
             panel.classList.toggle('panel-open', !!open);
             if (overlay) overlay.classList.toggle('show', !!open);
             document.body.classList.toggle('side-panel-open', !!open);
-            syncPanelTabState();
         }
 
         function toggleSidePanel() {
