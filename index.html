@@ -1215,7 +1215,7 @@
                     if (cloudPayload.updatedAt <= lastCloudUpdatedAt) return;
                     if (cloudPayload.updatedAt > getLocalUpdatedAt()) {
                         applyCloudPayload(cloudPayload);
-                        updateCloudSyncUI('已從其他裝置更新');
+                        updateCloudSyncUI('cloudUpdatedFromOther');
                     }
                 } catch (e) { /* 輪詢失敗時靜默 */ }
             }, 20000);
