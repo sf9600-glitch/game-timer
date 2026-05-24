@@ -514,11 +514,11 @@
                     0 6px 22px rgba(0, 0, 0, 0.55);
             }
         }
-        [data-theme="dark"] .timer-card.is-warning-blinking {
+        html.neon-glow-enabled[data-theme="dark"] .timer-card.is-warning-blinking {
             animation: warning-card-pulse-dark 0.85s ease-in-out infinite;
         }
         @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) .timer-card.is-warning-blinking {
+            html.neon-glow-enabled:not([data-theme="light"]) .timer-card.is-warning-blinking {
                 animation: warning-card-pulse-dark 0.85s ease-in-out infinite;
             }
         }
