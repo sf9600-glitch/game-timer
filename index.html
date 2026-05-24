@@ -1760,9 +1760,9 @@
                     </div>
                     <div id="taskContent" class="collapsible-content ${uiState.openSection === 'taskContent' ? 'active' : ''}"><div>
                         <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newTaskInput" placeholder="${t('taskNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') saveTask()"><button class="btn-adjust" onclick="saveTask()" style="width: 60px;">${t('add')}</button></div>
-                        <div id="taskList">${config.tasks.map((t, i) => {
+                        <div id="taskList">${config.tasks.map((taskItem, i) => {
                             const isDisplay = isTaskSubPanelOpen(i);
-                            const tagHex = t.color || config.colors.task;
+                            const tagHex = taskItem.color || config.colors.task;
                             const tagSpec = getLiteColorSpectrum(tagHex);
                             return `
                             <div class="tag-item-box" style="--tag-color: ${tagHex}" 
@@ -1776,15 +1776,15 @@
                                  ondrop="handleDrop(event, ${i})" 
                                  ondragend="handleDragEnd(event)">
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span class="editable-text" style="font-weight:bold;" onclick="event.stopPropagation(); renameTask(${i});">${t.name}</span>
+                                    <span class="editable-text" style="font-weight:bold;" onclick="event.stopPropagation(); renameTask(${i});">${taskItem.name}</span>
                                     <div style="display:flex; gap:5px;">
-                                        <input type="color" class="color-input" value="${t.color || config.colors.task}" onclick="event.stopPropagation()" onchange="updateTaskColorItem(${i}, this.value)">
+                                        <input type="color" class="color-input" value="${taskItem.color || config.colors.task}" onclick="event.stopPropagation()" onchange="updateTaskColorItem(${i}, this.value)">
                                         <button class="btn-mini" onclick="event.stopPropagation(); removeTask(${i})">×</button>
                                     </div>
                                 </div>
                                 <div id="sub-edit-${i}" class="sub-edit-panel ${isDisplay ? 'open' : ''}" onclick="event.stopPropagation()">
                                     <div class="sub-edit-inner">
-                                    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">${t.subs.map((s, si) => `<span class="sub-tag-item" draggable="true" title="${t('dragSortSub')}" style="background-color:${tagSpec.badgeBg}; color:${tagSpec.subText}; border:1px solid ${tagSpec.subBorder};" ondragstart="handleSubDragStart(event, ${i}, ${si})" ondragover="handleSubDragOver(event)" ondragenter="handleSubDragEnter(event)" ondragleave="handleSubDragLeave(event)" ondrop="handleSubDrop(event, ${i}, ${si})" ondragend="handleSubDragEnd(event)"><span class="editable-text" onclick="renameSubTask(${i},${si})">${s}</span> <span onclick="removeSubTask(${i},${si})" style="cursor:pointer;">×</span></span>`).join('')}</div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">${taskItem.subs.map((s, si) => `<span class="sub-tag-item" draggable="true" title="${t('dragSortSub')}" style="background-color:${tagSpec.badgeBg}; color:${tagSpec.subText}; border:1px solid ${tagSpec.subBorder};" ondragstart="handleSubDragStart(event, ${i}, ${si})" ondragover="handleSubDragOver(event)" ondragenter="handleSubDragEnter(event)" ondragleave="handleSubDragLeave(event)" ondrop="handleSubDrop(event, ${i}, ${si})" ondragend="handleSubDragEnd(event)"><span class="editable-text" onclick="renameSubTask(${i},${si})">${s}</span> <span onclick="removeSubTask(${i},${si})" style="cursor:pointer;">×</span></span>`).join('')}</div>
                                     <div style="display:flex; gap:3px;"><input type="text" id="subIn-${i}" style="flex:1;" onkeyup="if(event.key==='Enter') addSubTask(${i})"><button class="btn-mini" onclick="addSubTask(${i})">+</button></div>
                                     </div>
                                 </div>
