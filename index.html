@@ -1093,15 +1093,16 @@
                 activeTimers: getActiveTimers(),
                 undoStack,
                 theme: localStorage.getItem(THEME_KEY) || 'auto',
+                lang: currentLang,
                 updatedAt: Math.max(getLocalUpdatedAt(), Date.now()),
                 clientId: getClientId()
             };
         }
 
-        function updateCloudSyncUI(text) {
-            if (text !== undefined) cloudSyncStatus = text;
+        function updateCloudSyncUI(key) {
+            if (key !== undefined) cloudSyncStatusKey = key;
             const el = document.getElementById('cloudSyncStatus');
-            if (el) el.textContent = cloudSyncStatus;
+            if (el) el.textContent = t(cloudSyncStatusKey);
         }
 
         function applyCloudPayload(data) {
