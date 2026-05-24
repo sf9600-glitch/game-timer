@@ -1223,7 +1223,7 @@
 
         async function syncNowCloud() {
             if (!isCloudSyncActive()) {
-                alert('請先登入帳號');
+                alert(t('alertLoginFirst'));
                 return;
             }
             try {
