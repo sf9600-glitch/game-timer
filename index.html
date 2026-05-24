@@ -2028,7 +2028,7 @@
                         <div class="finished-by-char" id="finished-by-char-${safeId}"></div>
                     </div>`;
                 }
-                container.innerHTML = html || '<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">尚無計時器</div>';
+                container.innerHTML = html || `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
 
                 const activeGrid = container.querySelector(`#grid-active-${safeId}`);
                 activeTimers.forEach((t, i) => activeGrid && activeGrid.appendChild(buildActiveTimerCard(t, i)));
