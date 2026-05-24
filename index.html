@@ -781,6 +781,149 @@
         const STORAGE_KEY = 'GameTimer_Config_V7';
         const ACTIVE_TIMERS_KEY = 'GameTimer_Active_Single';
         const THEME_KEY = 'GameTimer_Theme_Preference';
+        const LANG_KEY = 'GameTimer_Lang_Preference';
+        const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
+        const I18N = {
+            'zh-TW': {
+                appTitle: '遊戲計時器',
+                openPanel: '開啟設定面板', closePanel: '關閉設定面板',
+                undo: '↩ 復原', undoOne: '↩ 復原「{name}」 (剩餘 {sec}s)', undoMany: '↩ 復原「{name}」等 {n} 項 (剩餘 {sec}s)',
+                sectionActive: '進行中', sectionFinished: '已完成', noTimers: '尚無計時器',
+                accMgmt: '帳號管理', accNamePh: '帳號名稱', add: '新增',
+                allTags: '全部標籤', collapseAll: '收合全部', expandAll: '展開全部', taskNamePh: '任務名稱',
+                dragSortTask: '拖拉可排列順序', dragSortSub: '拖拉可排列順序',
+                taskStart: '任務啟動', resetTime: '重置時間', flashWarning: '預警閃爍:', startTask: '啟動任務', clearFinished: '清除已完成計時器',
+                sysTheme: '系統與主題', restoreDefaultTags: '↺ 還原預設標籤',
+                themeLight: '淺色', themeDark: '深色', themeAuto: '自動',
+                langLabel: '介面語言', langZhTW: '繁體中文', langZhCN: '简体中文',
+                undoDisplaySec: '復原顯示時間(秒):', exportBackup: '匯出(完整備份)', importBtn: '匯入',
+                finishedEnd: '結束 {date}', finishedElapsed: '已過 {elapsed}',
+                dateEnded: '{date} (已結束)', dateSoon: '{date} (即將結束)',
+                dateMinLater: '{date} ({n}分鐘後)', dateHourLater: '{date} ({n}小時後)', dateDayLater: '{date} ({n}天後)',
+                elapsedJust: '剛剛', elapsedMin: '{n} 分鐘', elapsedHour: '{h} 小時', elapsedHourMin: '{h} 小時 {m} 分鐘',
+                elapsedDay: '{d} 天', elapsedDayHour: '{d} 天 {h} 小時',
+                undoOp: '操作', undoClearFinished: '清除已完成', undoTimer: '計時器', undoSettings: '設定',
+                finishedTimersLabel: '已完成計時器',
+                confirmDeleteAcc: '確定刪除帳號「{name}」？\n（該帳號下所有進行中計時器也會一併移除）',
+                confirmResetTasks: '確定還原為預設任務標籤？\n\n現有自訂標籤與子項目將被覆蓋。\n帳號、進行中計時器不受影響，可用「復原」還原此操作。',
+                promptRenameAcc: '修改帳號', promptRenameChar: '修改角色名稱', promptRenameSub: '修改子項目',
+                promptCharName: '輸入角色名稱', promptTaskTag: '任務標籤',
+                alertLoginFirst: '請先登入帳號', alertSyncFailed: '同步失敗：{msg}',
+                alertSupabaseNotSet: '尚未設定 Supabase，請見 DEPLOY.md', alertSupabaseNotSetShort: '尚未設定 Supabase',
+                alertEnterEmailPassword: '請輸入 Email 與密碼', alertPasswordMin6: '密碼至少 6 個字元',
+                alertSignUpSuccess: '註冊成功！若 Supabase 有開啟 Email 驗證，請先到信箱點確認連結再登入。',
+                alertEnterRegisteredEmail: '請輸入註冊時使用的 Email',
+                alertResetEmailSent: '已寄出重設密碼信，請到信箱點連結（若沒收到請查看垃圾郵件）。',
+                alertPasswordMismatch: '兩次輸入的密碼不一致', alertPasswordUpdated: '密碼已更新，你可以用新密碼登入。',
+                cloudTitle: '☁ 雲端同步', cloudResetTitle: '☁ 重設密碼', cloudForgotTitle: '☁ 忘記密碼',
+                cloudHintUnconfigured: '請先在 index.html 填入 SUPABASE_URL 與 SUPABASE_ANON_KEY，並依 DEPLOY.md 建立資料庫後再部署上線。',
+                cloudHintLoggedIn: '已登入帳號的設定與計時器會自動同步；手機、平板、電腦登入同一帳號即可共用。',
+                cloudHintLogin: '註冊／登入後，你的帳號、標籤與進行中計時器會保存在雲端，並在所有裝置間同步。',
+                cloudHintNewPassword: '你已從信箱連結進入，請設定新密碼（至少 6 字）。',
+                cloudHintForgot: '輸入註冊 Email，我們會寄重設連結到信箱（請一併查看垃圾郵件）。',
+                cloudPasswordPh: '密碼（至少 6 字）', cloudNewPasswordPh: '新密碼', cloudNewPassword2Ph: '再輸入一次新密碼',
+                cloudForgotLink: '忘記密碼？', cloudSyncNow: '立即同步', cloudSignOut: '登出',
+                cloudSignIn: '登入', cloudSignUp: '註冊', cloudSavePassword: '儲存新密碼', cloudCancel: '取消',
+                cloudSendReset: '寄送重設信', cloudBackLogin: '返回登入',
+                cloudLoggedInShort: '已登入',
+                cloudLoginPrompt: '請登入以同步', cloudBackendNotConfigured: '後端未設定',
+                cloudEnterEmailReset: '輸入 Email 以收取重設信', cloudSynced: '已同步至雲端', cloudSyncing: '同步中…',
+                cloudSyncFailed: '同步失敗', cloudLoading: '正在載入雲端…', cloudUploadedLocal: '已將本機資料上傳至雲端',
+                cloudRestoredNewer: '已從雲端還原較新資料', cloudInSync: '已與雲端一致', cloudUpdatedFromOther: '已從其他裝置更新',
+                cloudSigningIn: '登入中…', cloudSignInFailed: '登入失敗', cloudSigningUp: '註冊中…', cloudSignUpFailed: '註冊失敗',
+                cloudVerifyEmail: '請至信箱完成驗證後登入', cloudSignedOut: '已登出（本機資料仍保留）',
+                cloudSendingReset: '寄送重設信中…', cloudSendResetFailed: '寄送失敗', cloudResetSent: '已寄出重設信，請至信箱操作',
+                cloudUpdatingPassword: '更新密碼中…', cloudUpdatePasswordFailed: '更新失敗', cloudPasswordUpdated: '密碼已更新',
+                cloudLoggedIn: '已登入', cloudLoadFailed: '雲端載入失敗', cloudSetNewPassword: '請設定新密碼'
+            },
+            'zh-CN': {
+                appTitle: '游戏计时器',
+                openPanel: '打开设置面板', closePanel: '关闭设置面板',
+                undo: '↩ 撤销', undoOne: '↩ 撤销「{name}」 (剩余 {sec}s)', undoMany: '↩ 撤销「{name}」等 {n} 项 (剩余 {sec}s)',
+                sectionActive: '进行中', sectionFinished: '已完成', noTimers: '暂无计时器',
+                accMgmt: '账号管理', accNamePh: '账号名称', add: '新增',
+                allTags: '全部标签', collapseAll: '收起全部', expandAll: '展开全部', taskNamePh: '任务名称',
+                dragSortTask: '拖动可排列顺序', dragSortSub: '拖动可排列顺序',
+                taskStart: '任务启动', resetTime: '重置时间', flashWarning: '预警闪烁:', startTask: '启动任务', clearFinished: '清除已完成计时器',
+                sysTheme: '系统与主题', restoreDefaultTags: '↺ 还原默认标签',
+                themeLight: '浅色', themeDark: '深色', themeAuto: '自动',
+                langLabel: '界面语言', langZhTW: '繁體中文', langZhCN: '简体中文',
+                undoDisplaySec: '撤销显示时间(秒):', exportBackup: '导出(完整备份)', importBtn: '导入',
+                finishedEnd: '结束 {date}', finishedElapsed: '已过 {elapsed}',
+                dateEnded: '{date} (已结束)', dateSoon: '{date} (即将结束)',
+                dateMinLater: '{date} ({n}分钟后)', dateHourLater: '{date} ({n}小时后)', dateDayLater: '{date} ({n}天后)',
+                elapsedJust: '刚刚', elapsedMin: '{n} 分钟', elapsedHour: '{h} 小时', elapsedHourMin: '{h} 小时 {m} 分钟',
+                elapsedDay: '{d} 天', elapsedDayHour: '{d} 天 {h} 小时',
+                undoOp: '操作', undoClearFinished: '清除已完成', undoTimer: '计时器', undoSettings: '设置',
+                finishedTimersLabel: '已完成计时器',
+                confirmDeleteAcc: '确定删除账号「{name}」？\n（该账号下所有进行中计时器也会一并移除）',
+                confirmResetTasks: '确定还原为默认任务标签？\n\n现有自定义标签与子项目将被覆盖。\n账号、进行中计时器不受影响，可用「撤销」还原此操作。',
+                promptRenameAcc: '修改账号', promptRenameChar: '修改角色名称', promptRenameSub: '修改子项目',
+                promptCharName: '输入角色名称', promptTaskTag: '任务标签',
+                alertLoginFirst: '请先登录账号', alertSyncFailed: '同步失败：{msg}',
+                alertSupabaseNotSet: '尚未设置 Supabase，请见 DEPLOY.md', alertSupabaseNotSetShort: '尚未设置 Supabase',
+                alertEnterEmailPassword: '请输入 Email 与密码', alertPasswordMin6: '密码至少 6 个字符',
+                alertSignUpSuccess: '注册成功！若 Supabase 开启了 Email 验证，请先到邮箱点击确认链接再登录。',
+                alertEnterRegisteredEmail: '请输入注册时使用的 Email',
+                alertResetEmailSent: '已发出重置密码邮件，请到邮箱点击链接（若没收到请查看垃圾邮件）。',
+                alertPasswordMismatch: '两次输入的密码不一致', alertPasswordUpdated: '密码已更新，你可以用新密码登录。',
+                cloudTitle: '☁ 云端同步', cloudResetTitle: '☁ 重置密码', cloudForgotTitle: '☁ 忘记密码',
+                cloudHintUnconfigured: '请先在 index.html 填入 SUPABASE_URL 与 SUPABASE_ANON_KEY，并按 DEPLOY.md 建立数据库后再部署上线。',
+                cloudHintLoggedIn: '已登录账号的设置与计时器会自动同步；手机、平板、电脑登录同一账号即可共用。',
+                cloudHintLogin: '注册／登录后，你的账号、标签与进行中计时器会保存在云端，并在所有设备间同步。',
+                cloudHintNewPassword: '你已从邮箱链接进入，请设置新密码（至少 6 字）。',
+                cloudHintForgot: '输入注册 Email，我们会寄重置链接到邮箱（请一并查看垃圾邮件）。',
+                cloudPasswordPh: '密码（至少 6 字）', cloudNewPasswordPh: '新密码', cloudNewPassword2Ph: '再输入一次新密码',
+                cloudForgotLink: '忘记密码？', cloudSyncNow: '立即同步', cloudSignOut: '登出',
+                cloudSignIn: '登录', cloudSignUp: '注册', cloudSavePassword: '保存新密码', cloudCancel: '取消',
+                cloudSendReset: '发送重置信', cloudBackLogin: '返回登录',
+                cloudLoggedInShort: '已登录',
+                cloudLoginPrompt: '请登录以同步', cloudBackendNotConfigured: '后端未设置',
+                cloudEnterEmailReset: '输入 Email 以收取重置信', cloudSynced: '已同步至云端', cloudSyncing: '同步中…',
+                cloudSyncFailed: '同步失败', cloudLoading: '正在加载云端…', cloudUploadedLocal: '已将本机数据上传至云端',
+                cloudRestoredNewer: '已从云端还原较新数据', cloudInSync: '已与云端一致', cloudUpdatedFromOther: '已从其他设备更新',
+                cloudSigningIn: '登录中…', cloudSignInFailed: '登录失败', cloudSigningUp: '注册中…', cloudSignUpFailed: '注册失败',
+                cloudVerifyEmail: '请至邮箱完成验证后登录', cloudSignedOut: '已登出（本机数据仍保留）',
+                cloudSendingReset: '发送重置信中…', cloudSendResetFailed: '发送失败', cloudResetSent: '已发出重置信，请至邮箱操作',
+                cloudUpdatingPassword: '更新密码中…', cloudUpdatePasswordFailed: '更新失败', cloudPasswordUpdated: '密码已更新',
+                cloudLoggedIn: '已登录', cloudLoadFailed: '云端加载失败', cloudSetNewPassword: '请设置新密码'
+            }
+        };
+        let currentLang = localStorage.getItem(LANG_KEY) || 'zh-TW';
+        if (!I18N[currentLang]) currentLang = 'zh-TW';
+        let cloudSyncStatusKey = 'cloudLoginPrompt';
+        function t(key) { const d = I18N[currentLang] || I18N['zh-TW']; return d[key] ?? I18N['zh-TW'][key] ?? key; }
+        function tp(key, params) {
+            let s = t(key);
+            if (params) Object.keys(params).forEach(k => { s = s.split('{' + k + '}').join(String(params[k])); });
+            return s;
+        }
+        function setLang(lang, opts = {}) {
+            if (!I18N[lang]) return;
+            currentLang = lang;
+            localStorage.setItem(LANG_KEY, lang);
+            document.documentElement.lang = lang;
+            document.title = t('appTitle');
+            const panel = document.getElementById('sidePanel');
+            const btn = document.getElementById('panelToggle');
+            if (btn) btn.setAttribute('aria-label', panel && panel.classList.contains('panel-open') ? t('closePanel') : t('openPanel'));
+            updateCloudSyncUI();
+            if (undoStack.length) updateUndoToastText();
+            else { const el = document.getElementById('undoText'); if (el) el.textContent = t('undo'); }
+            renderSidePanel();
+            refreshMainDisplay();
+            if (!opts.skipCloud) scheduleCloudSync();
+        }
+        function applyLangFromStorage() {
+            const lang = localStorage.getItem(LANG_KEY);
+            if (lang && I18N[lang]) currentLang = lang;
+            document.documentElement.lang = currentLang;
+            document.title = t('appTitle');
+            const btn = document.getElementById('panelToggle');
+            if (btn) btn.setAttribute('aria-label', t('openPanel'));
+            const undoEl = document.getElementById('undoText');
+            if (undoEl) undoEl.textContent = t('undo');
+        }
         const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
         const LOCAL_UPDATED_KEY = 'GameTimer_LocalUpdatedAt';
 
