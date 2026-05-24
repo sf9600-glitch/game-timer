@@ -1142,7 +1142,7 @@
             localStorage.setItem(LANG_KEY, lang);
             document.documentElement.lang = lang;
             document.title = t('appTitle');
-            syncPanelTabState();
+            syncPanelMobileControls();
             updateCloudSyncUI();
             if (undoStack.length) updateUndoToastText();
             else { const el = document.getElementById('undoText'); if (el) el.textContent = t('undo'); }
