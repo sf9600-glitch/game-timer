@@ -1929,7 +1929,7 @@
             updateTimersDataTicker();
             if (!opts.skipRender) renderSidePanel();
         }
-        if (localStorage.getItem(THEME_KEY)) setTheme(localStorage.getItem(THEME_KEY), { skipCloud: true });
+        if (localStorage.getItem(THEME_KEY)) setTheme(localStorage.getItem(THEME_KEY), { skipCloud: true, skipRender: true });
 
         function syncCollapsibleClasses() {
             SECTION_IDS.forEach(id => {
