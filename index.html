@@ -1794,7 +1794,7 @@
                 </div>
 
                 <div class="config-section" id="sec-start" style="--section-color: ${(config.tasks[0] && config.tasks[0].color) || config.colors.task};">
-                    <div class="config-title" onclick="smartToggle('startContent')"><span>任務啟動</span></div>
+                    <div class="config-title" onclick="smartToggle('startContent')"><span>${t('taskStart')}</span></div>
                     <div id="startContent" class="collapsible-content ${uiState.openSection === 'startContent' ? 'active' : ''}"><div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;"><select id="accSelect" onchange="updateCharSelect()">${config.accounts.map(a => `<option value="${a.email}">${a.email}</option>`).join('')}</select><select id="charSelect"></select></div>
                         <select id="taskSelect" style="width:100%; margin-bottom:5px;" onchange="updateSubTaskSelect()">${config.tasks.map((t,i) => `<option value="${i}">${t.name}</option>`).join('')}</select>
