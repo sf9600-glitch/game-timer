@@ -1335,8 +1335,8 @@
                     console.error(e);
                 }
             }
-            updateCloudSyncUI('密碼已更新');
-            alert('密碼已更新，你可以用新密碼登入。');
+            updateCloudSyncUI('cloudPasswordUpdated');
+            alert(t('alertPasswordUpdated'));
             renderSidePanel();
         }
 
