@@ -1303,9 +1303,9 @@
                 alert(error.message);
                 return;
             }
-            alert('已寄出重設密碼信，請到信箱點連結（若沒收到請查看垃圾郵件）。');
+            alert(t('alertResetEmailSent'));
             cloudAuthView = 'login';
-            updateCloudSyncUI('已寄出重設信，請至信箱操作');
+            updateCloudSyncUI('cloudResetSent');
             renderSidePanel();
         }
 
