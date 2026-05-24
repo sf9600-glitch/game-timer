@@ -1237,14 +1237,14 @@
 
         async function signInFromUI() {
             const sb = getSupabase();
-            if (!sb) { alert('尚未設定 Supabase，請見 DEPLOY.md'); return; }
+            if (!sb) { alert(t('alertSupabaseNotSet')); return; }
             const email = document.getElementById('cloudEmail')?.value.trim();
             const password = document.getElementById('cloudPassword')?.value;
-            if (!email || !password) { alert('請輸入 Email 與密碼'); return; }
-            updateCloudSyncUI('登入中…');
+            if (!email || !password) { alert(t('alertEnterEmailPassword')); return; }
+            updateCloudSyncUI('cloudSigningIn');
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if (error) {
-                updateCloudSyncUI('登入失敗');
+                updateCloudSyncUI('cloudSignInFailed');
                 alert(error.message);
                 return;
             }
