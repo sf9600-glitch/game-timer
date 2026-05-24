@@ -1276,8 +1276,8 @@
                 renderSidePanel();
                 return;
             }
-            alert('註冊成功！若 Supabase 有開啟 Email 驗證，請先到信箱點確認連結再登入。');
-            updateCloudSyncUI('請至信箱完成驗證後登入');
+            alert(t('alertSignUpSuccess'));
+            updateCloudSyncUI('cloudVerifyEmail');
         }
 
         async function signOutCloud() {
