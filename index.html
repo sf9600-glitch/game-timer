@@ -386,106 +386,118 @@
 
         /* 深色主題：霓虹邊框光（計時器、左側面板；預警閃爍維持紅色動畫） */
         [data-theme="dark"] .control-panel {
-            border-color: color-mix(in srgb, var(--primary) 58%, var(--border-color));
+            border-color: color-mix(in srgb, var(--primary) 72%, #ffffff 10%);
             box-shadow:
-                0 0 6px color-mix(in srgb, var(--primary) 55%, transparent),
-                0 0 16px color-mix(in srgb, var(--primary) 32%, transparent),
-                0 4px 24px rgba(0, 0, 0, 0.5);
+                0 0 10px color-mix(in srgb, var(--primary) 78%, transparent),
+                0 0 26px color-mix(in srgb, var(--primary) 52%, transparent),
+                0 0 44px color-mix(in srgb, var(--primary) 32%, transparent),
+                0 4px 28px rgba(0, 0, 0, 0.55);
         }
         [data-theme="dark"] .config-section {
-            border-color: color-mix(in srgb, var(--section-color) 52%, var(--border-color));
-            border-top-color: color-mix(in srgb, var(--section-color) 88%, #ffffff 12%);
+            border-color: color-mix(in srgb, var(--section-color) 62%, var(--border-color));
+            border-top-color: color-mix(in srgb, var(--section-color) 92%, #ffffff 14%);
             box-shadow:
-                0 0 4px color-mix(in srgb, var(--section-color) 88%, transparent),
-                0 0 12px color-mix(in srgb, var(--section-color) 58%, transparent),
-                0 0 20px color-mix(in srgb, var(--section-color) 34%, transparent),
-                inset 0 0 12px color-mix(in srgb, var(--section-color) 10%, transparent);
+                0 0 8px color-mix(in srgb, var(--section-color) 95%, transparent),
+                0 0 22px color-mix(in srgb, var(--section-color) 72%, transparent),
+                0 0 38px color-mix(in srgb, var(--section-color) 48%, transparent),
+                inset 0 0 20px color-mix(in srgb, var(--section-color) 18%, transparent);
         }
         [data-theme="dark"] .cloud-sync-box {
-            border-color: color-mix(in srgb, var(--primary) 55%, var(--border-color));
+            border-color: color-mix(in srgb, var(--primary) 68%, #ffffff 8%);
             box-shadow:
-                0 0 4px color-mix(in srgb, var(--primary) 75%, transparent),
-                0 0 12px color-mix(in srgb, var(--primary) 42%, transparent);
+                0 0 8px color-mix(in srgb, var(--primary) 88%, transparent),
+                0 0 22px color-mix(in srgb, var(--primary) 58%, transparent),
+                0 0 36px color-mix(in srgb, var(--primary) 35%, transparent);
         }
         [data-theme="dark"] .cloud-sync-unconfigured {
-            border-color: color-mix(in srgb, var(--danger) 75%, #ffffff 8%) !important;
+            border-color: color-mix(in srgb, var(--danger) 82%, #ffffff 10%) !important;
             box-shadow:
-                0 0 4px color-mix(in srgb, var(--danger) 80%, transparent),
-                0 0 12px color-mix(in srgb, var(--danger) 48%, transparent);
+                0 0 8px color-mix(in srgb, var(--danger) 92%, transparent),
+                0 0 22px color-mix(in srgb, var(--danger) 62%, transparent),
+                0 0 36px color-mix(in srgb, var(--danger) 38%, transparent);
         }
         [data-theme="dark"] .tag-item-box {
-            border-color: color-mix(in srgb, var(--tag-color) 48%, var(--border-color));
+            border-color: color-mix(in srgb, var(--tag-color) 58%, var(--border-color));
             box-shadow:
-                0 0 4px color-mix(in srgb, var(--tag-color) 82%, transparent),
-                0 0 10px color-mix(in srgb, var(--tag-color) 50%, transparent),
-                inset 0 0 8px color-mix(in srgb, var(--tag-color) 8%, transparent);
+                0 0 8px color-mix(in srgb, var(--tag-color) 92%, transparent),
+                0 0 20px color-mix(in srgb, var(--tag-color) 65%, transparent),
+                0 0 32px color-mix(in srgb, var(--tag-color) 40%, transparent),
+                inset 0 0 14px color-mix(in srgb, var(--tag-color) 14%, transparent);
         }
         [data-theme="dark"] #timeDisplay {
             box-shadow:
-                0 0 6px color-mix(in srgb, var(--section-color) 70%, transparent),
-                0 0 14px color-mix(in srgb, var(--section-color) 40%, transparent);
+                0 0 10px color-mix(in srgb, var(--section-color) 85%, transparent),
+                0 0 24px color-mix(in srgb, var(--section-color) 58%, transparent),
+                0 0 40px color-mix(in srgb, var(--section-color) 35%, transparent);
         }
         @media (prefers-color-scheme: dark) {
             :root:not([data-theme="light"]) .control-panel {
-                border-color: color-mix(in srgb, var(--primary) 58%, var(--border-color));
+                border-color: color-mix(in srgb, var(--primary) 72%, #ffffff 10%);
                 box-shadow:
-                    0 0 6px color-mix(in srgb, var(--primary) 55%, transparent),
-                    0 0 16px color-mix(in srgb, var(--primary) 32%, transparent),
-                    0 4px 24px rgba(0, 0, 0, 0.5);
+                    0 0 10px color-mix(in srgb, var(--primary) 78%, transparent),
+                    0 0 26px color-mix(in srgb, var(--primary) 52%, transparent),
+                    0 0 44px color-mix(in srgb, var(--primary) 32%, transparent),
+                    0 4px 28px rgba(0, 0, 0, 0.55);
             }
             :root:not([data-theme="light"]) .config-section {
-                border-color: color-mix(in srgb, var(--section-color) 52%, var(--border-color));
-                border-top-color: color-mix(in srgb, var(--section-color) 88%, #ffffff 12%);
+                border-color: color-mix(in srgb, var(--section-color) 62%, var(--border-color));
+                border-top-color: color-mix(in srgb, var(--section-color) 92%, #ffffff 14%);
                 box-shadow:
-                    0 0 4px color-mix(in srgb, var(--section-color) 88%, transparent),
-                    0 0 12px color-mix(in srgb, var(--section-color) 58%, transparent),
-                    0 0 20px color-mix(in srgb, var(--section-color) 34%, transparent),
-                    inset 0 0 12px color-mix(in srgb, var(--section-color) 10%, transparent);
+                    0 0 8px color-mix(in srgb, var(--section-color) 95%, transparent),
+                    0 0 22px color-mix(in srgb, var(--section-color) 72%, transparent),
+                    0 0 38px color-mix(in srgb, var(--section-color) 48%, transparent),
+                    inset 0 0 20px color-mix(in srgb, var(--section-color) 18%, transparent);
             }
             :root:not([data-theme="light"]) .cloud-sync-box {
-                border-color: color-mix(in srgb, var(--primary) 55%, var(--border-color));
+                border-color: color-mix(in srgb, var(--primary) 68%, #ffffff 8%);
                 box-shadow:
-                    0 0 4px color-mix(in srgb, var(--primary) 75%, transparent),
-                    0 0 12px color-mix(in srgb, var(--primary) 42%, transparent);
+                    0 0 8px color-mix(in srgb, var(--primary) 88%, transparent),
+                    0 0 22px color-mix(in srgb, var(--primary) 58%, transparent),
+                    0 0 36px color-mix(in srgb, var(--primary) 35%, transparent);
             }
             :root:not([data-theme="light"]) .cloud-sync-unconfigured {
-                border-color: color-mix(in srgb, var(--danger) 75%, #ffffff 8%) !important;
+                border-color: color-mix(in srgb, var(--danger) 82%, #ffffff 10%) !important;
                 box-shadow:
-                    0 0 4px color-mix(in srgb, var(--danger) 80%, transparent),
-                    0 0 12px color-mix(in srgb, var(--danger) 48%, transparent);
+                    0 0 8px color-mix(in srgb, var(--danger) 92%, transparent),
+                    0 0 22px color-mix(in srgb, var(--danger) 62%, transparent),
+                    0 0 36px color-mix(in srgb, var(--danger) 38%, transparent);
             }
             :root:not([data-theme="light"]) .tag-item-box {
-                border-color: color-mix(in srgb, var(--tag-color) 48%, var(--border-color));
+                border-color: color-mix(in srgb, var(--tag-color) 58%, var(--border-color));
                 box-shadow:
-                    0 0 4px color-mix(in srgb, var(--tag-color) 82%, transparent),
-                    0 0 10px color-mix(in srgb, var(--tag-color) 50%, transparent),
-                    inset 0 0 8px color-mix(in srgb, var(--tag-color) 8%, transparent);
+                    0 0 8px color-mix(in srgb, var(--tag-color) 92%, transparent),
+                    0 0 20px color-mix(in srgb, var(--tag-color) 65%, transparent),
+                    0 0 32px color-mix(in srgb, var(--tag-color) 40%, transparent),
+                    inset 0 0 14px color-mix(in srgb, var(--tag-color) 14%, transparent);
             }
             :root:not([data-theme="light"]) #timeDisplay {
                 box-shadow:
-                    0 0 6px color-mix(in srgb, var(--section-color) 70%, transparent),
-                    0 0 14px color-mix(in srgb, var(--section-color) 40%, transparent);
+                    0 0 10px color-mix(in srgb, var(--section-color) 85%, transparent),
+                    0 0 24px color-mix(in srgb, var(--section-color) 58%, transparent),
+                    0 0 40px color-mix(in srgb, var(--section-color) 35%, transparent);
             }
         }
 
         [data-theme="dark"] .timer-card:not(.is-warning-blinking) {
-            border-color: color-mix(in srgb, var(--local-raw-color) 88%, #ffffff 12%);
+            border-color: color-mix(in srgb, var(--local-raw-color) 92%, #ffffff 14%);
             box-shadow:
-                0 0 5px color-mix(in srgb, var(--local-raw-color) 92%, transparent),
-                0 0 14px color-mix(in srgb, var(--local-raw-color) 68%, transparent),
-                0 0 26px color-mix(in srgb, var(--local-raw-color) 42%, transparent),
-                inset 0 0 14px color-mix(in srgb, var(--local-raw-color) 14%, transparent),
-                0 6px 18px rgba(0, 0, 0, 0.5);
+                0 0 10px color-mix(in srgb, var(--local-raw-color) 96%, transparent),
+                0 0 24px color-mix(in srgb, var(--local-raw-color) 78%, transparent),
+                0 0 42px color-mix(in srgb, var(--local-raw-color) 55%, transparent),
+                0 0 58px color-mix(in srgb, var(--local-raw-color) 32%, transparent),
+                inset 0 0 22px color-mix(in srgb, var(--local-raw-color) 22%, transparent),
+                0 6px 22px rgba(0, 0, 0, 0.55);
         }
         @media (prefers-color-scheme: dark) {
             :root:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
-                border-color: color-mix(in srgb, var(--local-raw-color) 88%, #ffffff 12%);
+                border-color: color-mix(in srgb, var(--local-raw-color) 92%, #ffffff 14%);
                 box-shadow:
-                    0 0 5px color-mix(in srgb, var(--local-raw-color) 92%, transparent),
-                    0 0 14px color-mix(in srgb, var(--local-raw-color) 68%, transparent),
-                    0 0 26px color-mix(in srgb, var(--local-raw-color) 42%, transparent),
-                    inset 0 0 14px color-mix(in srgb, var(--local-raw-color) 14%, transparent),
-                    0 6px 18px rgba(0, 0, 0, 0.5);
+                    0 0 10px color-mix(in srgb, var(--local-raw-color) 96%, transparent),
+                    0 0 24px color-mix(in srgb, var(--local-raw-color) 78%, transparent),
+                    0 0 42px color-mix(in srgb, var(--local-raw-color) 55%, transparent),
+                    0 0 58px color-mix(in srgb, var(--local-raw-color) 32%, transparent),
+                    inset 0 0 22px color-mix(in srgb, var(--local-raw-color) 22%, transparent),
+                    0 6px 22px rgba(0, 0, 0, 0.55);
             }
         }
         [data-theme="dark"] .timer-card.is-warning-blinking {
@@ -500,16 +512,18 @@
             0%, 100% {
                 border-color: #f87171;
                 box-shadow:
-                    0 0 6px rgba(248, 113, 113, 0.9),
-                    0 0 16px rgba(239, 83, 80, 0.65),
-                    0 0 28px rgba(239, 83, 80, 0.4);
+                    0 0 10px rgba(248, 113, 113, 0.95),
+                    0 0 26px rgba(239, 83, 80, 0.78),
+                    0 0 44px rgba(239, 83, 80, 0.52),
+                    0 0 60px rgba(239, 83, 80, 0.3);
             }
             50% {
                 border-color: #fecaca;
                 box-shadow:
-                    0 0 10px rgba(254, 202, 202, 0.95),
-                    0 0 22px rgba(239, 83, 80, 0.85),
-                    0 0 36px rgba(239, 83, 80, 0.55);
+                    0 0 16px rgba(254, 202, 202, 1),
+                    0 0 34px rgba(239, 83, 80, 0.92),
+                    0 0 52px rgba(239, 83, 80, 0.68),
+                    0 0 72px rgba(239, 83, 80, 0.42);
             }
         }
 
