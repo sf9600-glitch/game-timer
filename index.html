@@ -1130,6 +1130,7 @@
                     localStorage.setItem(LANG_KEY, data.lang);
                     document.documentElement.lang = data.lang;
                     document.title = t('appTitle');
+                    if (undoStack.length) updateUndoToastText();
                 }
                 if (data.updatedAt) {
                     localStorage.setItem(LOCAL_UPDATED_KEY, String(data.updatedAt));
