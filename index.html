@@ -445,7 +445,7 @@
                 0 0 40px color-mix(in srgb, var(--section-color) 35%, transparent);
         }
         @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) .control-panel {
+            html.neon-glow-enabled:not([data-theme="light"]) .control-panel {
                 border-color: color-mix(in srgb, var(--primary) 72%, #ffffff 10%);
                 box-shadow:
                     0 0 10px color-mix(in srgb, var(--primary) 78%, transparent),
