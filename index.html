@@ -2386,6 +2386,7 @@
         function saveTask() { const n = document.getElementById('newTaskInput').value; if(n){ config.tasks.push({name:n, subs:[], color:config.colors.task}); saveConfig(); } }
 
         function saveCurrentTasksAsDefault() {
+            if (!confirm(t('confirmSaveDefaultTags'))) return;
             normalizeConfig();
             config.defaultTasks = cloneTasks(config.tasks);
             saveConfig();
