@@ -1171,6 +1171,16 @@
         <span onclick="dismissUndo()" style="margin-left:10px; cursor:pointer; font-weight: bold;">&times;</span>
     </div>
 
+    <div class="tutorial-modal" id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialModalTitle" onclick="if(event.target===this)closeTutorialModal()">
+        <div class="tutorial-modal-card" onclick="event.stopPropagation()">
+            <div class="tutorial-modal-header">
+                <h2 class="tutorial-modal-title" id="tutorialModalTitle"></h2>
+                <button type="button" class="tutorial-modal-close" onclick="closeTutorialModal()" aria-label="">&times;</button>
+            </div>
+            <div class="tutorial-modal-body" id="tutorialModalBody"></div>
+        </div>
+    </div>
+
     <script>
         const STORAGE_KEY = 'GameTimer_Config_V7';
         const ACTIVE_TIMERS_KEY = 'GameTimer_Active_Single';
