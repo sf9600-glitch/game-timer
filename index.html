@@ -1491,7 +1491,7 @@
                 }
                 if (data.theme) {
                     localStorage.setItem(THEME_KEY, data.theme);
-                    setTheme(data.theme, { skipCloud: true });
+                    setTheme(data.theme, { skipCloud: true, skipRender: true });
                 }
                 if (data.lang && I18N[data.lang]) {
                     currentLang = data.lang;
