@@ -1814,11 +1814,11 @@
                             <button class="btn-adjust" onclick="adj(600)">+10m</button><button class="btn-adjust" onclick="adj(60)">+1m</button><button class="btn-adjust" onclick="adj(30)">+30s</button>
                         </div>
                         <div style="display:grid; grid-template-columns:1fr; gap:6px;">
-                            <button class="btn-adjust" onclick="resetTime()" style="color:var(--danger);">重置時間</button>
+                            <button class="btn-adjust" onclick="resetTime()" style="color:var(--danger);">${t('resetTime')}</button>
                         </div>
-                        <div style="margin-top:15px; font-size:0.75rem; background-color:var(--bg); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:2px;">預警閃爍: <input type="number" id="fMin" value="0" style="width:28px; text-align:center;">:<input type="number" id="fSec" value="30" style="width:28px; text-align:center;"></div>
-                        <button class="btn-main" id="btnStartTask" onclick="startTask()">啟動任務</button>
-                        <button class="btn-main" id="btn-clear-finished" onclick="clearFinishedTasks()">清除已完成計時器</button>
+                        <div style="margin-top:15px; font-size:0.75rem; background-color:var(--bg); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:2px;">${t('flashWarning')} <input type="number" id="fMin" value="0" style="width:28px; text-align:center;">:<input type="number" id="fSec" value="30" style="width:28px; text-align:center;"></div>
+                        <button class="btn-main" id="btnStartTask" onclick="startTask()">${t('startTask')}</button>
+                        <button class="btn-main" id="btn-clear-finished" onclick="clearFinishedTasks()">${t('clearFinished')}</button>
                     </div></div>
                 </div>
 
