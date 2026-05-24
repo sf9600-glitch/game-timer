@@ -2297,7 +2297,7 @@
             overlay.classList.toggle('show', isOpen);
             document.body.classList.toggle('side-panel-open', isOpen);
             btn.textContent = isOpen ? '✕' : '☰';
-            btn.setAttribute('aria-label', isOpen ? '關閉設定面板' : '開啟設定面板');
+            btn.setAttribute('aria-label', isOpen ? t('closePanel') : t('openPanel'));
         }
         function closeSidePanel() {
             document.getElementById('sidePanel').classList.remove('panel-open');
@@ -2305,7 +2305,7 @@
             document.body.classList.remove('side-panel-open');
             const btn = document.getElementById('panelToggle');
             btn.textContent = '☰';
-            btn.setAttribute('aria-label', '開啟設定面板');
+            btn.setAttribute('aria-label', t('openPanel'));
         }
         
         function saveConfig() {
