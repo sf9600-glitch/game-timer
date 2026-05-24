@@ -2316,7 +2316,7 @@
         }
         function renameAccount(i) {
             const oldEmail = config.accounts[i].email;
-            const newVal = prompt("修改帳號", oldEmail);
+            const newVal = prompt(t('promptRenameAcc'), oldEmail);
             if (!newVal || newVal === oldEmail) return;
             config.accounts[i].email = newVal;
             const allSavedData = getActiveTimers();
