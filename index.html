@@ -1149,7 +1149,7 @@
             await putCloudRecord(payload);
             lastCloudUploadAt = Date.now();
             lastCloudUpdatedAt = payload.updatedAt;
-            updateCloudSyncUI('已同步至雲端');
+            updateCloudSyncUI('cloudSynced');
         }
 
         function scheduleCloudSync() {
