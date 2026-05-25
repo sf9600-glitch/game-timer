@@ -2791,7 +2791,8 @@
 
         function ensureStartContent() {
             let sc = document.getElementById('startContent');
-            if (!sc) {
+            if (!sc || !sc.querySelector('.start-form-inner')) {
+                sc?.remove();
                 sc = createStartContentElement();
                 document.getElementById('startContentHolder')?.appendChild(sc);
             }
