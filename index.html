@@ -2895,6 +2895,7 @@
                     const elapsedEl = card.querySelector('.finished-elapsed-line');
                     if (endEl) endEl.textContent = getFinishedEndLine(finishTime);
                     if (elapsedEl) elapsedEl.textContent = getFinishedElapsedLine(finishTime);
+                    updateSyncNewBadgeOnCard(card, t);
                     return;
                 }
 
