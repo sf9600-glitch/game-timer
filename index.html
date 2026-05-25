@@ -3606,6 +3606,99 @@
             return card;
         }
 
+        function getCharGroupTitleHtml(accEmail, charName) {
+            const unspecified = '（未指定角色）';
+            if (charName && charName !== unspecified) return getCharBadgeHtml(accEmail, charName);
+            return `<span class="char-group-label">${charName || unspecified}</span>`;
+        }
+
+        function buildActiveTimerListRow(t) {
+            const row = document.createElement('div');
+            row.className = 'timer-list-row timer-list-row--active';
+            row.id = `t-${t.id}`;
+            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const charName = t.char || '';
+            const charColor = charName ? getCharColor(t.email, charName) : null;
+            applyTimerCardColorVars(row, taskHex, spectrum, charColor);
+            if (isTimerSyncNewBadgeVisible(t)) row.classList.add('has-sync-new');
+            row.innerHTML = `
+                ${getSyncNewBadgeHtml(t)}
+                <span class="timer-list-dot" aria-hidden="true"></span>
+                <span class="timer-list-task"><span class="task-title-display">${t.taskName}</span></span>
+                <span class="timer-list-time time-text">00:00:00</span>
+                <span class="timer-list-meta date-label">--</span>
+                <button type="button" class="timer-list-del" onclick="delTask(${t.id})" aria-label="${t('delTask') || '刪除'}">×</button>`;
+            return row;
+        }
+
+        function buildFinishedTimerListRow(t) {
+            const row = document.createElement('div');
+            row.className = 'timer-list-row timer-list-row--finished is-finished';
+            row.id = `t-${t.id}`;
+            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const charName = t.char || '';
+            const finishTime = new Date(t.finishDate);
+            const charColor = charName ? getCharColor(t.email, charName) : null;
+            applyTimerCardColorVars(row, taskHex, spectrum, charColor);
+            if (isTimerSyncNewBadgeVisible(t)) row.classList.add('has-sync-new');
+            row.innerHTML = `
+                ${getSyncNewBadgeHtml(t)}
+                <span class="timer-list-dot" aria-hidden="true"></span>
+                <span class="timer-list-task"><span class="task-title-display">${t.taskName}</span></span>
+                <span class="timer-list-time finished-end-line">${getFinishedEndLine(finishTime)}</span>
+                <span class="timer-list-meta finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
+                <button type="button" class="timer-list-del" onclick="delTask(${t.id})" aria-label="${t('delTask') || '刪除'}">×</button>`;
+            return row;
+        }
+
+        function appendActiveCharGroups(parentEl, activeCharGroups, acc, safeId) {
+            const listMode = isTimerDisplayList();
+            activeCharGroups.forEach(({ charName, timers: groupTimers }) => {
+                const charSafe = safeDomIdPart(charName);
+                const groupEl = document.createElement('div');
+                groupEl.className = 'char-timer-group' + (listMode ? ' char-timer-group--list' : '');
+                if (listMode) {
+                    groupEl.innerHTML = `
+                        <div class="char-group-title char-group-title--list">${getCharGroupTitleHtml(acc.email, charName)}</div>
+                        <div class="timer-list timer-list--active" id="list-active-${safeId}-${charSafe}"></div>`;
+                    parentEl.appendChild(groupEl);
+                    const list = groupEl.querySelector('.timer-list');
+                    groupTimers.forEach(t => list.appendChild(buildActiveTimerListRow(t)));
+                } else {
+                    groupEl.innerHTML = `<div class="timer-grid" id="grid-active-${safeId}-${charSafe}"></div>`;
+                    parentEl.appendChild(groupEl);
+                    const grid = groupEl.querySelector('.timer-grid');
+                    groupTimers.forEach((t, i) => grid.appendChild(buildActiveTimerCard(t, i)));
+                }
+            });
+        }
+
+        function appendFinishedCharGroups(parentEl, finishedCharGroups, acc, safeId) {
+            const listMode = isTimerDisplayList();
+            finishedCharGroups.forEach(({ charName, timers: groupTimers }) => {
+                const charSafe = safeDomIdPart(charName);
+                const groupEl = document.createElement('div');
+                groupEl.className = 'char-timer-group finished-char-group' + (listMode ? ' char-timer-group--list' : '');
+                if (listMode) {
+                    groupEl.innerHTML = `
+                        <div class="char-group-title char-group-title--list">${getCharGroupTitleHtml(acc.email, charName)}</div>
+                        <div class="timer-list timer-list--finished" id="list-finished-${safeId}-${charSafe}"></div>`;
+                    parentEl.appendChild(groupEl);
+                    const list = groupEl.querySelector('.timer-list');
+                    groupTimers.forEach(t => list.appendChild(buildFinishedTimerListRow(t)));
+                } else {
+                    groupEl.innerHTML = `<div class="timer-grid finished-grid" id="grid-finished-${safeId}-${charSafe}"></div>`;
+                    parentEl.appendChild(groupEl);
+                    const grid = groupEl.querySelector('.finished-grid');
+                    groupTimers.forEach((t, i) => grid.appendChild(buildFinishedTimerCard(t, i)));
+                }
+            });
+        }
+
         function getCharGroupKey(char) {
             return (char && String(char).trim()) ? String(char).trim() : '（未指定角色）';
         }
