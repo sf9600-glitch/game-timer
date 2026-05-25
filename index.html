@@ -1721,21 +1721,29 @@
             }
         }
 
+        async function pullCloudIfNewer() {
+            if (!isCloudSyncActive() || isApplyingCloudData) return;
+            const cloudPayload = await fetchCloudRecord();
+            if (!cloudPayload) return;
+            const cloudAt = cloudPayload.updatedAt || 0;
+            const localAt = getLocalUpdatedAt();
+            if (cloudPayload.clientId === getClientId() && cloudAt <= lastCloudUploadAt + 2000) return;
+            if (shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt) {
+                if (cloudAt > lastCloudUpdatedAt || shouldPreferCloudOnMerge(cloudPayload)) {
+                    applyCloudPayload(cloudPayload);
+                    updateCloudSyncUI('cloudUpdatedFromOther');
+                }
+            } else if (cloudAt > lastCloudUpdatedAt) {
+                lastCloudUpdatedAt = cloudAt;
+            }
+        }
+
         function startCloudPoll() {
             stopCloudPoll();
             if (!isCloudSyncActive()) return;
-            cloudPollInterval = setInterval(async () => {
+            cloudPollInterval = setInterval(() => {
                 if (isApplyingCloudData || document.visibilityState === 'hidden') return;
-                try {
-                    const cloudPayload = await fetchCloudRecord();
-                    if (!cloudPayload || !cloudPayload.updatedAt) return;
-                    if (cloudPayload.clientId === getClientId() && cloudPayload.updatedAt <= lastCloudUploadAt + 2000) return;
-                    if (cloudPayload.updatedAt <= lastCloudUpdatedAt) return;
-                    if (cloudPayload.updatedAt > getLocalUpdatedAt()) {
-                        applyCloudPayload(cloudPayload);
-                        updateCloudSyncUI('cloudUpdatedFromOther');
-                    }
-                } catch (e) { /* 輪詢失敗時靜默 */ }
+                pullCloudIfNewer().catch(() => {});
             }, 20000);
         }
 
