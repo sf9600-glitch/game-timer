@@ -3879,6 +3879,7 @@
                 const finishedByChar = container.querySelector(`#finished-by-char-${safeId}`);
                 if (finishedByChar) appendFinishedCharGroups(finishedByChar, finishedCharGroups, acc, safeId);
             });
+            reorderAccountGroupsInMain(allSavedData, now);
             } finally {
                 isDispatchingTimers = false;
             }
