@@ -1960,6 +1960,196 @@
             };
         }
 
+        function buildSnapshotPayload() {
+            return {
+                version: 2,
+                config: JSON.parse(JSON.stringify(config)),
+                activeTimers: JSON.parse(JSON.stringify(getActiveTimers())),
+                undoStack: JSON.parse(JSON.stringify(undoStack)),
+                theme: localStorage.getItem(THEME_KEY) || 'auto',
+                lang: currentLang
+            };
+        }
+
+        function getLocalSnapshots() {
+            try {
+                const arr = JSON.parse(localStorage.getItem(LOCAL_SNAPSHOTS_KEY) || '[]');
+                if (!Array.isArray(arr)) return [];
+                return arr.filter(s => s && s.id != null && s.payload).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function persistLocalSnapshots(list) {
+            try {
+                localStorage.setItem(LOCAL_SNAPSHOTS_KEY, JSON.stringify(list));
+            } catch (e) {
+                console.error('persistLocalSnapshots', e);
+                if (list.length > 10) {
+                    localStorage.setItem(LOCAL_SNAPSHOTS_KEY, JSON.stringify(list.slice(0, 10)));
+                }
+            }
+        }
+
+        function saveLocalSnapshot(meta) {
+            const createdAt = meta.createdAt || Date.now();
+            const entry = {
+                id: String(createdAt),
+                createdAt,
+                label: meta.label || '',
+                timerId: meta.timerId != null ? meta.timerId : null,
+                payload: buildSnapshotPayload()
+            };
+            const snapshots = getLocalSnapshots().filter(s => String(s.id) !== entry.id);
+            snapshots.unshift(entry);
+            persistLocalSnapshots(snapshots.slice(0, LOCAL_SNAPSHOTS_MAX));
+        }
+
+        function formatSnapshotDateTime(ts) {
+            const d = new Date(ts);
+            const p = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+        }
+
+        function escSnapshotText(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        }
+
+        function getSnapshotSummary(snapshot) {
+            const p = snapshot.payload || {};
+            const timers = Array.isArray(p.activeTimers) ? p.activeTimers : [];
+            const cfg = p.config || {};
+            const acc = Array.isArray(cfg.accounts) ? cfg.accounts.length : 0;
+            const tasks = Array.isArray(cfg.tasks) ? cfg.tasks.length : 0;
+            return {
+                date: formatSnapshotDateTime(snapshot.createdAt),
+                label: snapshot.label || '—',
+                timers: timers.length,
+                acc,
+                tasks,
+                line: tp('recoverySnapshotOption', {
+                    date: formatSnapshotDateTime(snapshot.createdAt),
+                    label: snapshot.label || '—',
+                    n: timers.length
+                }),
+                detail: tp('recoverySnapshotDetail', { acc, task: tasks, n: timers.length })
+            };
+        }
+
+        function getSelectedRecoverySnapshot() {
+            const sel = document.getElementById('recoverySnapshotSelect');
+            if (!sel || !sel.value) return null;
+            return getLocalSnapshots().find(s => String(s.id) === String(sel.value)) || null;
+        }
+
+        function updateRecoverySnapshotDetail() {
+            const el = document.getElementById('recoverySnapshotDetail');
+            if (!el) return;
+            const snap = getSelectedRecoverySnapshot();
+            el.textContent = snap ? getSnapshotSummary(snap).detail : '';
+        }
+
+        function applyLocalSnapshot(snapshot) {
+            const p = snapshot.payload;
+            if (p.config) {
+                config = JSON.parse(JSON.stringify(p.config));
+                normalizeConfig();
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            }
+            if (Array.isArray(p.undoStack)) {
+                undoStack = JSON.parse(JSON.stringify(p.undoStack));
+                persistUndoStack({ skipCloud: true });
+            }
+            if (p.theme) {
+                localStorage.setItem(THEME_KEY, p.theme);
+                setTheme(p.theme, { skipCloud: true, skipRender: true });
+            }
+            if (p.lang && I18N[p.lang]) {
+                currentLang = p.lang;
+                localStorage.setItem(LANG_KEY, p.lang);
+                document.documentElement.lang = p.lang;
+                document.title = t('appTitle');
+            }
+            const timers = Array.isArray(p.activeTimers) ? JSON.parse(JSON.stringify(p.activeTimers)) : [];
+            setActiveTimers(timers, { immediateCloud: true });
+            renderSidePanel();
+            refreshMainDisplay();
+            dispatchTimersToDOM();
+            if (undoStack.length) updateUndoToastText();
+        }
+
+        function restoreSelectedSnapshot() {
+            const snap = getSelectedRecoverySnapshot();
+            if (!snap) {
+                alert(t('recoveryNoSnapshots'));
+                return;
+            }
+            const sum = getSnapshotSummary(snap);
+            if (!confirm(tp('confirmRestoreSnapshot', { summary: sum.line }))) return;
+            applyLocalSnapshot(snap);
+            alert(t('alertSnapshotRestored'));
+        }
+
+        function deleteSelectedSnapshot() {
+            const snap = getSelectedRecoverySnapshot();
+            if (!snap) return;
+            const sum = getSnapshotSummary(snap);
+            if (!confirm(tp('confirmDeleteSnapshot', { summary: sum.line }))) return;
+            const next = getLocalSnapshots().filter(s => String(s.id) !== String(snap.id));
+            persistLocalSnapshots(next);
+            uiState.selectedRecoverySnapshotId = next[0]?.id || null;
+            renderSidePanel();
+            alert(t('alertSnapshotDeleted'));
+        }
+
+        function renderRecoveryPanelHtml() {
+            const snapshots = getLocalSnapshots();
+            const cloudBtn = isCloudSyncActive() ? '' : 'disabled';
+            const recOpen = uiState.recoveryExpanded ? ' recovery-panel--open' : '';
+            const recActive = uiState.recoveryExpanded ? ' active' : '';
+            if (!uiState.selectedRecoverySnapshotId && snapshots[0]) {
+                uiState.selectedRecoverySnapshotId = snapshots[0].id;
+            }
+            if (snapshots.length && !snapshots.some(s => String(s.id) === String(uiState.selectedRecoverySnapshotId))) {
+                uiState.selectedRecoverySnapshotId = snapshots[0].id;
+            }
+            let bodyInner;
+            if (!snapshots.length) {
+                bodyInner = `<p class="recovery-intro">${t('recoveryNoSnapshots')}</p>
+                    <p style="margin:0 0 8px; font-size:0.6rem; color:var(--text-sub); line-height:1.35;">${t('recoveryHint')}</p>
+                    <div class="recovery-actions">
+                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" disabled>${t('recoveryRestoreVersion')}</button>
+                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" ${cloudBtn} onclick="checkCloudForRecovery()">${t('recoveryCloudCheck')}</button>
+                    </div>`;
+            } else {
+                const opts = snapshots.map(s => {
+                    const sum = getSnapshotSummary(s);
+                    const sel = String(s.id) === String(uiState.selectedRecoverySnapshotId) ? ' selected' : '';
+                    return `<option value="${escSnapshotText(s.id)}"${sel}>${escSnapshotText(sum.line)}</option>`;
+                }).join('');
+                const detailSnap = snapshots.find(s => String(s.id) === String(uiState.selectedRecoverySnapshotId)) || snapshots[0];
+                const detailText = detailSnap ? getSnapshotSummary(detailSnap).detail : '';
+                bodyInner = `<p class="recovery-intro">${t('recoveryIntro')}</p>
+                    <label style="display:block; font-size:0.65rem; font-weight:bold; margin-bottom:4px; color:var(--text-sub);">${t('recoveryPickVersion')}</label>
+                    <select id="recoverySnapshotSelect" class="recovery-version-select" onchange="uiState.selectedRecoverySnapshotId=this.value; updateRecoverySnapshotDetail();">${opts}</select>
+                    <p id="recoverySnapshotDetail" class="recovery-version-detail">${escSnapshotText(detailText)}</p>
+                    <p style="margin:0 0 8px; font-size:0.6rem; color:var(--text-sub); line-height:1.35;">${t('recoveryHint')}</p>
+                    <div class="recovery-actions">
+                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" onclick="restoreSelectedSnapshot()">${t('recoveryRestoreVersion')}</button>
+                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" onclick="deleteSelectedSnapshot()">${t('recoveryDeleteVersion')}</button>
+                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" ${cloudBtn} onclick="checkCloudForRecovery()">${t('recoveryCloudCheck')}</button>
+                    </div>`;
+            }
+            return `<div class="recovery-panel${recOpen}" id="recoveryPanel">
+                <div class="recovery-panel-title" role="button" tabindex="0" onclick="toggleRecoveryPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleRecoveryPanel();}" aria-expanded="${uiState.recoveryExpanded}">
+                    <span>${t('recoveryTitle')}</span>
+                    <span class="recovery-panel-chevron" aria-hidden="true">›</span>
+                </div>
+                <div id="recoveryPanelBody" class="recovery-panel-body collapsible-content${recActive}"><div>${bodyInner}</div></div>
+            </div>`;
+        }
+
         /** 本機從未標記更新時間（0）且雲端有資料時，應優先採用雲端 */
         function shouldPreferCloudOnMerge(cloudPayload) {
             const localAt = getLocalUpdatedAt();
