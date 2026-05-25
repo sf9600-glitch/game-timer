@@ -3892,8 +3892,10 @@
             applyLangFromStorage();
             updateTutorialModalChrome();
             await initCloudSync();
-            lastLayoutWasMobile = !isMobileLayout();
-            syncLayoutForViewport();
+            renderSidePanel();
+            refreshMainDisplay();
+            syncPanelMobileControls();
+            lastLayoutWasMobile = isMobileLayout();
             initMobilePanelState();
             runGlobalClockTick();
         })();
