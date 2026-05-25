@@ -211,8 +211,35 @@
         .account-group { margin-bottom: 25px; display: flex; flex-direction: column; padding: 0; position: relative; }
         .account-group-header {
             position: relative;
-            display: block;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 6px;
             line-height: 0;
+        }
+        .timer-display-header-tabs {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: flex-end;
+            line-height: normal;
+            z-index: 2;
+        }
+        .timer-display-header-tabs .timer-display-tab-btn {
+            padding: 4px 10px;
+            font-size: 0.68rem;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            background: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 1px -1px 4px rgba(15, 23, 42, 0.04);
+        }
+        .timer-display-header-tabs .timer-display-tab-btn.btn-toggle-selected {
+            background: var(--acc-theme);
+            color: #fff;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+            border-color: color-mix(in srgb, var(--acc-theme) 70%, var(--border-color));
         }
         .account-tab-item { 
             background-color: var(--acc-theme); 
