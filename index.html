@@ -1000,6 +1000,10 @@
         .card-tags-row { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
         .char-title-badge { flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+        @media (min-width: 769px) {
+            .start-sheet-overlay,
+            .start-sheet { display: none !important; visibility: hidden; pointer-events: none; }
+        }
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
