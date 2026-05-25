@@ -1650,10 +1650,11 @@
 
         async function uploadToCloud() {
             if (!isCloudSyncActive() || isApplyingCloudData) return;
-            const payload = buildCloudPayload();
+            const updatedAt = touchLocalUpdated();
+            const payload = { ...buildCloudPayload(), updatedAt };
             await putCloudRecord(payload);
             lastCloudUploadAt = Date.now();
-            lastCloudUpdatedAt = payload.updatedAt;
+            lastCloudUpdatedAt = updatedAt;
             updateCloudSyncUI('cloudSynced');
         }
 
