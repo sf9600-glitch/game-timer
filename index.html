@@ -3971,11 +3971,12 @@
             const tIdx = document.getElementById('taskSelect').value;
             const t = config.tasks[tIdx];
             const sSelect = document.getElementById('subTaskSelect');
-            if (t && t.subs.length) {
-                sSelect.style.display = 'block';
+            const wrap = document.getElementById('subTaskFieldWrap');
+            if (t && t.subs.length && sSelect) {
+                if (wrap) wrap.style.display = '';
                 sSelect.innerHTML = t.subs.map(x => `<option value="${x}">${x}</option>`).join('');
             } else {
-                sSelect.style.display = 'none';
+                if (wrap) wrap.style.display = 'none';
             }
             updateStartSectionTheme();
         }
