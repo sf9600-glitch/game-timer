@@ -1351,6 +1351,7 @@
         function applyLangFromStorage() {
             const lang = localStorage.getItem(LANG_KEY);
             if (lang && I18N[lang]) currentLang = lang;
+            else if (!I18N[currentLang] && I18N[DEFAULT_LANG]) currentLang = DEFAULT_LANG;
             document.documentElement.lang = currentLang;
             document.title = t('appTitle');
             syncPanelMobileControls();
