@@ -3862,9 +3862,11 @@
                         <button type="button" class="main-settings-btn" onclick="toggleSidePanel()"></button>
                        </div>`
                     : '';
+                const timerDisplayTabs = i === 0 ? renderTimerDisplayTabsHtml() : '';
                 div.innerHTML = `
                     <div class="account-group-header">
                         <div class="account-tab-item">${acc.email}</div>
+                        ${timerDisplayTabs}
                         ${headerActions}
                     </div>
                     <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
