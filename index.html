@@ -1328,6 +1328,19 @@
         const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
         const LOCALE_DIR = 'locales';
         const DEFAULT_LANG = 'zh-TW';
+        /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
+        const LOCALE_INLINE_FALLBACK = {
+            'zh-TW': {
+                sectionFinishedClearHint: '點擊清除',
+                sectionFinishedClearHover: '清除全部已完成',
+                sectionFinishedClearTitle: '點擊清除此帳號下全部已完成計時器'
+            },
+            'zh-CN': {
+                sectionFinishedClearHint: '点击清除',
+                sectionFinishedClearHover: '清除全部已完成',
+                sectionFinishedClearTitle: '点击清除此账号下全部已完成计时器'
+            }
+        };
         const I18N = {};
         let localeManifest = { default: DEFAULT_LANG, languages: [{ id: 'zh-TW', nativeName: '繁體中文' }, { id: 'zh-CN', nativeName: '简体中文' }] };
         let currentLang = DEFAULT_LANG;
