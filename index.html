@@ -590,6 +590,119 @@
         }
         .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
 
+        .timer-card-progress-track {
+            display: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 4px;
+            background: color-mix(in srgb, var(--text-sub) 22%, transparent);
+            z-index: 2;
+            pointer-events: none;
+        }
+        .timer-card-progress-fill {
+            display: block;
+            height: 100%;
+            width: 0;
+            max-width: 100%;
+            background: var(--local-raw-color);
+            transition: width 0.35s ease;
+            border-radius: 0 0 0 2px;
+        }
+
+        /* 簡潔顯示：任務色僅作左側色條與小色點，文字固定深淺色 */
+        html.timer-display-clean .timer-card:not(.is-warning-blinking) {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            border-left-width: 4px !important;
+            border-left-color: var(--local-raw-color) !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+        html.timer-display-clean .timer-card--active .timer-card-bg { display: none; }
+        html.timer-display-clean .timer-card--active .timer-card-inner { padding-bottom: 16px; }
+        html.timer-display-clean .timer-card--active .timer-card-progress-track { display: block; }
+        html.timer-display-clean .timer-card--active .active-slot-id {
+            border-color: var(--border-color);
+            background: var(--bg);
+            color: var(--text-sub);
+        }
+        html.timer-display-clean .timer-card--active .active-slot-task .task-title-display {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent !important;
+            color: var(--text-main) !important;
+            font-weight: 700;
+        }
+        html.timer-display-clean .timer-card--active .active-slot-task .task-title-display::before {
+            content: '';
+            flex-shrink: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--local-raw-color);
+        }
+        html.timer-display-clean .timer-card--active .active-slot-time .time-text {
+            color: var(--text-main) !important;
+            font-weight: 800;
+        }
+        html.timer-display-clean .timer-card--active .active-slot-date .date-label {
+            color: var(--text-sub) !important;
+        }
+        html.timer-display-clean .char-title-badge {
+            background-color: var(--bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            text-shadow: none !important;
+            box-shadow: inset 3px 0 0 var(--local-char-accent, var(--local-raw-color));
+        }
+        html.timer-display-clean .btn-close-circle {
+            color: var(--text-sub) !important;
+            border-color: var(--border-color) !important;
+            background-color: var(--card-bg) !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
+        }
+        html.timer-display-clean .timer-card.is-finished {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            border-left-width: 4px !important;
+            border-left-color: var(--local-raw-color) !important;
+        }
+        html.timer-display-clean .timer-card.is-finished .finished-row-2 .task-title-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent !important;
+            color: var(--text-main) !important;
+            font-weight: 700;
+        }
+        html.timer-display-clean .timer-card.is-finished .finished-row-2 .task-title-display::before {
+            content: '';
+            flex-shrink: 0;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--local-raw-color);
+        }
+        html.timer-display-clean .timer-card.is-finished .finished-elapsed-line {
+            color: var(--text-sub) !important;
+            font-weight: 600;
+        }
+        html.neon-glow-enabled.timer-display-clean[data-theme="dark"] .timer-card:not(.is-warning-blinking),
+        html.neon-glow-enabled.timer-display-clean:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            border-color: var(--border-color);
+            border-left-color: var(--local-raw-color) !important;
+        }
+
         .sys-block { margin-bottom: 4px; }
         .sys-block-title {
             font-size: 0.72rem;
