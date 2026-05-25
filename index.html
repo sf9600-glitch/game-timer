@@ -2800,7 +2800,7 @@
 
         function ensureStartContent() {
             let sc = document.getElementById('startContent');
-            if (!sc || !sc.querySelector('.start-form-inner')) {
+            if (!sc || !sc.querySelector('[data-start-form="v2"]')) {
                 sc?.remove();
                 sc = createStartContentElement();
                 document.getElementById('startContentHolder')?.appendChild(sc);
