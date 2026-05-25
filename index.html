@@ -3337,9 +3337,15 @@
                             </div>
                             <div style="margin-bottom:6px; font-size:0.75rem;">${t('neonGlowLabel')}</div>
                             <p style="margin:0 0 8px; font-size:0.65rem; color:var(--text-sub); line-height:1.4;">${t('neonGlowHint')}</p>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
                                 <button class="btn-adjust${config.neonGlow !== false ? ' btn-toggle-selected' : ''}" onclick="setNeonGlow(true)">${t('neonGlowOn')}</button>
                                 <button class="btn-adjust${config.neonGlow === false ? ' btn-toggle-selected' : ''}" onclick="setNeonGlow(false)">${t('neonGlowOff')}</button>
+                            </div>
+                            <div style="margin-bottom:6px; font-size:0.75rem;">${t('timerDisplayLabel')}</div>
+                            <p style="margin:0 0 8px; font-size:0.65rem; color:var(--text-sub); line-height:1.4;">${t('timerDisplayHint')}</p>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                                <button class="btn-adjust${isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('clean')">${t('timerDisplayClean')}</button>
+                                <button class="btn-adjust${!isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('colorful')">${t('timerDisplayColorful')}</button>
                             </div>
                         </div>
                     </div></div>
