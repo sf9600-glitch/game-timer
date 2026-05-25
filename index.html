@@ -696,11 +696,21 @@
             color: var(--text-sub) !important;
             font-weight: 600;
         }
-        html.neon-glow-enabled.timer-display-clean[data-theme="dark"] .timer-card:not(.is-warning-blinking),
-        html.neon-glow-enabled.timer-display-clean:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
+        html.neon-glow-enabled.timer-display-clean[data-theme="dark"] .timer-card:not(.is-warning-blinking) {
             box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-            border-color: var(--border-color);
+            border-top-color: var(--border-color);
+            border-right-color: var(--border-color);
+            border-bottom-color: var(--border-color);
             border-left-color: var(--local-raw-color) !important;
+        }
+        @media (prefers-color-scheme: dark) {
+            html.neon-glow-enabled.timer-display-clean:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
+                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+                border-top-color: var(--border-color);
+                border-right-color: var(--border-color);
+                border-bottom-color: var(--border-color);
+                border-left-color: var(--local-raw-color) !important;
+            }
         }
 
         .sys-block { margin-bottom: 4px; }
