@@ -3392,13 +3392,14 @@
             return tp('finishedElapsed', { elapsed: formatElapsedSinceFinish(elapsedSec) });
         }
 
-        function applyTimerCardColorVars(card, taskHex, spectrum) {
+        function applyTimerCardColorVars(card, taskHex, spectrum, charColor) {
             card.dataset.taskColor = taskHex;
             card.style.setProperty('--local-raw-color', spectrum.raw);
             card.style.setProperty('--local-progress-color', spectrum.progress);
             card.style.setProperty('--local-dark-color', spectrum.dark);
             card.style.setProperty('--local-badge-bg', spectrum.badgeBg);
             card.style.setProperty('--local-badge-text', spectrum.badgeText);
+            if (charColor) card.style.setProperty('--local-char-accent', charColor);
         }
 
         function getCharBadgeHtml(accEmail, charName) {
