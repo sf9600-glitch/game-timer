@@ -2880,6 +2880,51 @@
             dispatchTimersToDOM();
         }
 
+        const LEGACY_TIMER_STORAGE_KEYS = [
+            ACTIVE_TIMERS_KEY,
+            'GameTimer_Active',
+            'GameTimer_ActiveTimers',
+            'GameTimer_Active_Timers'
+        ];
+
+        function isTimerLike(obj) {
+            return obj && typeof obj === 'object' && obj.id != null &&
+                (obj.finishDate != null || obj.dur != null) &&
+                (obj.email != null || obj.taskName != null || obj.taskBase != null);
+        }
+
+        function extractTimersFromValue(value, depth) {
+            const out = [];
+            if (value == null || depth > 12) return out;
+            if (Array.isArray(value)) {
+                if (value.length && value.every(isTimerLike)) return value.filter(isTimerLike);
+                value.forEach(v => out.push(...extractTimersFromValue(v, depth + 1)));
+                return out;
+            }
+            if (typeof value === 'object') {
+                if (isTimerLike(value)) return [value];
+                if (Array.isArray(value.activeTimers)) {
+                    out.push(...value.activeTimers.filter(isTimerLike));
+                }
+                Object.values(value).forEach(v => out.push(...extractTimersFromValue(v, depth + 1)));
+            }
+            return out;
+        }
+
+        function deepScanLocalStorageForTimers() {
+            const all = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (!key) continue;
+                try {
+                    const raw = localStorage.getItem(key);
+                    if (!raw || raw.length < 12) continue;
+                    all.push(...extractTimersFromValue(JSON.parse(raw), 0));
+                } catch (_) {}
+            }
+            return all;
+        }
+
         function collectTimersFromUndoStorage() {
             const list = [];
             [UNDO_TEMP_KEY, 'GameTimer_Undo_Temp'].forEach(key => {
