@@ -1637,10 +1637,35 @@
             else scheduleCloudSync();
         }
 
+        function stripSyncNewFlagsForCloud(timers) {
+            return (timers || []).map(item => {
+                if (!item || item.syncNewUntil == null) return item;
+                const { syncNewUntil, ...rest } = item;
+                return rest;
+            });
+        }
+
+        function isTimerSyncNewBadgeVisible(timer) {
+            return !!(timer && timer.syncNewUntil && Date.now() < timer.syncNewUntil);
+        }
+
+        function markTimersNewFromCloud(localTimers, incomingTimers) {
+            const localIds = new Set((localTimers || []).map(t => String(t.id)));
+            const until = Date.now() + SYNC_NEW_BADGE_MS;
+            return (incomingTimers || []).map(t => {
+                if (!t || t.id == null) return t;
+                if (!localIds.has(String(t.id))) {
+                    return { ...t, syncNewUntil: until };
+                }
+                const { syncNewUntil, ...rest } = t;
+                return rest;
+            });
+        }
+
         function buildCloudPayload() {
             return {
                 config,
-                activeTimers: getActiveTimers(),
+                activeTimers: stripSyncNewFlagsForCloud(getActiveTimers()),
                 undoStack,
                 theme: localStorage.getItem(THEME_KEY) || 'auto',
                 lang: currentLang,
