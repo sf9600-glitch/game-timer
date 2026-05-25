@@ -791,18 +791,22 @@
             font-size: 0.58rem;
         }
         html.timer-display-list .timer-list-main {
-            flex: 1;
+            flex: 1 1 auto;
             min-width: 0;
             display: flex;
-            align-items: center;
-            gap: 5px;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px 5px;
+            row-gap: 3px;
         }
         html.timer-display-list .timer-list-char {
             flex-shrink: 0;
-            max-width: 4.5em;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            max-width: none;
+            overflow: visible;
+            text-overflow: unset;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
             font-size: 0.68rem;
             font-weight: 600;
             color: var(--local-char-accent, var(--text-sub));
@@ -812,17 +816,22 @@
             color: var(--text-sub);
             opacity: 0.55;
         }
-        html.timer-display-list .timer-list-task {
-            flex: 1;
+        html.timer-display-list .timer-list-task,
+        html.timer-display-list .timer-list-task.task-title-display {
+            flex: 1 1 100%;
             min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            max-width: none;
+            overflow: visible;
+            text-overflow: unset;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
             font-weight: 500;
             color: var(--text-main);
         }
         html.timer-display-list .timer-list-time {
             flex-shrink: 0;
+            margin-top: 1px;
             font-variant-numeric: tabular-nums;
             font-weight: 700;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -831,10 +840,12 @@
             white-space: nowrap;
         }
         html.timer-display-list .timer-list-meta {
-            flex-shrink: 0;
+            flex: 1 1 100%;
             color: var(--text-sub);
             font-size: 0.68rem;
-            white-space: nowrap;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
         html.timer-display-list .timer-list-del {
             width: 22px;
@@ -848,6 +859,7 @@
             line-height: 1;
             cursor: pointer;
             flex-shrink: 0;
+            margin-top: 1px;
             opacity: 0.45;
         }
         html.timer-display-list .timer-list-row:hover .timer-list-del {
