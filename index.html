@@ -3179,7 +3179,8 @@
             }
             if (!confirm(tp('confirmRecover', { n: recoverable.length }))) return;
             const all = getActiveTimers();
-            recoverable.forEach(t => {
+            const marked = markTimersNewFromCloud(all, recoverable);
+            marked.forEach(t => {
                 if (!all.some(x => String(x.id) === String(t.id))) all.push(t);
             });
             setActiveTimers(all);
