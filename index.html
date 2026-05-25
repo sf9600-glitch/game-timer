@@ -1428,6 +1428,16 @@
 <body>
 
     <div class="panel-overlay" id="panelOverlay" onclick="closeSidePanel()"></div>
+    <div class="start-sheet-overlay" id="startSheetOverlay" onclick="closeStartSheet()"></div>
+    <div class="start-sheet" id="startSheet" role="dialog" aria-modal="true" aria-labelledby="startSheetTitle">
+        <div class="start-sheet-handle" aria-hidden="true"></div>
+        <div class="start-sheet-header">
+            <h2 class="start-sheet-title" id="startSheetTitle"></h2>
+            <button type="button" class="start-sheet-close" id="startSheetCloseBtn" onclick="closeStartSheet()" aria-label="">&times;</button>
+        </div>
+        <div class="start-sheet-body" id="startSheetBody"></div>
+    </div>
+    <div id="startContentHolder" hidden aria-hidden="true"></div>
 
     <div class="control-panel" id="sidePanel">
         <button type="button" class="panel-close-bar" id="panelCloseBar" onclick="closeSidePanel()"></button>
