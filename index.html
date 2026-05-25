@@ -716,6 +716,107 @@
             }
         }
 
+        /* 文字列表顯示 */
+        .timer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 100%;
+        }
+        .char-timer-group--list .char-group-title--list {
+            margin-bottom: 2px;
+        }
+        .timer-list-row {
+            position: relative;
+            display: grid;
+            grid-template-columns: 8px minmax(0, 1fr) auto auto 26px;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 6px 5px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--local-raw-color);
+            background: var(--card-bg);
+            font-size: 0.78rem;
+            line-height: 1.25;
+            min-height: 30px;
+        }
+        .timer-list-row.has-sync-new { padding-left: 52px; }
+        .timer-list-row > .sync-new-badge {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .timer-list-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--local-raw-color);
+            flex-shrink: 0;
+        }
+        .timer-list-task {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .timer-list-task .task-title-display {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .timer-list-time {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.82rem;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+        .timer-list-meta {
+            color: var(--text-sub);
+            font-size: 0.68rem;
+            white-space: nowrap;
+            max-width: 9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .timer-list-del {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            border: none;
+            border-radius: 4px;
+            background: transparent;
+            color: var(--text-sub);
+            font-size: 1rem;
+            line-height: 1;
+            cursor: pointer;
+            justify-self: end;
+        }
+        .timer-list-del:hover {
+            background: color-mix(in srgb, var(--danger) 18%, transparent);
+            color: var(--danger);
+        }
+        .timer-list-row.is-finished {
+            opacity: 0.88;
+            border-left-color: color-mix(in srgb, var(--local-raw-color) 55%, var(--border-color));
+        }
+        .timer-list-row.is-finished .timer-list-time {
+            font-weight: 500;
+            font-size: 0.72rem;
+            color: var(--text-sub);
+        }
+        .timer-list-row.is-warning-blinking {
+            animation: timer-warning-pulse 1s ease-in-out infinite;
+            border-left-color: var(--danger) !important;
+            background: color-mix(in srgb, var(--danger) 12%, var(--card-bg));
+        }
+        .timer-list-row.is-warning-blinking .timer-list-time,
+        .timer-list-row.is-warning-blinking .timer-list-task .task-title-display {
+            color: var(--danger);
+        }
+
         .sys-block { margin-bottom: 4px; }
         .sys-block-title {
             font-size: 0.72rem;
