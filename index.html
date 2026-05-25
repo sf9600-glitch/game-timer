@@ -3452,13 +3452,15 @@
             const taskHex = taskObj ? taskObj.color : '#475569';
             const spectrum = getLiteColorSpectrum(taskHex);
             const charName = t.char || '';
-            applyTimerCardColorVars(card, taskHex, spectrum);
+            const charColor = charName ? getCharColor(t.email, charName) : null;
+            applyTimerCardColorVars(card, taskHex, spectrum, charColor);
             if (isTimerSyncNewBadgeVisible(t)) card.classList.add('has-sync-new');
             card.innerHTML = `
                 ${getSyncNewBadgeHtml(t)}
                 <div class="timer-card-bg"></div>
                 <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
                 <div class="timer-card-inner">
+                    <div class="timer-card-progress-track" aria-hidden="true"><div class="timer-card-progress-fill"></div></div>
                     <div class="active-layout">
                         <span class="card-id-badge active-slot-id">#${index + 1}</span>
                         <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
