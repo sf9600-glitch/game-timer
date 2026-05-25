@@ -3503,7 +3503,8 @@
             const spectrum = getLiteColorSpectrum(taskHex);
             const charName = t.char || '';
             const finishTime = new Date(t.finishDate);
-            applyTimerCardColorVars(card, taskHex, spectrum);
+            const charColor = charName ? getCharColor(t.email, charName) : null;
+            applyTimerCardColorVars(card, taskHex, spectrum, charColor);
             card.style.setProperty('--p', '0%');
             const charCell = getCharBadgeHtml(t.email, charName) || '<span class="finished-char-placeholder"></span>';
             if (isTimerSyncNewBadgeVisible(t)) card.classList.add('has-sync-new');
