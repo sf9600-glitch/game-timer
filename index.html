@@ -820,11 +820,18 @@
         .timer-card .time-text, .timer-card .date-label { transition: color 0.25s ease; }
 
         /* DHMS 輸入區 */
-        .start-form-inner { display: flex; flex-direction: column; gap: 6px; }
-        .start-field-row--2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .start-field { display: flex; flex-direction: column; gap: 3px; margin: 0; min-width: 0; }
-        .start-field-label { font-size: 0.68rem; font-weight: bold; color: var(--text-sub); line-height: 1.2; }
-        .start-field select { width: 100%; box-sizing: border-box; }
+        .start-form-inner { display: flex; flex-direction: column; gap: 5px; }
+        .start-field-row--2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; align-items: center; }
+        .start-field-row--2.start-field-row--task-only { grid-template-columns: 1fr; }
+        .start-field {
+            display: flex; flex-direction: row; align-items: center; gap: 5px;
+            margin: 0; min-width: 0;
+        }
+        .start-field-label {
+            flex-shrink: 0; width: 2.4em; text-align: right;
+            font-size: 0.68rem; font-weight: bold; color: var(--text-sub); line-height: 1.2;
+        }
+        .start-field select { flex: 1; min-width: 0; box-sizing: border-box; }
         .dhms-container {
             display: flex; justify-content: center; align-items: flex-end;
             background: var(--bg); padding: 6px 8px; border-radius: 8px;
