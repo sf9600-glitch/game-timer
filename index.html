@@ -3591,7 +3591,8 @@
             allSavedData.push(newTimerData);
             setActiveTimers(allSavedData, { immediateCloud: true });
             resetTime(); dispatchTimersToDOM();
-            if (window.innerWidth <= 768) closeSidePanel();
+            if (isMobileLayout()) closeStartSheet();
+            else closeSidePanel();
         }
 
         function saveConfig() {
