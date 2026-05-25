@@ -4016,13 +4016,13 @@
                 }
 
                 const timeEl = card.querySelector('.time-text');
+                if (!timeEl) return;
                 const dateEl = card.querySelector('.date-label');
-                if (!timeEl || !dateEl) return;
 
                 card.classList.toggle('is-warning-blinking', totalRemSec <= parseInt(t.fThres));
                 const h = Math.floor(totalRemSec / 3600), m = Math.floor((totalRemSec % 3600) / 60), s = Math.floor(totalRemSec % 60);
                 timeEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-                dateEl.textContent = getFinishDateLabel(new Date(t.finishDate));
+                if (dateEl) dateEl.textContent = getFinishDateLabel(new Date(t.finishDate));
                 if (!isListRow) {
                     const pPercent = Math.max(0, Math.min(100, (totalRemSec / parseInt(t.dur)) * 100));
                     card.style.setProperty('--p', `${pPercent}%`);
