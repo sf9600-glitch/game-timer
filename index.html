@@ -2068,27 +2068,14 @@
                 alert(t('recoveryNoSnapshots'));
                 return;
             }
-            const sum = getSnapshotSummary(snap);
-            if (!confirm(tp('confirmRestoreSnapshot', { summary: sum.line }))) return;
+            const date = formatSnapshotDateTime(snap.createdAt);
+            if (!confirm(tp('confirmRestoreSnapshot', { date }))) return;
             applyLocalSnapshot(snap);
             alert(t('alertSnapshotRestored'));
         }
 
-        function deleteSelectedSnapshot() {
-            const snap = getSelectedRecoverySnapshot();
-            if (!snap) return;
-            const sum = getSnapshotSummary(snap);
-            if (!confirm(tp('confirmDeleteSnapshot', { summary: sum.line }))) return;
-            const next = getLocalSnapshots().filter(s => String(s.id) !== String(snap.id));
-            persistLocalSnapshots(next);
-            uiState.selectedRecoverySnapshotId = next[0]?.id || null;
-            renderSidePanel();
-            alert(t('alertSnapshotDeleted'));
-        }
-
         function renderRecoveryPanelHtml() {
             const snapshots = getLocalSnapshots();
-            const cloudBtn = isCloudSyncActive() ? '' : 'disabled';
             const recOpen = uiState.recoveryExpanded ? ' recovery-panel--open' : '';
             const recActive = uiState.recoveryExpanded ? ' active' : '';
             if (!uiState.selectedRecoverySnapshotId && snapshots[0]) {
@@ -2099,30 +2086,14 @@
             }
             let bodyInner;
             if (!snapshots.length) {
-                bodyInner = `<p class="recovery-intro">${t('recoveryNoSnapshots')}</p>
-                    <p style="margin:0 0 8px; font-size:0.6rem; color:var(--text-sub); line-height:1.35;">${t('recoveryHint')}</p>
-                    <div class="recovery-actions">
-                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" disabled>${t('recoveryRestoreVersion')}</button>
-                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" ${cloudBtn} onclick="checkCloudForRecovery()">${t('recoveryCloudCheck')}</button>
-                    </div>`;
+                bodyInner = `<p style="margin:0;font-size:0.65rem;color:var(--text-sub);line-height:1.4;">${t('recoveryNoSnapshots')}</p>`;
             } else {
                 const opts = snapshots.map(s => {
-                    const sum = getSnapshotSummary(s);
                     const sel = String(s.id) === String(uiState.selectedRecoverySnapshotId) ? ' selected' : '';
-                    return `<option value="${escSnapshotText(s.id)}"${sel}>${escSnapshotText(sum.line)}</option>`;
+                    return `<option value="${escSnapshotText(s.id)}"${sel}>${escSnapshotText(getSnapshotSelectLabel(s))}</option>`;
                 }).join('');
-                const detailSnap = snapshots.find(s => String(s.id) === String(uiState.selectedRecoverySnapshotId)) || snapshots[0];
-                const detailText = detailSnap ? getSnapshotSummary(detailSnap).detail : '';
-                bodyInner = `<p class="recovery-intro">${t('recoveryIntro')}</p>
-                    <label style="display:block; font-size:0.65rem; font-weight:bold; margin-bottom:4px; color:var(--text-sub);">${t('recoveryPickVersion')}</label>
-                    <select id="recoverySnapshotSelect" class="recovery-version-select" onchange="uiState.selectedRecoverySnapshotId=this.value; updateRecoverySnapshotDetail();">${opts}</select>
-                    <p id="recoverySnapshotDetail" class="recovery-version-detail">${escSnapshotText(detailText)}</p>
-                    <p style="margin:0 0 8px; font-size:0.6rem; color:var(--text-sub); line-height:1.35;">${t('recoveryHint')}</p>
-                    <div class="recovery-actions">
-                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" onclick="restoreSelectedSnapshot()">${t('recoveryRestoreVersion')}</button>
-                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" onclick="deleteSelectedSnapshot()">${t('recoveryDeleteVersion')}</button>
-                        <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" ${cloudBtn} onclick="checkCloudForRecovery()">${t('recoveryCloudCheck')}</button>
-                    </div>`;
+                bodyInner = `<select id="recoverySnapshotSelect" class="recovery-version-select" onchange="uiState.selectedRecoverySnapshotId=this.value">${opts}</select>
+                    <button type="button" class="btn-adjust" style="width:100%;font-size:0.68rem;margin-top:6px;" onclick="restoreSelectedSnapshot()">${t('recoveryRestoreVersion')}</button>`;
             }
             return `<div class="recovery-panel${recOpen}" id="recoveryPanel">
                 <div class="recovery-panel-title" role="button" tabindex="0" onclick="toggleRecoveryPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleRecoveryPanel();}" aria-expanded="${uiState.recoveryExpanded}">
