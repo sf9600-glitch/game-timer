@@ -1644,6 +1644,70 @@
             return cloudTimers.some(t => t && !localIds.has(String(t.id)));
         }
 
+        /** 合併兩邊進行中計時器（依 id）；同 id 保留結束時間較晚者 */
+        function mergeActiveTimersUnion(localTimers, cloudTimers) {
+            const map = new Map();
+            const ingest = (t) => {
+                if (!t || t.id == null) return;
+                const id = String(t.id);
+                const prev = map.get(id);
+                if (!prev) {
+                    map.set(id, t);
+                    return;
+                }
+                const prevEnd = new Date(prev.finishDate || 0).getTime();
+                const nextEnd = new Date(t.finishDate || 0).getTime();
+                if (nextEnd >= prevEnd) map.set(id, t);
+            };
+            (localTimers || []).forEach(ingest);
+            (cloudTimers || []).forEach(ingest);
+            return [...map.values()];
+        }
+
+        function activeTimersNeedMerge(localTimers, cloudTimers) {
+            const local = localTimers || [];
+            const cloud = cloudTimers || [];
+            const localIds = new Set(local.map(t => String(t.id)));
+            const cloudIds = new Set(cloud.map(t => String(t.id)));
+            if (cloud.some(t => t && !localIds.has(String(t.id)))) return true;
+            if (local.some(t => t && !cloudIds.has(String(t.id)))) return true;
+            return false;
+        }
+
+        /** 登入／立即同步：合併設定與計時器，避免舊本機整包蓋掉新雲端 */
+        function buildMergedSyncPayload(cloudPayload, localPayload) {
+            const cloudAt = cloudPayload?.updatedAt || 0;
+            const localAt = localPayload?.updatedAt || 0;
+            const preferCloudMeta = cloudAt >= localAt;
+            const meta = preferCloudMeta ? cloudPayload : localPayload;
+            const metaAlt = preferCloudMeta ? localPayload : cloudPayload;
+            const mergedTimers = mergeActiveTimersUnion(
+                localPayload?.activeTimers || [],
+                cloudPayload?.activeTimers || []
+            );
+            return {
+                config: meta.config || metaAlt.config || config,
+                activeTimers: mergedTimers,
+                undoStack: preferCloudMeta
+                    ? (Array.isArray(cloudPayload.undoStack) ? cloudPayload.undoStack : undoStack)
+                    : (Array.isArray(localPayload.undoStack) ? localPayload.undoStack : undoStack),
+                theme: meta.theme || metaAlt.theme || localStorage.getItem(THEME_KEY) || 'auto',
+                lang: meta.lang || metaAlt.lang || currentLang,
+                updatedAt: Math.max(cloudAt, localAt),
+                clientId: getClientId()
+            };
+        }
+
+        async function applyMergedCloudSync(cloudPayload, localPayload, statusKey) {
+            const merged = buildMergedSyncPayload(cloudPayload, localPayload);
+            applyCloudPayload(merged);
+            const updatedAt = touchLocalUpdated();
+            await putCloudRecord({ ...merged, updatedAt });
+            lastCloudUploadAt = Date.now();
+            lastCloudUpdatedAt = updatedAt;
+            updateCloudSyncUI(statusKey);
+        }
+
         function updateCloudSyncUI(key) {
             if (key !== undefined) cloudSyncStatusKey = key;
             const el = document.getElementById('cloudSyncStatus');
