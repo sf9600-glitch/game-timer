@@ -3703,22 +3703,21 @@
             return (char && String(char).trim()) ? String(char).trim() : '（未指定角色）';
         }
 
-        function getTimersCharGroups(timers, acc) {
-            const grouped = new Map();
-            timers.forEach(t => {
-                const key = getCharGroupKey(t.char);
-                if (!grouped.has(key)) grouped.set(key, []);
-                grouped.get(key).push(t);
+        /** 先依結束時間全域排序，相鄰同角色再合為一組（最快結束的永遠在最前） */
+        function getTimersCharGroupsByFinishOrder(timers, compareFn) {
+            if (!timers.length) return [];
+            const sorted = [...timers].sort(compareFn);
+            const groups = [];
+            let current = null;
+            sorted.forEach(timer => {
+                const charName = getCharGroupKey(timer.char);
+                if (!current || current.charName !== charName) {
+                    current = { charName, timers: [] };
+                    groups.push(current);
+                }
+                current.timers.push(timer);
             });
-            const order = [];
-            if (acc && acc.characters) {
-                acc.characters.forEach(c => {
-                    const name = typeof c === 'string' ? c : c.name;
-                    if (name && grouped.has(name)) order.push(name);
-                });
-            }
-            grouped.forEach((_, key) => { if (!order.includes(key)) order.push(key); });
-            return order.map(charName => ({ charName, timers: grouped.get(charName) }));
+            return groups;
         }
 
         function safeDomIdPart(s) {
