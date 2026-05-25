@@ -3182,7 +3182,7 @@
             const newTimerData = { id: Date.now(), email: acc, char: char, taskName: tObj.name + (ts ? ` (${ts})` : ''), dur: totalSec, fThres: fThres, finishDate: new Date(Date.now() + totalSec * 1000).toISOString(), taskBase: tObj.name };
             const allSavedData = getActiveTimers();
             allSavedData.push(newTimerData);
-            setActiveTimers(allSavedData);
+            setActiveTimers(allSavedData, { immediateCloud: true });
             resetTime(); dispatchTimersToDOM();
             if (window.innerWidth <= 768) closeSidePanel();
         }
