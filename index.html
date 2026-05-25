@@ -2673,6 +2673,38 @@
             return `<span class="char-title-badge ${charContrastClass}" style="background-color:${charColor}; color:${charTextColor};">${charName}</span>`;
         }
 
+        function getSyncNewBadgeHtml(timer) {
+            if (!isTimerSyncNewBadgeVisible(timer)) return '';
+            return `<span class="sync-new-badge">${t('syncNewBadge')}</span>`;
+        }
+
+        function updateSyncNewBadgeOnCard(card, timer) {
+            const slot = card.querySelector('.active-slot-task') || card.querySelector('.finished-row-2');
+            if (!slot) return;
+            let badge = slot.querySelector('.sync-new-badge');
+            const show = isTimerSyncNewBadgeVisible(timer);
+            if (show && !badge) {
+                badge = document.createElement('span');
+                badge.className = 'sync-new-badge';
+                badge.textContent = t('syncNewBadge');
+                slot.appendChild(badge);
+            } else if (!show && badge) badge.remove();
+        }
+
+        function pruneExpiredSyncNewFlags() {
+            const timers = getActiveTimers();
+            let changed = false;
+            const next = timers.map(item => {
+                if (item && item.syncNewUntil != null && Date.now() >= item.syncNewUntil) {
+                    changed = true;
+                    const { syncNewUntil, ...rest } = item;
+                    return rest;
+                }
+                return item;
+            });
+            if (changed) localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(next));
+        }
+
         function buildActiveTimerCard(t, index) {
             const card = document.createElement('div');
             card.className = 'timer-card timer-card--active';
@@ -2689,7 +2721,7 @@
                     <div class="active-layout">
                         <span class="card-id-badge active-slot-id">#${index + 1}</span>
                         <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
-                        <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div></div>
+                        <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div>${getSyncNewBadgeHtml(t)}</div>
                         <div class="active-slot-time"><div class="time-text">00:00:00</div></div>
                         <div class="active-slot-date"><div class="date-label">--/--</div></div>
                     </div>
