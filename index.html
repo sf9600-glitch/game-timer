@@ -3720,6 +3720,40 @@
             return groups;
         }
 
+        function getSoonestActiveFinishMs(accEmail, allSavedData, now) {
+            let soonest = Infinity;
+            allSavedData.forEach(timer => {
+                if (timer.email !== accEmail) return;
+                const finishMs = new Date(timer.finishDate).getTime();
+                if (Number.isNaN(finishMs) || finishMs <= now) return;
+                if (finishMs < soonest) soonest = finishMs;
+            });
+            return soonest;
+        }
+
+        /** 有進行中計時器的帳號依最快結束時間排前；僅已完成的帳號排在後面 */
+        function getAccountsOrderedBySoonestActiveFinish(allSavedData, now) {
+            return config.accounts
+                .map((acc, index) => ({
+                    acc,
+                    index,
+                    soonest: getSoonestActiveFinishMs(acc.email, allSavedData, now)
+                }))
+                .sort((a, b) => a.soonest - b.soonest || a.index - b.index)
+                .map(x => x.acc);
+        }
+
+        function reorderAccountGroupsInMain(allSavedData, now) {
+            const main = document.getElementById('mainDisplay');
+            if (!main) return;
+            getAccountsOrderedBySoonestActiveFinish(allSavedData, now).forEach(acc => {
+                const contentId = `content-acc-${acc.email.replace(/[@.]/g, '_')}`;
+                const content = document.getElementById(contentId);
+                const group = content && content.closest('.account-group');
+                if (group) main.appendChild(group);
+            });
+        }
+
         function safeDomIdPart(s) {
             return String(s).replace(/[@.\s\u3000]/g, '_').replace(/[^\w\u4e00-\u9fff-]/g, '_');
         }
