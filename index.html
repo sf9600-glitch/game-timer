@@ -2852,13 +2852,16 @@
 
         function runGlobalClockTick() { updateTimersDataTicker(); requestAnimationFrame(runGlobalClockTick); }
 
-        function clearFinishedTasks() {
+        function clearFinishedTasks(accEmail) {
             const allSavedData = getActiveTimers();
             const now = Date.now();
-            const finished = allSavedData.filter(t => new Date(t.finishDate).getTime() <= now);
+            let finished = allSavedData.filter(t => new Date(t.finishDate).getTime() <= now);
+            if (accEmail) finished = finished.filter(t => t.email === accEmail);
             if (!finished.length) return;
-            triggerUndo('已完成計時器', finished.map(t => JSON.parse(JSON.stringify(t))),
-                finished.length === 1 ? (finished[0].taskName || '已完成計時器') : `已完成計時器(${finished.length})`);
+            const undoDetail = accEmail
+                ? (finished.length === 1 ? (finished[0].taskName || t('sectionFinished')) : `${accEmail} ${t('sectionFinished')}(${finished.length})`)
+                : (finished.length === 1 ? (finished[0].taskName || '已完成計時器') : `已完成計時器(${finished.length})`);
+            triggerUndo('已完成計時器', finished.map(t => JSON.parse(JSON.stringify(t))), undoDetail);
             const active = allSavedData.filter(t => new Date(t.finishDate).getTime() > now);
             setActiveTimers(active, { immediateCloud: true });
             dispatchTimersToDOM();
