@@ -3731,15 +3731,39 @@
             return soonest;
         }
 
-        /** 有進行中計時器的帳號依最快結束時間排前；僅已完成的帳號排在後面 */
+        function getLatestFinishedFinishMs(accEmail, allSavedData, now) {
+            let latest = -Infinity;
+            allSavedData.forEach(timer => {
+                if (timer.email !== accEmail) return;
+                const finishMs = new Date(timer.finishDate).getTime();
+                if (Number.isNaN(finishMs) || finishMs > now) return;
+                if (finishMs > latest) latest = finishMs;
+            });
+            return latest;
+        }
+
+        /** 有進行中：依最快結束時間排前；僅已完成：依最近結束排前；無計時器排最後 */
         function getAccountsOrderedBySoonestActiveFinish(allSavedData, now) {
             return config.accounts
                 .map((acc, index) => ({
                     acc,
                     index,
-                    soonest: getSoonestActiveFinishMs(acc.email, allSavedData, now)
+                    soonest: getSoonestActiveFinishMs(acc.email, allSavedData, now),
+                    latestFinished: getLatestFinishedFinishMs(acc.email, allSavedData, now)
                 }))
-                .sort((a, b) => a.soonest - b.soonest || a.index - b.index)
+                .sort((a, b) => {
+                    const aActive = a.soonest !== Infinity;
+                    const bActive = b.soonest !== Infinity;
+                    if (aActive && bActive) return a.soonest - b.soonest || a.index - b.index;
+                    if (aActive) return -1;
+                    if (bActive) return 1;
+                    const aDone = a.latestFinished !== -Infinity;
+                    const bDone = b.latestFinished !== -Infinity;
+                    if (aDone && bDone) return b.latestFinished - a.latestFinished || a.index - b.index;
+                    if (aDone) return -1;
+                    if (bDone) return 1;
+                    return a.index - b.index;
+                })
                 .map(x => x.acc);
         }
 
