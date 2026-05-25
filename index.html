@@ -1867,7 +1867,29 @@
                 config.defaultTasks = cloneTasks(config.tasks.length ? config.tasks : BUILTIN_DEFAULT_TASKS);
             }
             if (config.neonGlow === undefined) config.neonGlow = true;
+            if (config.timerDisplay !== 'colorful') config.timerDisplay = 'clean';
             applyNeonGlow();
+            applyTimerDisplayMode();
+        }
+
+        function isTimerDisplayClean() {
+            return config.timerDisplay !== 'colorful';
+        }
+
+        function applyTimerDisplayMode() {
+            const clean = isTimerDisplayClean();
+            document.documentElement.classList.toggle('timer-display-clean', clean);
+            document.documentElement.classList.toggle('timer-display-colorful', !clean);
+        }
+
+        function setTimerDisplay(mode) {
+            config.timerDisplay = mode === 'colorful' ? 'colorful' : 'clean';
+            applyTimerDisplayMode();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            touchLocalUpdated();
+            scheduleCloudSync();
+            refreshMainDisplay();
+            renderSidePanel();
         }
 
         function applyNeonGlow() {
