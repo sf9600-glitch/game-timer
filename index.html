@@ -2768,9 +2768,11 @@
 
         function openStartSheet() {
             if (!isMobileLayout()) {
-                setSidePanelOpen(true);
-                if (uiState.openSection !== 'startContent') smartToggle('startContent');
-                else mountStartContent();
+                uiState.openSection = 'startContent';
+                syncCollapsibleClasses();
+                mountStartContent();
+                syncStartContentExpandedState();
+                document.getElementById('sec-start')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 return;
             }
             closeSidePanel();
