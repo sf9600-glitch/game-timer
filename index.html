@@ -2865,6 +2865,7 @@
         }
 
         function updateTimersDataTicker(skipRelayout = false) {
+            pruneExpiredSyncNewFlags();
             const allSavedData = getActiveTimers();
             const accountEmails = new Set(config.accounts.map(a => a.email));
             const now = Date.now();
