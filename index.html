@@ -2066,6 +2066,7 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
             touchLocalUpdated();
             scheduleCloudSync();
+            syncMainTimerDisplayBar();
             refreshMainDisplay();
             renderSidePanel();
         }
