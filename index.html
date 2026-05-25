@@ -1691,14 +1691,26 @@
                 return;
             }
 
-            lastCloudUpdatedAt = cloudPayload.updatedAt || 0;
-            if (cloudPayload.updatedAt > localPayload.updatedAt) {
+            const cloudAt = cloudPayload.updatedAt || 0;
+            const localAt = localPayload.updatedAt || 0;
+            lastCloudUpdatedAt = cloudAt;
+
+            if (shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt) {
                 applyCloudPayload(cloudPayload);
                 updateCloudSyncUI('cloudRestoredNewer');
-            } else if (localPayload.updatedAt > cloudPayload.updatedAt) {
+            } else if (localAt > cloudAt) {
                 await uploadToCloud();
             } else {
-                updateCloudSyncUI('cloudInSync');
+                const localN = (localPayload.activeTimers || []).length;
+                const cloudN = (cloudPayload.activeTimers || []).length;
+                if (cloudN > localN) {
+                    applyCloudPayload(cloudPayload);
+                    updateCloudSyncUI('cloudRestoredNewer');
+                } else if (localN > cloudN) {
+                    await uploadToCloud();
+                } else {
+                    updateCloudSyncUI('cloudInSync');
+                }
             }
         }
 
