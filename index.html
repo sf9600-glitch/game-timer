@@ -3982,12 +3982,15 @@
             const t = config.tasks[tIdx];
             const sSelect = document.getElementById('subTaskSelect');
             const wrap = document.getElementById('subTaskFieldWrap');
-            if (t && t.subs.length && sSelect) {
+            const row = document.getElementById('taskSubRow');
+            const hasSubs = !!(t && t.subs.length && sSelect);
+            if (hasSubs) {
                 if (wrap) wrap.style.display = '';
                 sSelect.innerHTML = t.subs.map(x => `<option value="${x}">${x}</option>`).join('');
-            } else {
-                if (wrap) wrap.style.display = 'none';
+            } else if (wrap) {
+                wrap.style.display = 'none';
             }
+            if (row) row.classList.toggle('start-field-row--task-only', !hasSubs);
             updateStartSectionTheme();
         }
         
