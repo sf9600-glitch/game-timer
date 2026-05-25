@@ -2765,8 +2765,12 @@
                     </div>`;
                 }
                 if (finishedCharGroups.length) {
+                    const accEmailJs = String(acc.email).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
                     html += `<div class="timer-section timer-section-finished">
-                        <div class="timer-section-title">${t('sectionFinished')}</div>
+                        <div class="timer-section-title timer-section-title--clear-finished" role="button" tabindex="0" title="${t('sectionFinishedClearTitle')}" onclick="clearFinishedTasks('${accEmailJs}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();clearFinishedTasks('${accEmailJs}');}">
+                            <span class="finished-title-default">${t('sectionFinished')}</span>
+                            <span class="finished-title-hover">${t('sectionFinishedClearHover')}</span>
+                        </div>
                         <div class="finished-by-char" id="finished-by-char-${safeId}"></div>
                     </div>`;
                 }
