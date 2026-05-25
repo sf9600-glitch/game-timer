@@ -2601,6 +2601,28 @@
             return window.innerWidth <= 768;
         }
 
+        let lastLayoutWasMobile = null;
+
+        /** 手機 ↔ 桌面切換時重繪側欄（否則桌面沒有 #startContentDesktopMount） */
+        function syncLayoutForViewport() {
+            const mobile = isMobileLayout();
+            if (lastLayoutWasMobile === mobile) {
+                mountStartContent();
+                return;
+            }
+            lastLayoutWasMobile = mobile;
+            if (!mobile) {
+                closeStartSheet();
+                setSidePanelOpen(false);
+            } else {
+                closeSidePanel();
+            }
+            renderSidePanel();
+            refreshMainDisplay();
+            syncPanelMobileControls();
+            if (mobile && !getActiveTimers().length) openStartSheet();
+        }
+
         function syncPanelMobileControls() {
             const closeBar = document.getElementById('panelCloseBar');
             if (closeBar) {
