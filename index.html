@@ -2881,7 +2881,12 @@
                 ? (finished.length === 1 ? (finished[0].taskName || t('sectionFinished')) : `${accEmail} ${t('sectionFinished')}(${finished.length})`)
                 : (finished.length === 1 ? (finished[0].taskName || '已完成計時器') : `已完成計時器(${finished.length})`);
             triggerUndo('已完成計時器', finished.map(t => JSON.parse(JSON.stringify(t))), undoDetail);
-            const active = allSavedData.filter(t => new Date(t.finishDate).getTime() > now);
+            const active = allSavedData.filter(t => {
+                const isFinished = new Date(t.finishDate).getTime() <= now;
+                if (!isFinished) return true;
+                if (accEmail) return t.email !== accEmail;
+                return false;
+            });
             setActiveTimers(active, { immediateCloud: true });
             dispatchTimersToDOM();
         }
