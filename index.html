@@ -3157,12 +3157,9 @@
                     : tp('recoveryCloudFound', { n: missing.length, total: cloudTimers.length });
                 if (!confirm(msg)) return;
                 if (useFull) {
-                    setActiveTimers(cloudTimers);
+                    setActiveTimers(markTimersNewFromCloud(current, cloudTimers));
                 } else {
-                    const all = [...current];
-                    missing.forEach(t => {
-                        if (!all.some(x => String(x.id) === String(t.id))) all.push(t);
-                    });
+                    const all = [...current, ...markTimersNewFromCloud(current, missing)];
                     setActiveTimers(all);
                 }
                 dispatchTimersToDOM();
