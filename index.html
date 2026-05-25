@@ -2722,10 +2722,9 @@
                     <button type="button" class="btn-main btn-open-start-sheet" onclick="openStartSheet()">${t('taskStart')}</button>
                 </div>`;
             }
-            const active = uiState.openSection === 'startContent' ? 'active' : '';
             return `<div class="config-section" id="sec-start" style="--section-color: ${taskColor};">
                     <div class="config-title" onclick="smartToggle('startContent')"><span>${t('taskStart')}</span></div>
-                    <div id="startContentDesktopMount" class="collapsible-content ${active}"></div>
+                    <div id="startContentDesktopMount"></div>
                 </div>`;
         }
 
