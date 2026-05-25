@@ -1824,16 +1824,24 @@
             const cloudPayload = await fetchCloudRecord();
             if (!cloudPayload) return;
             const cloudAt = cloudPayload.updatedAt || 0;
-            const localAt = getLocalUpdatedAt();
             if (cloudPayload.clientId === getClientId() && cloudAt <= lastCloudUploadAt + 2000) return;
-            const shouldPull = shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt || cloudHasTimersNotInLocal(cloudPayload);
-            if (!shouldPull) {
-                if (cloudAt > lastCloudUpdatedAt) lastCloudUpdatedAt = cloudAt;
+
+            const localPayload = buildCloudPayload();
+            const needsMerge = activeTimersNeedMerge(localPayload.activeTimers, cloudPayload.activeTimers);
+            const cloudNewer = cloudAt > getLocalUpdatedAt();
+            if (!needsMerge && !cloudNewer && cloudAt <= lastCloudUpdatedAt) return;
+
+            if (!needsMerge && cloudNewer && cloudAt > lastCloudUpdatedAt) {
+                applyCloudPayload(cloudPayload);
+                lastCloudUpdatedAt = cloudAt;
+                updateCloudSyncUI('cloudUpdatedFromOther');
                 return;
             }
-            if (cloudAt > lastCloudUpdatedAt || cloudHasTimersNotInLocal(cloudPayload) || shouldPreferCloudOnMerge(cloudPayload)) {
-                applyCloudPayload(cloudPayload);
-                updateCloudSyncUI('cloudUpdatedFromOther');
+
+            if (needsMerge || cloudNewer || shouldPreferCloudOnMerge(cloudPayload)) {
+                await applyMergedCloudSync(cloudPayload, localPayload, needsMerge ? 'cloudMerged' : 'cloudUpdatedFromOther');
+            } else if (cloudAt > lastCloudUpdatedAt) {
+                lastCloudUpdatedAt = cloudAt;
             }
         }
 
