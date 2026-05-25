@@ -3681,27 +3681,32 @@
             return `<span class="char-group-label">${charName || unspecified}</span>`;
         }
 
-        function getTimerListCharPart(timer) {
+        function getTimerListCharLine(timer) {
             const charKey = getCharGroupKey(timer.char);
             if (charKey === '（未指定角色）') return '';
-            return `<span class="timer-list-char">${charKey}</span><span class="timer-list-sep" aria-hidden="true">·</span>`;
+            return `<div class="timer-list-charline">${getCharBadgeHtml(timer.email, charKey)}</div>`;
         }
 
         function buildActiveTimerListRow(timer) {
             const row = document.createElement('div');
             row.className = 'timer-list-row timer-list-row--active';
             row.id = `t-${timer.id}`;
+            const taskObj = config.tasks.find(x => x.name === timer.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
             const charName = timer.char || '';
             const charColor = charName ? getCharColor(timer.email, charName) : null;
-            if (charColor) row.style.setProperty('--local-char-accent', charColor);
+            applyTimerCardColorVars(row, taskHex, getLiteColorSpectrum(taskHex), charColor);
             if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
             row.innerHTML = `
                 ${getSyncNewBadgeHtml(timer)}
-                <span class="timer-list-main">
-                    ${getTimerListCharPart(timer)}
-                    <span class="timer-list-task task-title-display">${timer.taskName}</span>
-                    <span class="timer-list-time time-text">00:00:00</span>
-                </span>
+                <div class="timer-list-info">
+                    ${getTimerListCharLine(timer)}
+                    <div class="timer-list-task">${timer.taskName}</div>
+                </div>
+                <div class="timer-list-side">
+                    <div class="timer-list-time time-text">00:00:00</div>
+                    <div class="timer-list-hint date-label">--</div>
+                </div>
                 <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
             return row;
         }
@@ -3710,18 +3715,23 @@
             const row = document.createElement('div');
             row.className = 'timer-list-row timer-list-row--finished is-finished';
             row.id = `t-${timer.id}`;
+            const taskObj = config.tasks.find(x => x.name === timer.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
             const charName = timer.char || '';
             const finishTime = new Date(timer.finishDate);
             const charColor = charName ? getCharColor(timer.email, charName) : null;
-            if (charColor) row.style.setProperty('--local-char-accent', charColor);
+            applyTimerCardColorVars(row, taskHex, getLiteColorSpectrum(taskHex), charColor);
             if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
             row.innerHTML = `
                 ${getSyncNewBadgeHtml(timer)}
-                <span class="timer-list-main">
-                    ${getTimerListCharPart(timer)}
-                    <span class="timer-list-task task-title-display">${timer.taskName}</span>
-                    <span class="timer-list-meta finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
-                </span>
+                <div class="timer-list-info">
+                    ${getTimerListCharLine(timer)}
+                    <div class="timer-list-task">${timer.taskName}</div>
+                </div>
+                <div class="timer-list-side">
+                    <span class="timer-list-time" aria-hidden="true"></span>
+                    <span class="timer-list-status finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
+                </div>
                 <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
             return row;
         }
