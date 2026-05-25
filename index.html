@@ -1797,27 +1797,19 @@
                 return;
             }
 
-            const cloudAt = cloudPayload.updatedAt || 0;
-            const localAt = localPayload.updatedAt || 0;
-            lastCloudUpdatedAt = cloudAt;
+            lastCloudUpdatedAt = cloudPayload.updatedAt || 0;
+            const localTimers = localPayload.activeTimers || [];
+            const cloudTimers = cloudPayload.activeTimers || [];
+            const needsMerge = activeTimersNeedMerge(localTimers, cloudTimers);
 
-            if (shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt || cloudHasTimersNotInLocal(cloudPayload)) {
-                applyCloudPayload(cloudPayload);
-                updateCloudSyncUI('cloudRestoredNewer');
-            } else if (localAt > cloudAt) {
-                await uploadToCloud();
-            } else {
-                const localN = (localPayload.activeTimers || []).length;
-                const cloudN = (cloudPayload.activeTimers || []).length;
-                if (cloudN > localN) {
-                    applyCloudPayload(cloudPayload);
-                    updateCloudSyncUI('cloudRestoredNewer');
-                } else if (localN > cloudN) {
-                    await uploadToCloud();
-                } else {
-                    updateCloudSyncUI('cloudInSync');
-                }
+            if (!needsMerge && (cloudPayload.updatedAt || 0) === (localPayload.updatedAt || 0)) {
+                updateCloudSyncUI('cloudInSync');
+                return;
             }
+
+            const statusKey = needsMerge ? 'cloudMerged'
+                : ((cloudPayload.updatedAt || 0) > (localPayload.updatedAt || 0) ? 'cloudRestoredNewer' : 'cloudSynced');
+            await applyMergedCloudSync(cloudPayload, localPayload, statusKey);
         }
 
         function stopCloudPoll() {
