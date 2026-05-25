@@ -910,6 +910,91 @@
             pointer-events: none;
         }
         .panel-overlay.show { display: block; opacity: 1; pointer-events: auto; }
+        #startContentHolder { display: none !important; }
+        .start-sheet-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 155;
+            opacity: 0;
+            transition: opacity 0.28s ease;
+            pointer-events: none;
+        }
+        .start-sheet-overlay.show { display: block; opacity: 1; pointer-events: auto; }
+        .start-sheet {
+            display: none;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 160;
+            max-height: min(88vh, 88dvh);
+            background: var(--panel-bg);
+            border-radius: 16px 16px 0 0;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.18);
+            transform: translateY(105%);
+            transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-direction: column;
+            overflow: hidden;
+            padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+        }
+        .start-sheet.show {
+            display: flex;
+            transform: translateY(0);
+        }
+        .start-sheet-handle {
+            flex-shrink: 0;
+            width: 40px;
+            height: 4px;
+            margin: 8px auto 4px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--text-sub) 35%, transparent);
+        }
+        .start-sheet-header {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 4px 14px 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .start-sheet-title {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+        .start-sheet-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: var(--bg);
+            color: var(--text-sub);
+            font-size: 1.25rem;
+            line-height: 1;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .start-sheet-body {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: 10px 14px 4px;
+        }
+        .start-sheet #startContent {
+            display: block !important;
+            grid-template-rows: 1fr !important;
+            margin-top: 0 !important;
+            overflow: visible;
+        }
+        .start-sheet #startContent > div { padding-top: 0; }
+        .sec-start-entry-mobile .btn-open-start-sheet { margin-top: 0; }
         .card-header-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 4px; }
         .card-tags-row { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
         .char-title-badge { flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
