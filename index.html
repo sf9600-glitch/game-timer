@@ -3794,10 +3794,13 @@
         }
 
         function updateStartSectionTheme() {
-            const sec = document.getElementById('sec-start');
-            if (!sec) return;
             const color = getSelectedTaskColor();
-            sec.style.setProperty('--section-color', color);
+            ['sec-start', 'sec-start-entry', 'startSheet'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.setProperty('--section-color', color);
+            });
+            const timeEl = document.getElementById('timeDisplay');
+            if (timeEl) timeEl.style.color = color;
         }
 
         function updateSubTaskSelect() {
