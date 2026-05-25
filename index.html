@@ -3213,6 +3213,55 @@
             scheduleCloudSync();
             renderSidePanel();
         }
+        function escapeRegExp(s) {
+            return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function timerBelongsToTask(t, taskName) {
+            if (t.taskBase === taskName) return true;
+            if (t.taskBase != null && t.taskBase !== '') return false;
+            const name = t.taskName || '';
+            if (name === taskName) return true;
+            return name.startsWith(taskName + ' (') && name.endsWith(')');
+        }
+
+        function syncTimersAfterTaskRename(oldName, newName) {
+            if (!oldName || !newName || oldName === newName) return;
+            const all = getActiveTimers();
+            let changed = false;
+            all.forEach(t => {
+                if (!timerBelongsToTask(t, oldName)) return;
+                t.taskBase = newName;
+                if (t.taskName === oldName) {
+                    t.taskName = newName;
+                } else {
+                    const prefix = oldName + ' (';
+                    if ((t.taskName || '').startsWith(prefix) && (t.taskName || '').endsWith(')')) {
+                        const sub = t.taskName.slice(prefix.length, -1);
+                        t.taskName = `${newName} (${sub})`;
+                    }
+                }
+                changed = true;
+            });
+            if (changed) setActiveTimers(all);
+        }
+
+        function syncTimersAfterSubRename(taskName, oldSub, newSub) {
+            if (!taskName || !oldSub || !newSub || oldSub === newSub) return;
+            const oldFull = `${taskName} (${oldSub})`;
+            const newFull = `${taskName} (${newSub})`;
+            const all = getActiveTimers();
+            let changed = false;
+            all.forEach(t => {
+                if (!timerBelongsToTask(t, taskName)) return;
+                if (t.taskName !== oldFull) return;
+                t.taskName = newFull;
+                t.taskBase = taskName;
+                changed = true;
+            });
+            if (changed) setActiveTimers(all);
+        }
+
         function renameAccount(i) {
             const oldEmail = config.accounts[i].email;
             const newVal = prompt(t('promptRenameAcc'), oldEmail);
@@ -3239,11 +3288,26 @@
             refreshMainDisplay();
         }
         function renameSubTask(ti, si) {
-            const newVal = prompt(t('promptRenameSub'), config.tasks[ti].subs[si]);
-            if (newVal) { config.tasks[ti].subs[si] = newVal; saveConfig(); }
+            const taskName = config.tasks[ti].name;
+            const oldSub = config.tasks[ti].subs[si];
+            const newVal = prompt(t('promptRenameSub'), oldSub);
+            if (!newVal || newVal === oldSub) return;
+            config.tasks[ti].subs[si] = newVal;
+            syncTimersAfterSubRename(taskName, oldSub, newVal);
+            saveConfig();
+            refreshMainDisplay();
         }
         function addCharacter(i) { const n = prompt(t('promptCharName')); if(n){ config.accounts[i].characters.push(n); saveConfig(); } }
-        function renameTask(i) { const newVal = prompt(t('promptTaskTag'), config.tasks[i].name); if(newVal){ config.tasks[i].name = newVal; saveConfig(); renderSidePanel(); } }
+        function renameTask(i) {
+            const oldVal = config.tasks[i].name;
+            const newVal = prompt(t('promptTaskTag'), oldVal);
+            if (!newVal || newVal === oldVal) return;
+            config.tasks[i].name = newVal;
+            syncTimersAfterTaskRename(oldVal, newVal);
+            saveConfig();
+            renderSidePanel();
+            refreshMainDisplay();
+        }
         
         function updateSectionColor(k, v) { config.colors[k] = v; saveConfig(); } 
         function updateTaskColorItem(i, v) { config.tasks[i].color = v; saveConfig(); renderSidePanel(); } 
