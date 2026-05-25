@@ -2700,7 +2700,10 @@
             const target = mobile
                 ? document.getElementById('startSheetBody')
                 : document.getElementById('startContentDesktopMount');
-            if (!target) return;
+            if (!target) {
+                document.getElementById('startContentHolder')?.appendChild(sc);
+                return;
+            }
             if (sc.parentElement !== target) target.appendChild(sc);
             syncStartContentExpandedState();
             refreshStartContentControls();
