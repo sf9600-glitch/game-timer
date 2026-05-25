@@ -1386,8 +1386,9 @@
 
         function t(key) {
             const d = I18N[currentLang] || I18N[DEFAULT_LANG];
-            if (!d) return key;
-            return d[key] ?? I18N[DEFAULT_LANG]?.[key] ?? key;
+            const inlineFb = LOCALE_INLINE_FALLBACK[currentLang] || LOCALE_INLINE_FALLBACK[DEFAULT_LANG] || {};
+            if (!d) return inlineFb[key] ?? key;
+            return d[key] ?? I18N[DEFAULT_LANG]?.[key] ?? inlineFb[key] ?? key;
         }
         function tp(key, params) {
             let s = t(key);
