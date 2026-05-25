@@ -10,6 +10,7 @@
   "sectionActive": "進行中",
   "sectionFinished": "已完成",
   "sectionFinishedClearHover": "清除全部已完成",
+  "sectionFinishedClearHint": "點擊清除",
   "sectionFinishedClearTitle": "點擊清除此帳號下全部已完成計時器",
   "noTimers": "尚無計時器",
   "accMgmt": "帳號管理",

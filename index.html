@@ -375,24 +375,95 @@
         }
         .timer-section-finished .timer-section-title { color: var(--text-sub); }
         .timer-section-title--clear-finished {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
             cursor: pointer;
             user-select: none;
-            border-radius: 6px;
-            padding: 2px 6px;
-            margin: -2px -6px 6px;
-            transition: color 0.15s ease, background-color 0.15s ease;
+            margin: -2px 0 6px;
+            padding: 0;
+            border: none;
+            background: none;
+            font: inherit;
+            letter-spacing: inherit;
         }
-        .timer-section-title--clear-finished .finished-title-hover { display: none; }
-        .timer-section-title--clear-finished:hover,
-        .timer-section-title--clear-finished:focus-visible {
+        .finished-clear-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px 3px 6px;
+            border-radius: 999px;
+            border: 1px dashed color-mix(in srgb, var(--danger) 48%, var(--border-color));
+            background: color-mix(in srgb, var(--danger) 7%, var(--card-bg));
+            color: var(--text-sub);
+            box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 0%, transparent);
+            transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+            animation: finished-clear-chip-hint 2.4s ease-in-out infinite;
+        }
+        @keyframes finished-clear-chip-hint {
+            0%, 100% {
+                box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 0%, transparent);
+                border-color: color-mix(in srgb, var(--danger) 42%, var(--border-color));
+            }
+            50% {
+                box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent);
+                border-color: color-mix(in srgb, var(--danger) 62%, var(--border-color));
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .finished-clear-chip { animation: none; }
+        }
+        .finished-clear-icon {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 800;
+            line-height: 1;
             color: var(--danger);
-            background: color-mix(in srgb, var(--danger) 10%, transparent);
+            background: color-mix(in srgb, var(--danger) 16%, var(--card-bg));
+            border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
         }
-        .timer-section-title--clear-finished:hover .finished-title-default,
-        .timer-section-title--clear-finished:focus-visible .finished-title-default { display: none; }
-        .timer-section-title--clear-finished:hover .finished-title-hover,
-        .timer-section-title--clear-finished:focus-visible .finished-title-hover { display: inline; }
+        .finished-title-label { font-weight: bold; }
+        .finished-title-label .finished-title-hover { display: none; }
+        .finished-clear-affordance {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: color-mix(in srgb, var(--danger) 88%, var(--text-sub));
+            padding-left: 2px;
+            border-left: 1px solid color-mix(in srgb, var(--danger) 28%, var(--border-color));
+            margin-left: 2px;
+            padding-left: 6px;
+            white-space: nowrap;
+        }
+        .timer-section-title--clear-finished:hover .finished-clear-chip,
+        .timer-section-title--clear-finished:focus-visible .finished-clear-chip {
+            color: var(--danger);
+            background: color-mix(in srgb, var(--danger) 14%, var(--card-bg));
+            border-style: solid;
+            border-color: color-mix(in srgb, var(--danger) 72%, transparent);
+            box-shadow: 0 2px 10px color-mix(in srgb, var(--danger) 22%, transparent);
+            transform: translateY(-1px);
+            animation: none;
+        }
+        .timer-section-title--clear-finished:hover .finished-title-label .finished-title-default,
+        .timer-section-title--clear-finished:focus-visible .finished-title-label .finished-title-default { display: none; }
+        .timer-section-title--clear-finished:hover .finished-title-label .finished-title-hover,
+        .timer-section-title--clear-finished:focus-visible .finished-title-label .finished-title-hover { display: inline; }
+        .timer-section-title--clear-finished:hover .finished-clear-affordance,
+        .timer-section-title--clear-finished:focus-visible .finished-clear-affordance { display: none; }
+        .timer-section-title--clear-finished:active .finished-clear-chip { transform: translateY(0); box-shadow: none; }
+        [data-theme="dark"] .finished-clear-chip {
+            background: color-mix(in srgb, var(--danger) 12%, var(--card-bg));
+            border-color: color-mix(in srgb, var(--danger) 38%, var(--border-color));
+        }
+        [data-theme="dark"] .finished-clear-icon {
+            background: color-mix(in srgb, var(--danger) 22%, #1a1a1a);
+        }
         .finished-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(136px, 148px));
