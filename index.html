@@ -3630,15 +3630,25 @@
                 }
                 container.innerHTML = html || `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
 
-                const activeGrid = container.querySelector(`#grid-active-${safeId}`);
-                activeTimers.forEach((t, i) => activeGrid && activeGrid.appendChild(buildActiveTimerCard(t, i)));
+                const activeByChar = container.querySelector(`#active-by-char-${safeId}`);
+                if (activeByChar) {
+                    activeCharGroups.forEach(({ charName, timers: groupTimers }) => {
+                        const charSafe = safeDomIdPart(charName);
+                        const groupEl = document.createElement('div');
+                        groupEl.className = 'char-timer-group';
+                        groupEl.innerHTML = `<div class="timer-grid" id="grid-active-${safeId}-${charSafe}"></div>`;
+                        activeByChar.appendChild(groupEl);
+                        const grid = groupEl.querySelector('.timer-grid');
+                        groupTimers.forEach((t, i) => grid.appendChild(buildActiveTimerCard(t, i)));
+                    });
+                }
 
                 const finishedByChar = container.querySelector(`#finished-by-char-${safeId}`);
                 if (finishedByChar) {
                     finishedCharGroups.forEach(({ charName, timers: groupTimers }) => {
                         const charSafe = safeDomIdPart(charName);
                         const groupEl = document.createElement('div');
-                        groupEl.className = 'finished-char-group';
+                        groupEl.className = 'char-timer-group finished-char-group';
                         groupEl.innerHTML = `<div class="timer-grid finished-grid" id="grid-finished-${safeId}-${charSafe}"></div>`;
                         finishedByChar.appendChild(groupEl);
                         const grid = groupEl.querySelector('.finished-grid');
