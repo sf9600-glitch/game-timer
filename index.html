@@ -3833,7 +3833,8 @@
             try {
             const allSavedData = getActiveTimers();
             const now = Date.now();
-            config.accounts.forEach(acc => {
+            const accountsOrdered = getAccountsOrderedBySoonestActiveFinish(allSavedData, now);
+            accountsOrdered.forEach(acc => {
                 const safeId = acc.email.replace(/[@.\s]/g, '_');
                 const container = document.getElementById(`content-acc-${acc.email.replace(/[@.]/g, '_')}`);
                 if (!container) return;
