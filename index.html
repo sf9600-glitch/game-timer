@@ -3136,7 +3136,7 @@
             const allSavedData = getActiveTimers();
             const target = allSavedData.find(t => String(t.id) === String(id));
             if(target) triggerUndo('計時器', target, target.taskName || '計時器');
-            setActiveTimers(allSavedData.filter(t => String(t.id) !== String(id)));
+            setActiveTimers(allSavedData.filter(t => String(t.id) !== String(id)), { immediateCloud: true });
             dispatchTimersToDOM();
         }
         
