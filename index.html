@@ -3320,7 +3320,7 @@
         }
         function removeSubTask(ti, si) {
             const subName = config.tasks[ti].subs[si];
-            triggerUndo('設定', JSON.parse(JSON.stringify(config)), subName);
+            triggerUndo(t('undoSettings'), JSON.parse(JSON.stringify(config)), subName);
             config.tasks[ti].subs.splice(si, 1);
             saveConfig(); refreshMainDisplay();
         }
