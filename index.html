@@ -1327,7 +1327,13 @@
             document.getElementById('tutorialModal')?.classList.remove('show');
         }
 
-        function setLang(lang, opts = {}) {
+        async function setLang(lang, opts = {}) {
+            if (!I18N[lang]) {
+                try { await loadLocaleFile(lang); } catch (e) {
+                    console.error('setLang loadLocale', lang, e);
+                    return;
+                }
+            }
             if (!I18N[lang]) return;
             currentLang = lang;
             localStorage.setItem(LANG_KEY, lang);
