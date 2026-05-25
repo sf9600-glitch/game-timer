@@ -2835,7 +2835,7 @@
             triggerUndo('已完成計時器', finished.map(t => JSON.parse(JSON.stringify(t))),
                 finished.length === 1 ? (finished[0].taskName || '已完成計時器') : `已完成計時器(${finished.length})`);
             const active = allSavedData.filter(t => new Date(t.finishDate).getTime() > now);
-            setActiveTimers(active);
+            setActiveTimers(active, { immediateCloud: true });
             dispatchTimersToDOM();
         }
 
