@@ -2626,10 +2626,142 @@
 
         function initMobilePanelState() {
             if (!isMobileLayout()) return;
-            if (!getActiveTimers().length) setSidePanelOpen(true);
+            if (!getActiveTimers().length) openStartSheet();
+        }
+
+        function createStartContentElement() {
+            const wrap = document.createElement('div');
+            wrap.id = 'startContent';
+            wrap.className = 'collapsible-content';
+            wrap.innerHTML = `<div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;"><select id="accSelect" onchange="updateCharSelect()"></select><select id="charSelect"></select></div>
+                        <select id="taskSelect" style="width:100%; margin-bottom:5px;" onchange="updateSubTaskSelect()"></select>
+                        <select id="subTaskSelect" style="width:100%; margin-bottom:5px; display:none;"></select>
+                        <div id="timeDisplay" style="text-align:center; background:var(--bg); padding:10px; border-radius:10px; margin:5px 0 6px 0; font-size:1.8rem; font-family:monospace; font-weight:bold; color:var(--section-color);">00:00:00</div>
+                        <div class="dhms-container">
+                            <div class="dhms-group"><input type="number" id="in-d" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>D</span></div>
+                            <div class="dhms-group"><input type="number" id="in-h" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>H</span></div>
+                            <div class="dhms-group"><input type="number" id="in-m" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>M</span></div>
+                            <div class="dhms-group"><input type="number" id="in-s" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>S</span></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:6px;">
+                            <button class="btn-adjust" onclick="adj(86400)">+1d</button><button class="btn-adjust" onclick="adj(43200)">+12h</button><button class="btn-adjust" onclick="adj(3600)">+1h</button>
+                            <button class="btn-adjust" onclick="adj(600)">+10m</button><button class="btn-adjust" onclick="adj(60)">+1m</button><button class="btn-adjust" onclick="adj(30)">+30s</button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr; gap:6px;">
+                            <button class="btn-adjust" onclick="resetTime()" style="color:var(--danger);">${t('resetTime')}</button>
+                        </div>
+                        <div style="margin-top:15px; font-size:0.75rem; background-color:var(--bg); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:2px;">${t('flashWarning')} <input type="number" id="fMin" value="0" style="width:28px; text-align:center;">:<input type="number" id="fSec" value="30" style="width:28px; text-align:center;"></div>
+                        <button class="btn-main" id="btnStartTask" onclick="startTask()">${t('startTask')}</button>
+                        <button class="btn-main" id="btn-clear-finished" onclick="clearFinishedTasks()">${t('clearFinished')}</button>
+                    </div>`;
+            return wrap;
+        }
+
+        function ensureStartContent() {
+            let sc = document.getElementById('startContent');
+            if (!sc) {
+                sc = createStartContentElement();
+                document.getElementById('startContentHolder')?.appendChild(sc);
+            }
+            return sc;
+        }
+
+        function detachStartContent() {
+            const sc = document.getElementById('startContent');
+            const holder = document.getElementById('startContentHolder');
+            if (sc && holder && sc.parentElement !== holder) holder.appendChild(sc);
+        }
+
+        function syncStartContentExpandedState() {
+            const sc = document.getElementById('startContent');
+            if (!sc) return;
+            if (sc.closest('#startSheetBody')) sc.classList.add('active');
+            else sc.classList.toggle('active', uiState.openSection === 'startContent');
+        }
+
+        function mountStartContent() {
+            const sc = ensureStartContent();
+            const mobile = isMobileLayout();
+            const target = mobile
+                ? document.getElementById('startSheetBody')
+                : document.getElementById('startContentDesktopMount');
+            if (!target) return;
+            if (sc.parentElement !== target) target.appendChild(sc);
+            syncStartContentExpandedState();
+            refreshStartContentControls();
+            updateStartSectionTheme();
+            updateClearFinishedButtonHighlight();
+        }
+
+        function refreshStartContentControls() {
+            const accSel = document.getElementById('accSelect');
+            const taskSel = document.getElementById('taskSelect');
+            if (!accSel || !taskSel) return;
+            const prevAcc = accSel.value;
+            const prevTask = taskSel.value;
+            accSel.innerHTML = config.accounts.map(a => `<option value="${a.email}">${a.email}</option>`).join('');
+            if (prevAcc && [...accSel.options].some(o => o.value === prevAcc)) accSel.value = prevAcc;
+            taskSel.innerHTML = config.tasks.map((tk, i) => `<option value="${i}">${tk.name}</option>`).join('');
+            const ti = parseInt(prevTask, 10);
+            if (!Number.isNaN(ti) && ti >= 0 && ti < config.tasks.length) taskSel.value = String(ti);
+            updateCharSelect();
+            updateSubTaskSelect();
+        }
+
+        function getStartSectionPanelHtml() {
+            const taskColor = (config.tasks[0] && config.tasks[0].color) || config.colors.task;
+            if (isMobileLayout()) {
+                return `<div class="config-section sec-start-entry-mobile" id="sec-start-entry" style="--section-color: ${taskColor};">
+                    <button type="button" class="btn-main btn-open-start-sheet" onclick="openStartSheet()">${t('taskStart')}</button>
+                </div>`;
+            }
+            const active = uiState.openSection === 'startContent' ? 'active' : '';
+            return `<div class="config-section" id="sec-start" style="--section-color: ${taskColor};">
+                    <div class="config-title" onclick="smartToggle('startContent')"><span>${t('taskStart')}</span></div>
+                    <div id="startContentDesktopMount" class="collapsible-content ${active}"></div>
+                </div>`;
+        }
+
+        function syncStartSheetChrome() {
+            const title = document.getElementById('startSheetTitle');
+            const closeBtn = document.getElementById('startSheetCloseBtn');
+            if (title) title.textContent = t('taskStart');
+            if (closeBtn) closeBtn.setAttribute('aria-label', t('closePanel'));
+        }
+
+        function setStartSheetOpen(open) {
+            const sheet = document.getElementById('startSheet');
+            const overlay = document.getElementById('startSheetOverlay');
+            if (!sheet) return;
+            sheet.classList.toggle('show', !!open);
+            if (overlay) overlay.classList.toggle('show', !!open);
+            document.body.classList.toggle('start-sheet-open', !!open);
+            if (open) {
+                mountStartContent();
+                syncStartSheetChrome();
+                updateStartSectionTheme();
+            }
+        }
+
+        function openStartSheet() {
+            if (!isMobileLayout()) {
+                setSidePanelOpen(true);
+                if (uiState.openSection !== 'startContent') smartToggle('startContent');
+                else mountStartContent();
+                return;
+            }
+            closeSidePanel();
+            mountStartContent();
+            setStartSheetOpen(true);
+        }
+
+        function closeStartSheet() {
+            setStartSheetOpen(false);
         }
 
         function renderSidePanel() {
+            detachStartContent();
             const panel = document.getElementById('sidePanelContent');
             if (!panel) return;
             const currentTheme = localStorage.getItem(THEME_KEY) || 'auto';
