@@ -2052,6 +2052,14 @@
             renderSidePanel();
         }
 
+        function renderTimerDisplayTabsHtml() {
+            return `<div class="timer-display-header-tabs" role="group" aria-label="${t('timerDisplayLabel')}">
+                <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('clean')">${t('timerDisplayClean')}</button>
+                <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayList() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('list')">${t('timerDisplayList')}</button>
+                <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayColorful() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('colorful')">${t('timerDisplayColorful')}</button>
+            </div>`;
+        }
+
         function applyNeonGlow() {
             const on = config.neonGlow !== false;
             document.documentElement.classList.toggle('neon-glow-enabled', on);
