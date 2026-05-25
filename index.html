@@ -3213,10 +3213,6 @@
             scheduleCloudSync();
             renderSidePanel();
         }
-        function escapeRegExp(s) {
-            return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
         function timerBelongsToTask(t, taskName) {
             if (t.taskBase === taskName) return true;
             if (t.taskBase != null && t.taskBase !== '') return false;
