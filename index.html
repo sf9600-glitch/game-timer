@@ -3886,20 +3886,14 @@
             closeTutorialModal();
             closeStartSheet();
         });
-        window.addEventListener('resize', () => {
-            if (!isMobileLayout()) {
-                setSidePanelOpen(false);
-                closeStartSheet();
-            }
-            mountStartContent();
-        });
+        window.addEventListener('resize', () => syncLayoutForViewport());
         (async () => {
             await initI18n();
             applyLangFromStorage();
             updateTutorialModalChrome();
             await initCloudSync();
-            renderSidePanel();
-            syncPanelMobileControls();
+            lastLayoutWasMobile = !isMobileLayout();
+            syncLayoutForViewport();
             initMobilePanelState();
             runGlobalClockTick();
         })();
