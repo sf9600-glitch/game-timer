@@ -3476,9 +3476,10 @@
                             </div>
                             <div style="margin-bottom:6px; font-size:0.75rem;">${t('timerDisplayLabel')}</div>
                             <p style="margin:0 0 8px; font-size:0.65rem; color:var(--text-sub); line-height:1.4;">${t('timerDisplayHint')}</p>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;">
                                 <button class="btn-adjust${isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('clean')">${t('timerDisplayClean')}</button>
-                                <button class="btn-adjust${!isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('colorful')">${t('timerDisplayColorful')}</button>
+                                <button class="btn-adjust${isTimerDisplayColorful() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('colorful')">${t('timerDisplayColorful')}</button>
+                                <button class="btn-adjust${isTimerDisplayList() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('list')">${t('timerDisplayList')}</button>
                             </div>
                         </div>
                     </div></div>
