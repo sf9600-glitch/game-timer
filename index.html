@@ -2716,6 +2716,16 @@
             if (!Number.isNaN(ti) && ti >= 0 && ti < config.tasks.length) taskSel.value = String(ti);
             updateCharSelect();
             updateSubTaskSelect();
+            refreshStartContentLabels();
+        }
+
+        function refreshStartContentLabels() {
+            const startBtn = document.getElementById('btnStartTask');
+            const clearBtn = document.getElementById('btn-clear-finished');
+            if (startBtn) startBtn.textContent = t('startTask');
+            if (clearBtn) clearBtn.textContent = t('clearFinished');
+            const resetBtn = document.querySelector('#startContent button[onclick="resetTime()"]');
+            if (resetBtn) resetBtn.textContent = t('resetTime');
         }
 
         function getStartSectionPanelHtml() {
