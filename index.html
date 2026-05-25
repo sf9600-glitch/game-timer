@@ -2922,7 +2922,7 @@
                 const allSavedData = getActiveTimers();
                 if (!allSavedData.some(t => String(t.id) === String(last.data.id))) {
                     allSavedData.push(last.data);
-                    setActiveTimers(allSavedData);
+                    setActiveTimers(allSavedData, { immediateCloud: true });
                 }
             } else if (last.label === '已完成計時器') {
                 const allSavedData = getActiveTimers();
@@ -2930,7 +2930,7 @@
                 toRestore.forEach(t => {
                     if (!allSavedData.some(x => String(x.id) === String(t.id))) allSavedData.push(t);
                 });
-                setActiveTimers(allSavedData);
+                setActiveTimers(allSavedData, { immediateCloud: true });
                 dispatchTimersToDOM();
             } else {
                 config = last.data;
