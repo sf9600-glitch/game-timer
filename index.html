@@ -1587,9 +1587,19 @@
                 undoStack,
                 theme: localStorage.getItem(THEME_KEY) || 'auto',
                 lang: currentLang,
-                updatedAt: Math.max(getLocalUpdatedAt(), Date.now()),
+                updatedAt: getLocalUpdatedAt(),
                 clientId: getClientId()
             };
+        }
+
+        /** 本機從未標記更新時間（0）且雲端有資料時，應優先採用雲端 */
+        function shouldPreferCloudOnMerge(cloudPayload) {
+            const localAt = getLocalUpdatedAt();
+            const cloudAt = cloudPayload.updatedAt || 0;
+            if (localAt > 0) return false;
+            if (cloudAt <= 0) return false;
+            const cloudTimers = Array.isArray(cloudPayload.activeTimers) ? cloudPayload.activeTimers : [];
+            return cloudTimers.length > 0 || !!cloudPayload.config;
         }
 
         function updateCloudSyncUI(key) {
