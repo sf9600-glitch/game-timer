@@ -3051,13 +3051,15 @@
         
         let totalSec = 0;
         
-        if (!localStorage.getItem(LOCAL_UPDATED_KEY) && (localStorage.getItem(STORAGE_KEY) || localStorage.getItem(ACTIVE_TIMERS_KEY))) {
-            touchLocalUpdated();
-        }
         loadUndoStackFromStorage();
         window.addEventListener('beforeunload', () => { if (isCloudSyncActive()) flushCloudSyncNow(); });
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && isCloudSyncActive()) flushCloudSyncNow();
+            if (!isCloudSyncActive()) return;
+            if (document.visibilityState === 'hidden') flushCloudSyncNow();
+            else pullCloudIfNewer().catch(e => console.error('pullCloudIfNewer', e));
+        });
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted && isCloudSyncActive()) pullCloudIfNewer().catch(() => {});
         });
         applyLangFromStorage();
         updateTutorialModalChrome();
