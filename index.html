@@ -1351,8 +1351,9 @@
             const res = await fetch(`${LOCALE_DIR}/${lang}.json`);
             if (!res.ok) throw new Error(`locale ${lang}: ${res.status}`);
             const data = await res.json();
-            I18N[lang] = data;
-            return data;
+            const inlineFb = LOCALE_INLINE_FALLBACK[lang] || LOCALE_INLINE_FALLBACK[DEFAULT_LANG] || {};
+            I18N[lang] = { ...inlineFb, ...data };
+            return I18N[lang];
         }
 
         async function loadLocaleManifest() {
