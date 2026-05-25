@@ -3843,7 +3843,9 @@
                 const finishedByChar = container.querySelector(`#finished-by-char-${safeId}`);
                 if (finishedByChar) appendFinishedCharGroups(finishedByChar, finishedCharGroups, acc, safeId);
             });
-            isDispatchingTimers = false;
+            } finally {
+                isDispatchingTimers = false;
+            }
             updateClearFinishedButtonHighlight();
             updateTimersDataTicker(true);
         }
