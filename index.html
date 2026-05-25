@@ -752,125 +752,118 @@
             }
         }
 
-        /* 文字列表顯示（簡潔） */
+        /* 文字列表：左側角色＋任務，右側時間（易讀） */
         html.timer-display-list .timers-by-char.active-by-char,
         html.timer-display-list .timers-by-char.finished-by-char {
-            gap: 8px;
+            gap: 10px;
         }
         html.timer-display-list .timer-list {
             display: flex;
             flex-direction: column;
-            gap: 0;
+            gap: 6px;
             width: 100%;
         }
         html.timer-display-list .timer-list-row {
             position: relative;
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            padding: 5px 0;
-            border: none;
-            border-bottom: 1px solid color-mix(in srgb, var(--border-color) 65%, transparent);
-            border-radius: 0;
-            background: transparent;
-            font-size: 0.76rem;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto 28px;
+            grid-template-areas: "info side del";
+            align-items: center;
+            gap: 8px 10px;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--local-raw-color, var(--border-color));
+            border-radius: 8px;
+            background: var(--card-bg);
+            font-size: 0.8rem;
             line-height: 1.35;
-            min-height: 26px;
-        }
-        html.timer-display-list .timer-list-row:last-child {
-            border-bottom: none;
         }
         html.timer-display-list .timer-list-row.has-sync-new {
-            padding-left: 44px;
+            padding-top: 22px;
         }
         html.timer-display-list .timer-list-row > .sync-new-badge {
             position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
+            left: 10px;
+            top: 6px;
             font-size: 0.58rem;
         }
-        html.timer-display-list .timer-list-main {
-            flex: 1 1 auto;
+        html.timer-display-list .timer-list-info {
+            grid-area: info;
             min-width: 0;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 4px 5px;
-            row-gap: 3px;
         }
-        html.timer-display-list .timer-list-char {
-            flex-shrink: 0;
-            max-width: none;
-            overflow: visible;
-            text-overflow: unset;
-            white-space: normal;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-            font-size: 0.68rem;
+        html.timer-display-list .timer-list-charline {
+            margin-bottom: 4px;
+        }
+        html.timer-display-list .timer-list-charline .char-title-badge {
+            font-size: 0.7rem;
+        }
+        html.timer-display-list .timer-list-task {
+            display: block;
+            font-size: 0.84rem;
             font-weight: 600;
-            color: var(--local-char-accent, var(--text-sub));
-        }
-        html.timer-display-list .timer-list-sep {
-            flex-shrink: 0;
-            color: var(--text-sub);
-            opacity: 0.55;
-        }
-        html.timer-display-list .timer-list-task,
-        html.timer-display-list .timer-list-task.task-title-display {
-            flex: 1 1 auto;
-            min-width: 0;
-            max-width: 100%;
-            overflow: visible;
-            text-overflow: unset;
-            white-space: normal;
+            color: var(--text-main);
+            line-height: 1.4;
             word-break: break-word;
             overflow-wrap: anywhere;
-            font-weight: 500;
-            color: var(--text-main);
+        }
+        html.timer-display-list .timer-list-side {
+            grid-area: side;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 2px;
+            flex-shrink: 0;
+            text-align: right;
         }
         html.timer-display-list .timer-list-time {
-            flex-shrink: 0;
-            margin-top: 1px;
             font-variant-numeric: tabular-nums;
             font-weight: 700;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: 0.78rem;
+            font-size: 1.05rem;
+            line-height: 1.1;
             color: var(--text-main);
             white-space: nowrap;
         }
-        html.timer-display-list .timer-list-meta {
-            flex: 1 1 auto;
-            max-width: 100%;
+        html.timer-display-list .timer-list-hint,
+        html.timer-display-list .timer-list-status {
+            font-size: 0.65rem;
             color: var(--text-sub);
-            font-size: 0.68rem;
-            white-space: normal;
-            word-break: break-word;
-            overflow-wrap: anywhere;
+            line-height: 1.2;
+            white-space: nowrap;
         }
         html.timer-display-list .timer-list-del {
-            width: 22px;
-            height: 22px;
+            grid-area: del;
+            align-self: center;
+            width: 26px;
+            height: 26px;
             padding: 0;
             border: none;
-            border-radius: 3px;
-            background: transparent;
+            border-radius: 6px;
+            background: color-mix(in srgb, var(--text-sub) 10%, transparent);
             color: var(--text-sub);
-            font-size: 0.95rem;
+            font-size: 1rem;
             line-height: 1;
             cursor: pointer;
-            flex-shrink: 0;
-            margin-top: 1px;
-            opacity: 0.45;
-        }
-        html.timer-display-list .timer-list-row:hover .timer-list-del {
-            opacity: 1;
         }
         html.timer-display-list .timer-list-del:hover {
+            background: color-mix(in srgb, var(--danger) 15%, transparent);
             color: var(--danger);
         }
         html.timer-display-list .timer-list-row.is-finished {
-            opacity: 0.75;
+            opacity: 0.82;
+            border-left-color: color-mix(in srgb, var(--local-raw-color, var(--border-color)) 45%, var(--border-color));
+        }
+        html.timer-display-list .timer-list-row.is-finished .timer-list-time {
+            display: none;
+        }
+        html.timer-display-list .timer-list-row.is-finished .timer-list-status {
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        html.timer-display-list .timer-list-row.is-warning-blinking {
+            border-left-color: var(--danger);
+            background: color-mix(in srgb, var(--danger) 8%, var(--card-bg));
         }
         html.timer-display-list .timer-list-row.is-warning-blinking .timer-list-time {
             color: var(--danger);
