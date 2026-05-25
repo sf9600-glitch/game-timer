@@ -1608,10 +1608,11 @@
             return JSON.parse(localStorage.getItem(ACTIVE_TIMERS_KEY) || '[]');
         }
 
-        function setActiveTimers(data) {
+        function setActiveTimers(data, opts = {}) {
             localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(data));
             touchLocalUpdated();
-            scheduleCloudSync();
+            if (opts.immediateCloud) flushCloudSyncNow();
+            else scheduleCloudSync();
         }
 
         function buildCloudPayload() {
