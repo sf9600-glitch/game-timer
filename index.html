@@ -3946,6 +3946,11 @@
             const allSavedData = getActiveTimers();
             allSavedData.push(newTimerData);
             setActiveTimers(allSavedData, { immediateCloud: true });
+            saveLocalSnapshot({
+                createdAt: Date.now(),
+                label: newTimerData.taskName,
+                timerId: newTimerData.id
+            });
             resetTime(); dispatchTimersToDOM();
             if (isMobileLayout()) closeStartSheet();
             else closeSidePanel();
