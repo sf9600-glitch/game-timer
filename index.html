@@ -3308,7 +3308,7 @@
         function removeChar(ai, ci) {
             const c = config.accounts[ai].characters[ci];
             const charName = typeof c === 'string' ? c : c.name;
-            triggerUndo('設定', JSON.parse(JSON.stringify(config)), charName);
+            triggerUndo(t('undoSettings'), JSON.parse(JSON.stringify(config)), charName);
             config.accounts[ai].characters.splice(ci, 1);
             saveConfig(); refreshMainDisplay();
         }
