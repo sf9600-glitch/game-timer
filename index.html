@@ -3456,7 +3456,7 @@
 
         function resetDefaultTasks() {
             if (!confirm(t('confirmResetTasks'))) return;
-            triggerUndo('設定', JSON.parse(JSON.stringify(config)), '任務標籤');
+            triggerUndo(t('undoSettings'), JSON.parse(JSON.stringify(config)), t('allTags'));
             config.tasks = getUserDefaultTasks();
             uiState.editingTaskIdx = null;
             uiState.allTasksExpanded = false;
