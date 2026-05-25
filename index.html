@@ -2520,9 +2520,8 @@
                         <div class="sys-block">
                             <div class="sys-block-title">${t('sysSectionTheme')}</div>
                             <div style="margin-bottom:8px; font-size:0.75rem;">${t('langLabel')}</div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
-                                <button class="btn-adjust${currentLang === 'zh-TW' ? ' btn-toggle-selected' : ''}" onclick="setLang('zh-TW')">${t('langZhTW')}</button>
-                                <button class="btn-adjust${currentLang === 'zh-CN' ? ' btn-toggle-selected' : ''}" onclick="setLang('zh-CN')">${t('langZhCN')}</button>
+                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(0, 1fr)); gap:6px; margin-bottom:12px;">
+                                ${getAvailableLanguages().map(l => `<button type="button" class="btn-adjust${currentLang === l.id ? ' btn-toggle-selected' : ''}" onclick="setLang('${l.id}')">${l.nativeName || l.id}</button>`).join('')}
                             </div>
                             <div style="margin-bottom:8px; font-size:0.75rem;">${t('themeLabel')}</div>
                             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px;">
