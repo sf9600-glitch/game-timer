@@ -1703,7 +1703,7 @@
             const localAt = localPayload.updatedAt || 0;
             lastCloudUpdatedAt = cloudAt;
 
-            if (shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt) {
+            if (shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt || cloudHasTimersNotInLocal(cloudPayload)) {
                 applyCloudPayload(cloudPayload);
                 updateCloudSyncUI('cloudRestoredNewer');
             } else if (localAt > cloudAt) {
