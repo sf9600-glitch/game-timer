@@ -3675,23 +3675,28 @@
             return `<span class="char-group-label">${charName || unspecified}</span>`;
         }
 
+        function getTimerListCharPart(timer) {
+            const charKey = getCharGroupKey(timer.char);
+            if (charKey === '（未指定角色）') return '';
+            return `<span class="timer-list-char">${charKey}</span><span class="timer-list-sep" aria-hidden="true">·</span>`;
+        }
+
         function buildActiveTimerListRow(timer) {
             const row = document.createElement('div');
             row.className = 'timer-list-row timer-list-row--active';
             row.id = `t-${timer.id}`;
-            const taskObj = config.tasks.find(x => x.name === timer.taskBase);
-            const taskHex = taskObj ? taskObj.color : '#475569';
-            const spectrum = getLiteColorSpectrum(taskHex);
             const charName = timer.char || '';
             const charColor = charName ? getCharColor(timer.email, charName) : null;
-            applyTimerCardColorVars(row, taskHex, spectrum, charColor);
+            if (charColor) row.style.setProperty('--local-char-accent', charColor);
             if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
             row.innerHTML = `
                 ${getSyncNewBadgeHtml(timer)}
-                <span class="timer-list-dot" aria-hidden="true"></span>
-                <span class="timer-list-task"><span class="task-title-display">${timer.taskName}</span></span>
-                <span class="timer-list-time time-text">00:00:00</span>
-                <span class="timer-list-meta date-label">--</span>
+                <span class="timer-list-main">
+                    ${getTimerListCharPart(timer)}
+                    <span class="timer-list-task task-title-display">${timer.taskName}</span>
+                    <span class="timer-list-time time-text">00:00:00</span>
+                </span>
+                <span class="date-label" hidden aria-hidden="true"></span>
                 <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
             return row;
         }
@@ -3700,22 +3705,27 @@
             const row = document.createElement('div');
             row.className = 'timer-list-row timer-list-row--finished is-finished';
             row.id = `t-${timer.id}`;
-            const taskObj = config.tasks.find(x => x.name === timer.taskBase);
-            const taskHex = taskObj ? taskObj.color : '#475569';
-            const spectrum = getLiteColorSpectrum(taskHex);
             const charName = timer.char || '';
             const finishTime = new Date(timer.finishDate);
             const charColor = charName ? getCharColor(timer.email, charName) : null;
-            applyTimerCardColorVars(row, taskHex, spectrum, charColor);
+            if (charColor) row.style.setProperty('--local-char-accent', charColor);
             if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
             row.innerHTML = `
                 ${getSyncNewBadgeHtml(timer)}
-                <span class="timer-list-dot" aria-hidden="true"></span>
-                <span class="timer-list-task"><span class="task-title-display">${timer.taskName}</span></span>
-                <span class="timer-list-time finished-end-line">${getFinishedEndLine(finishTime)}</span>
-                <span class="timer-list-meta finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
+                <span class="timer-list-main">
+                    ${getTimerListCharPart(timer)}
+                    <span class="timer-list-task task-title-display">${timer.taskName}</span>
+                    <span class="timer-list-meta finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
+                </span>
+                <span class="finished-end-line" hidden aria-hidden="true"></span>
                 <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
             return row;
+        }
+
+        function appendListRowsFromCharGroups(listEl, charGroups, buildRowFn) {
+            charGroups.forEach(({ timers }) => {
+                timers.forEach(timer => listEl.appendChild(buildRowFn(timer)));
+            });
         }
 
         function appendActiveCharGroups(parentEl, activeCharGroups, acc, safeId) {
