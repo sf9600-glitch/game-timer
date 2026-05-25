@@ -2604,6 +2604,11 @@
                 btn.textContent = t('panelFabOpen');
                 btn.setAttribute('aria-label', t('openPanel'));
             });
+            document.querySelectorAll('.main-start-btn').forEach(btn => {
+                btn.textContent = t('taskStart');
+                btn.setAttribute('aria-label', t('taskStart'));
+            });
+            syncStartSheetChrome();
         }
 
         function setSidePanelOpen(open) {
