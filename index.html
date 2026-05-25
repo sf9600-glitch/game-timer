@@ -3354,8 +3354,16 @@
             if (document.visibilityState === 'hidden') flushCloudSyncNow();
             else pullCloudIfNewer().catch(e => console.error('pullCloudIfNewer', e));
         });
+        function shouldPullCloudOnPageShow(e) {
+            if (!isCloudSyncActive()) return false;
+            if (e && e.persisted) return true;
+            const nav = performance.getEntriesByType('navigation')[0];
+            return nav && (nav.type === 'reload' || nav.type === 'back_forward');
+        }
+
         window.addEventListener('pageshow', (e) => {
-            if (e.persisted && isCloudSyncActive()) pullCloudIfNewer().catch(() => {});
+            if (!shouldPullCloudOnPageShow(e)) return;
+            mergeCloudFromRemote().catch(err => console.error('mergeCloudFromRemote on pageshow', err));
         });
         applyLangFromStorage();
         updateTutorialModalChrome();
