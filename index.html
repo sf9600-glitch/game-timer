@@ -3493,10 +3493,14 @@
             return card;
         }
 
-        function getFinishedCharGroups(finishedTimers, acc) {
+        function getCharGroupKey(char) {
+            return (char && String(char).trim()) ? String(char).trim() : '（未指定角色）';
+        }
+
+        function getTimersCharGroups(timers, acc) {
             const grouped = new Map();
-            finishedTimers.forEach(t => {
-                const key = (t.char && String(t.char).trim()) ? String(t.char).trim() : '（未指定角色）';
+            timers.forEach(t => {
+                const key = getCharGroupKey(t.char);
                 if (!grouped.has(key)) grouped.set(key, []);
                 grouped.get(key).push(t);
             });
