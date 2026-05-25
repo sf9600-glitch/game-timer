@@ -2965,9 +2965,55 @@
                     map.set(id, t);
                 });
             };
-            try { tryAdd(JSON.parse(localStorage.getItem(ACTIVE_TIMERS_KEY) || '[]')); } catch (_) {}
+            LEGACY_TIMER_STORAGE_KEYS.forEach(key => {
+                try { tryAdd(JSON.parse(localStorage.getItem(key) || '[]')); } catch (_) {}
+            });
+            tryAdd(deepScanLocalStorageForTimers());
             tryAdd(collectTimersFromUndoStorage());
             return [...map.values()];
+        }
+
+        async function checkCloudForRecovery() {
+            if (!isCloudSyncActive()) {
+                alert(t('recoveryCloudLogin'));
+                return;
+            }
+            updateCloudSyncUI('cloudLoading');
+            try {
+                const cloud = await fetchCloudRecord();
+                const cloudTimers = Array.isArray(cloud?.activeTimers) ? cloud.activeTimers.filter(isTimerLike) : [];
+                const current = getActiveTimers();
+                if (!cloudTimers.length) {
+                    alert(t('recoveryCloudEmpty'));
+                    renderSidePanel();
+                    return;
+                }
+                const missing = cloudTimers.filter(t => !current.some(x => String(x.id) === String(t.id)));
+                if (!missing.length && cloudTimers.length === current.length) {
+                    alert(t('recoveryCloudSame'));
+                    return;
+                }
+                const useFull = !current.length && cloudTimers.length > 0;
+                const msg = useFull
+                    ? tp('recoveryCloudReplace', { n: cloudTimers.length })
+                    : tp('recoveryCloudFound', { n: missing.length, total: cloudTimers.length });
+                if (!confirm(msg)) return;
+                if (useFull) {
+                    setActiveTimers(cloudTimers);
+                } else {
+                    const all = [...current];
+                    missing.forEach(t => {
+                        if (!all.some(x => String(x.id) === String(t.id))) all.push(t);
+                    });
+                    setActiveTimers(all);
+                }
+                dispatchTimersToDOM();
+                alert(tp('alertRecovered', { n: useFull ? cloudTimers.length : missing.length }));
+            } catch (e) {
+                console.error(e);
+                alert(tp('alertSyncFailed', { msg: e.message || e }));
+            }
+            renderSidePanel();
         }
 
         function restoreRecoverableTimers() {
