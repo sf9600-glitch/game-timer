@@ -2846,12 +2846,28 @@
         }
 
         function refreshStartContentLabels() {
+            const root = document.getElementById('startContent');
+            if (!root) return;
             const startBtn = document.getElementById('btnStartTask');
             const clearBtn = document.getElementById('btn-clear-finished');
             if (startBtn) startBtn.textContent = t('startTask');
             if (clearBtn) clearBtn.textContent = t('clearFinished');
-            const resetBtn = document.querySelector('#startContent button[onclick="resetTime()"]');
+            const resetBtn = root.querySelector('button[onclick="resetTime()"]');
             if (resetBtn) resetBtn.textContent = t('resetTime');
+            const labelMap = { account: 'startLabelAccount', char: 'startLabelChar', task: 'startLabelTask', sub: 'startLabelSub' };
+            root.querySelectorAll('[data-start-label]').forEach(el => {
+                const key = labelMap[el.dataset.startLabel];
+                if (key) el.textContent = t(key);
+            });
+            const unitMap = { day: 'dhmsDay', hour: 'dhmsHour', min: 'dhmsMin', sec: 'dhmsSec' };
+            root.querySelectorAll('[data-dhms-unit]').forEach(el => {
+                const key = unitMap[el.dataset.dhmsUnit];
+                if (key) el.textContent = t(key);
+            });
+            root.querySelectorAll('[data-adj-key]').forEach(btn => {
+                const key = btn.dataset.adjKey;
+                if (key) btn.textContent = t(key);
+            });
         }
 
         function getStartSectionPanelHtml() {
