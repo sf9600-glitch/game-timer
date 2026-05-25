@@ -1237,168 +1237,55 @@
         const THEME_KEY = 'GameTimer_Theme_Preference';
         const LANG_KEY = 'GameTimer_Lang_Preference';
         const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
-        const I18N = {
-            'zh-TW': {
-                appTitle: '遊戲計時器',
-                openPanel: '開啟設定面板', closePanel: '關閉設定面板',
-                panelFabOpen: '設定', panelCloseBar: '‹ 收起',
-                undo: '↩ 復原', undoOne: '↩ 復原「{name}」 (剩餘 {sec}s)', undoMany: '↩ 復原「{name}」等 {n} 項 (剩餘 {sec}s)',
-                sectionActive: '進行中', sectionFinished: '已完成', noTimers: '尚無計時器',
-                accMgmt: '帳號管理', accNamePh: '帳號名稱', add: '新增',
-                allTags: '全部標籤', collapseAll: '收合全部', expandAll: '展開全部', taskNamePh: '任務名稱',
-                dragSortTask: '拖拉可排列順序', dragSortSub: '拖拉可排列順序',
-                taskStart: '任務啟動', resetTime: '重置時間', flashWarning: '預警閃爍:', startTask: '啟動任務', clearFinished: '清除已完成計時器',
-                sysTheme: '系統與主題', sysSectionSystem: '系統', sysSectionTheme: '主題',
-                neonGlowLabel: '深色霓虹光暈', neonGlowOn: '開啟', neonGlowOff: '關閉', neonGlowHint: '僅在深色／自動深色時顯示',
-                saveDefaultTags: '★ 將目前標籤設為預設', restoreDefaultTags: '↺ 還原預設標籤',
-                confirmSaveDefaultTags: '確定將「全部標籤」目前的內容設為預設？\n\n之後按「還原預設標籤」會還原到此狀態。',
-                alertDefaultTagsSaved: '已將目前標籤儲存為預設；之後可按「還原預設標籤」還原。',
-                themeLight: '淺色', themeDark: '深色', themeAuto: '自動', themeLabel: '外觀模式',
-                langLabel: '介面語言', langZhTW: '繁體中文', langZhCN: '简体中文',
-                undoDisplaySec: '復原顯示時間(秒):', exportBackup: '匯出(完整備份)', importBtn: '匯入',
-                openTutorial: '📖 新手教學', tutorialModalTitle: '新手使用教學',
-                tutorialLoading: '載入中…', tutorialLoadFailed: '無法載入教學內容。請透過網頁伺服器開啟（例如 python3 -m http.server），不要直接用檔案開啟 index.html。',
-                closeTutorial: '關閉',
-                recoveryTitle: '本機資料救援',
-                recoveryFound: '本機找到 {n} 個目前畫面上沒有的計時器，可嘗試救回。',
-                recoveryNone: '本機未找到可救回的計時器（請見下方說明嘗試其他裝置或雲端）。',
-                recoveryRestore: '救回這 {n} 個計時器',
-                recoveryRestoreNone: '目前無可救回',
-                recoveryScanned: '已掃描本機 {keys} 個儲存欄位（含舊版 key）。',
-                recoveryCloudCheck: '從雲端檢查並還原',
-                recoveryCloudLogin: '請先登入雲端帳號，才能檢查雲端備份。',
-                recoveryCloudEmpty: '雲端也沒有計時器資料（可能已被覆蓋成空）。\n\n若曾在 Supabase 開啟資料庫備份，可到 Dashboard 查詢歷史還原。',
-                recoveryCloudSame: '雲端與目前畫面上的計時器相同，沒有多餘的可還原項目。',
-                recoveryCloudFound: '雲端有 {total} 個計時器，其中 {n} 個不在目前畫面上。\n\n確定要合併救回嗎？',
-                recoveryCloudReplace: '雲端有 {n} 個計時器，本機目前為空或較少。\n\n確定要用雲端資料覆蓋本機進行中計時器嗎？',
-                recoveryHint: '若另一台裝置（如電腦）還看得到計時器：請在該裝置先匯出備份，勿按同步；或在本機救援區按「從雲端檢查」。',
-                confirmRecover: '確定要救回 {n} 個計時器？\n\n會合併到目前列表，不會刪除現有計時器。',
-                alertRecovered: '已救回 {n} 個計時器。',
-                alertNothingToRecover: '沒有可救回的計時器。',
-                finishedEnd: '結束 {date}', finishedElapsed: '已過 {elapsed}',
-                dateEnded: '{date} (已結束)', dateSoon: '{date} (即將結束)',
-                dateMinLater: '{date} ({n}分鐘後)', dateHourLater: '{date} ({n}小時後)', dateDayLater: '{date} ({n}天後)',
-                elapsedJust: '剛剛', elapsedMin: '{n} 分鐘', elapsedHour: '{h} 小時', elapsedHourMin: '{h} 小時 {m} 分鐘',
-                elapsedDay: '{d} 天', elapsedDayHour: '{d} 天 {h} 小時',
-                undoOp: '操作', undoClearFinished: '清除已完成', undoTimer: '計時器', undoSettings: '設定',
-                finishedTimersLabel: '已完成計時器',
-                confirmDeleteAcc: '確定刪除帳號「{name}」？\n（該帳號下所有進行中計時器也會一併移除）',
-                confirmResetTasks: '確定還原為你儲存的預設標籤？\n\n現有標籤與子項目將被覆蓋。\n帳號、進行中計時器不受影響，可用「復原」還原此操作。',
-                promptRenameAcc: '修改帳號', promptRenameChar: '修改角色名稱', promptRenameSub: '修改子項目',
-                promptCharName: '輸入角色名稱', promptTaskTag: '任務標籤',
-                alertLoginFirst: '請先登入帳號', alertSyncFailed: '同步失敗：{msg}',
-                alertSupabaseNotSet: '尚未設定 Supabase，請見 DEPLOY.md', alertSupabaseNotSetShort: '尚未設定 Supabase',
-                alertEnterEmailPassword: '請輸入 Email 與密碼', alertPasswordMin6: '密碼至少 6 個字元',
-                alertSignUpSuccess: '註冊成功！若 Supabase 有開啟 Email 驗證，請先到信箱點確認連結再登入。',
-                alertEnterRegisteredEmail: '請輸入註冊時使用的 Email',
-                alertResetEmailSent: '已寄出重設密碼信，請到信箱點連結（若沒收到請查看垃圾郵件）。',
-                alertPasswordMismatch: '兩次輸入的密碼不一致', alertPasswordUpdated: '密碼已更新，你可以用新密碼登入。',
-                cloudTitle: '☁ 雲端同步', cloudResetTitle: '☁ 重設密碼', cloudForgotTitle: '☁ 忘記密碼',
-                cloudHintUnconfigured: '請先在 index.html 填入 SUPABASE_URL 與 SUPABASE_ANON_KEY，並依 DEPLOY.md 建立資料庫後再部署上線。',
-                cloudHintLoggedIn: '已登入：新增／刪除計時器與設定變更會自動上傳雲端；其他裝置重新整理頁面即可取得更新（無需即時同步）。',
-                cloudHintLogin: '註冊／登入後，你的帳號、標籤與進行中計時器會保存在雲端，並在所有裝置間同步。',
-                cloudHintNewPassword: '你已從信箱連結進入，請設定新密碼（至少 6 字）。',
-                cloudHintForgot: '輸入註冊 Email，我們會寄重設連結到信箱（請一併查看垃圾郵件）。',
-                cloudPasswordPh: '密碼（至少 6 字）', cloudNewPasswordPh: '新密碼', cloudNewPassword2Ph: '再輸入一次新密碼',
-                cloudForgotLink: '忘記密碼？', cloudSyncNow: '立即同步', cloudSignOut: '登出',
-                cloudSignIn: '登入', cloudSignUp: '註冊', cloudSavePassword: '儲存新密碼', cloudCancel: '取消',
-                cloudSendReset: '寄送重設信', cloudBackLogin: '返回登入',
-                cloudLoggedInShort: '已登入',
-                cloudLoginPrompt: '請登入以同步', cloudBackendNotConfigured: '後端未設定',
-                cloudEnterEmailReset: '輸入 Email 以收取重設信', cloudSynced: '已同步至雲端', cloudSyncing: '同步中…',
-                cloudSyncFailed: '同步失敗', cloudLoading: '正在載入雲端…', cloudUploadedLocal: '已將本機資料上傳至雲端',
-                cloudRestoredNewer: '已從雲端還原較新資料', cloudInSync: '已與雲端一致', cloudUpdatedFromOther: '已從其他裝置更新',
-                cloudMerged: '已合併本機與雲端計時器（兩邊都會保留）',
-                syncNewBadge: '剛從其他裝置新增',
-                cloudSigningIn: '登入中…', cloudSignInFailed: '登入失敗', cloudSigningUp: '註冊中…', cloudSignUpFailed: '註冊失敗',
-                cloudVerifyEmail: '請至信箱完成驗證後登入', cloudSignedOut: '已登出（本機資料仍保留）',
-                cloudSendingReset: '寄送重設信中…', cloudSendResetFailed: '寄送失敗', cloudResetSent: '已寄出重設信，請至信箱操作',
-                cloudUpdatingPassword: '更新密碼中…', cloudUpdatePasswordFailed: '更新失敗', cloudPasswordUpdated: '密碼已更新',
-                cloudLoggedIn: '已登入', cloudLoadFailed: '雲端載入失敗', cloudSetNewPassword: '請設定新密碼'
-            },
-            'zh-CN': {
-                appTitle: '游戏计时器',
-                openPanel: '打开设置面板', closePanel: '关闭设置面板',
-                panelFabOpen: '设置', panelCloseBar: '‹ 收起',
-                undo: '↩ 撤销', undoOne: '↩ 撤销「{name}」 (剩余 {sec}s)', undoMany: '↩ 撤销「{name}」等 {n} 项 (剩余 {sec}s)',
-                sectionActive: '进行中', sectionFinished: '已完成', noTimers: '暂无计时器',
-                accMgmt: '账号管理', accNamePh: '账号名称', add: '新增',
-                allTags: '全部标签', collapseAll: '收起全部', expandAll: '展开全部', taskNamePh: '任务名称',
-                dragSortTask: '拖动可排列顺序', dragSortSub: '拖动可排列顺序',
-                taskStart: '任务启动', resetTime: '重置时间', flashWarning: '预警闪烁:', startTask: '启动任务', clearFinished: '清除已完成计时器',
-                sysTheme: '系统与主题', sysSectionSystem: '系统', sysSectionTheme: '主题',
-                neonGlowLabel: '深色霓虹光晕', neonGlowOn: '开启', neonGlowOff: '关闭', neonGlowHint: '仅在深色／自动深色时显示',
-                saveDefaultTags: '★ 将当前标签设为默认', restoreDefaultTags: '↺ 还原默认标签',
-                confirmSaveDefaultTags: '确定将「全部标签」目前的内容设为默认？\n\n之后按「还原默认标签」会还原到此状态。',
-                alertDefaultTagsSaved: '已将当前标签保存为默认；之后可按「还原默认标签」还原。',
-                themeLight: '浅色', themeDark: '深色', themeAuto: '自动', themeLabel: '外观模式',
-                langLabel: '界面语言', langZhTW: '繁體中文', langZhCN: '简体中文',
-                undoDisplaySec: '撤销显示时间(秒):', exportBackup: '导出(完整备份)', importBtn: '导入',
-                openTutorial: '📖 新手教学', tutorialModalTitle: '新手使用教学',
-                tutorialLoading: '加载中…', tutorialLoadFailed: '无法加载教学内容。请通过网页服务器打开（例如 python3 -m http.server），不要直接用文件打开 index.html。',
-                closeTutorial: '关闭',
-                recoveryTitle: '本机资料救援',
-                recoveryFound: '本机找到 {n} 个目前画面上没有的计时器，可尝试救回。',
-                recoveryNone: '本机未找到可救回的计时器（请见下方说明尝试其他装置或云端）。',
-                recoveryRestore: '救回这 {n} 个计时器',
-                recoveryRestoreNone: '目前无可救回',
-                recoveryScanned: '已扫描本机 {keys} 个存储字段（含旧版 key）。',
-                recoveryCloudCheck: '从云端检查并还原',
-                recoveryCloudLogin: '请先登录云端账号，才能检查云端备份。',
-                recoveryCloudEmpty: '云端也没有计时器数据（可能已被覆盖成空）。\n\n若曾在 Supabase 开启数据库备份，可到 Dashboard 查询历史还原。',
-                recoveryCloudSame: '云端与目前画面上的计时器相同，没有多余的可还原项目。',
-                recoveryCloudFound: '云端有 {total} 个计时器，其中 {n} 个不在目前画面上。\n\n确定要合并救回吗？',
-                recoveryCloudReplace: '云端有 {n} 个计时器，本机目前为空或较少。\n\n确定要用云端数据覆盖本机进行中计时器吗？',
-                recoveryHint: '若另一台装置（如电脑）还看得到计时器：请在该装置先导出备份，勿按同步；或在本机救援区按「从云端检查」。',
-                confirmRecover: '确定要救回 {n} 个计时器？\n\n会合并到目前列表，不会删除现有计时器。',
-                alertRecovered: '已救回 {n} 个计时器。',
-                alertNothingToRecover: '没有可救回的计时器。',
-                finishedEnd: '结束 {date}', finishedElapsed: '已过 {elapsed}',
-                dateEnded: '{date} (已结束)', dateSoon: '{date} (即将结束)',
-                dateMinLater: '{date} ({n}分钟后)', dateHourLater: '{date} ({n}小时后)', dateDayLater: '{date} ({n}天后)',
-                elapsedJust: '刚刚', elapsedMin: '{n} 分钟', elapsedHour: '{h} 小时', elapsedHourMin: '{h} 小时 {m} 分钟',
-                elapsedDay: '{d} 天', elapsedDayHour: '{d} 天 {h} 小时',
-                undoOp: '操作', undoClearFinished: '清除已完成', undoTimer: '计时器', undoSettings: '设置',
-                finishedTimersLabel: '已完成计时器',
-                confirmDeleteAcc: '确定删除账号「{name}」？\n（该账号下所有进行中计时器也会一并移除）',
-                confirmResetTasks: '确定还原为你保存的默认标签？\n\n现有标签与子项目将被覆盖。\n账号、进行中计时器不受影响，可用「撤销」还原此操作。',
-                promptRenameAcc: '修改账号', promptRenameChar: '修改角色名称', promptRenameSub: '修改子项目',
-                promptCharName: '输入角色名称', promptTaskTag: '任务标签',
-                alertLoginFirst: '请先登录账号', alertSyncFailed: '同步失败：{msg}',
-                alertSupabaseNotSet: '尚未设置 Supabase，请见 DEPLOY.md', alertSupabaseNotSetShort: '尚未设置 Supabase',
-                alertEnterEmailPassword: '请输入 Email 与密码', alertPasswordMin6: '密码至少 6 个字符',
-                alertSignUpSuccess: '注册成功！若 Supabase 开启了 Email 验证，请先到邮箱点击确认链接再登录。',
-                alertEnterRegisteredEmail: '请输入注册时使用的 Email',
-                alertResetEmailSent: '已发出重置密码邮件，请到邮箱点击链接（若没收到请查看垃圾邮件）。',
-                alertPasswordMismatch: '两次输入的密码不一致', alertPasswordUpdated: '密码已更新，你可以用新密码登录。',
-                cloudTitle: '☁ 云端同步', cloudResetTitle: '☁ 重置密码', cloudForgotTitle: '☁ 忘记密码',
-                cloudHintUnconfigured: '请先在 index.html 填入 SUPABASE_URL 与 SUPABASE_ANON_KEY，并按 DEPLOY.md 建立数据库后再部署上线。',
-                cloudHintLoggedIn: '已登录：新增／删除计时器与设置变更会自动上传云端；其他设备刷新页面即可取得更新（无需即时同步）。',
-                cloudHintLogin: '注册／登录后，你的账号、标签与进行中计时器会保存在云端，并在所有设备间同步。',
-                cloudHintNewPassword: '你已从邮箱链接进入，请设置新密码（至少 6 字）。',
-                cloudHintForgot: '输入注册 Email，我们会寄重置链接到邮箱（请一并查看垃圾邮件）。',
-                cloudPasswordPh: '密码（至少 6 字）', cloudNewPasswordPh: '新密码', cloudNewPassword2Ph: '再输入一次新密码',
-                cloudForgotLink: '忘记密码？', cloudSyncNow: '立即同步', cloudSignOut: '登出',
-                cloudSignIn: '登录', cloudSignUp: '注册', cloudSavePassword: '保存新密码', cloudCancel: '取消',
-                cloudSendReset: '发送重置信', cloudBackLogin: '返回登录',
-                cloudLoggedInShort: '已登录',
-                cloudLoginPrompt: '请登录以同步', cloudBackendNotConfigured: '后端未设置',
-                cloudEnterEmailReset: '输入 Email 以收取重置信', cloudSynced: '已同步至云端', cloudSyncing: '同步中…',
-                cloudSyncFailed: '同步失败', cloudLoading: '正在加载云端…', cloudUploadedLocal: '已将本机数据上传至云端',
-                cloudRestoredNewer: '已从云端还原较新数据', cloudInSync: '已与云端一致', cloudUpdatedFromOther: '已从其他设备更新',
-                cloudMerged: '已合并本机与云端计时器（两边都会保留）',
-                syncNewBadge: '刚从其他设备新增',
-                cloudSigningIn: '登录中…', cloudSignInFailed: '登录失败', cloudSigningUp: '注册中…', cloudSignUpFailed: '注册失败',
-                cloudVerifyEmail: '请至邮箱完成验证后登录', cloudSignedOut: '已登出（本机数据仍保留）',
-                cloudSendingReset: '发送重置信中…', cloudSendResetFailed: '发送失败', cloudResetSent: '已发出重置信，请至邮箱操作',
-                cloudUpdatingPassword: '更新密码中…', cloudUpdatePasswordFailed: '更新失败', cloudPasswordUpdated: '密码已更新',
-                cloudLoggedIn: '已登录', cloudLoadFailed: '云端加载失败', cloudSetNewPassword: '请设置新密码'
-            }
-        };
-        let currentLang = localStorage.getItem(LANG_KEY) || 'zh-TW';
-        if (!I18N[currentLang]) currentLang = 'zh-TW';
+        const LOCALE_DIR = 'locales';
+        const DEFAULT_LANG = 'zh-TW';
+        const I18N = {};
+        let localeManifest = { default: DEFAULT_LANG, languages: [{ id: 'zh-TW', nativeName: '繁體中文' }, { id: 'zh-CN', nativeName: '简体中文' }] };
+        let currentLang = DEFAULT_LANG;
         let cloudSyncStatusKey = 'cloudLoginPrompt';
-        function t(key) { const d = I18N[currentLang] || I18N['zh-TW']; return d[key] ?? I18N['zh-TW'][key] ?? key; }
+
+        async function loadLocaleFile(lang) {
+            if (I18N[lang]) return I18N[lang];
+            const res = await fetch(`${LOCALE_DIR}/${lang}.json`);
+            if (!res.ok) throw new Error(`locale ${lang}: ${res.status}`);
+            const data = await res.json();
+            I18N[lang] = data;
+            return data;
+        }
+
+        async function loadLocaleManifest() {
+            try {
+                const res = await fetch(`${LOCALE_DIR}/manifest.json`);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data && Array.isArray(data.languages) && data.languages.length) {
+                    localeManifest = data;
+                }
+            } catch (_) {}
+        }
+
+        function getAvailableLanguages() {
+            return localeManifest.languages || [];
+        }
+
+        async function initI18n() {
+            await loadLocaleManifest();
+            const preferred = localStorage.getItem(LANG_KEY) || localeManifest.default || DEFAULT_LANG;
+            const fallback = localeManifest.default || DEFAULT_LANG;
+            const toLoad = [...new Set([preferred, fallback].filter(Boolean))];
+            await Promise.all(toLoad.map(lang => loadLocaleFile(lang).catch(err => {
+                console.error('loadLocale', lang, err);
+                return null;
+            })));
+            currentLang = I18N[preferred] ? preferred : (I18N[fallback] ? fallback : DEFAULT_LANG);
+            if (!I18N[currentLang] && I18N[DEFAULT_LANG]) currentLang = DEFAULT_LANG;
+        }
+
+        function t(key) {
+            const d = I18N[currentLang] || I18N[DEFAULT_LANG];
+            if (!d) return key;
+            return d[key] ?? I18N[DEFAULT_LANG]?.[key] ?? key;
+        }
         function tp(key, params) {
             let s = t(key);
             if (params) Object.keys(params).forEach(k => { s = s.split('{' + k + '}').join(String(params[k])); });
