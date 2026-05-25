@@ -2615,6 +2615,7 @@
             const panel = document.getElementById('sidePanel');
             const overlay = document.getElementById('panelOverlay');
             if (!panel) return;
+            if (open && isMobileLayout()) closeStartSheet();
             panel.classList.toggle('panel-open', !!open);
             if (overlay) overlay.classList.toggle('show', !!open);
             document.body.classList.toggle('side-panel-open', !!open);
