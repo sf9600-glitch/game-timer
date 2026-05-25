@@ -1602,6 +1602,14 @@
             return cloudTimers.length > 0 || !!cloudPayload.config;
         }
 
+        /** 雲端含有本機沒有的計時器（另一台裝置新增） */
+        function cloudHasTimersNotInLocal(cloudPayload) {
+            const cloudTimers = Array.isArray(cloudPayload.activeTimers) ? cloudPayload.activeTimers : [];
+            if (!cloudTimers.length) return false;
+            const localIds = new Set(getActiveTimers().map(t => String(t.id)));
+            return cloudTimers.some(t => t && !localIds.has(String(t.id)));
+        }
+
         function updateCloudSyncUI(key) {
             if (key !== undefined) cloudSyncStatusKey = key;
             const el = document.getElementById('cloudSyncStatus');
