@@ -2858,14 +2858,97 @@
             dispatchTimersToDOM();
         }
 
+        function collectTimersFromUndoStorage() {
+            const list = [];
+            [UNDO_TEMP_KEY, 'GameTimer_Undo_Temp'].forEach(key => {
+                try {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) return;
+                    const parsed = JSON.parse(raw);
+                    const arr = Array.isArray(parsed) ? parsed : [parsed];
+                    arr.forEach(entry => {
+                        if (!entry) return;
+                        if (entry.label === '計時器' && entry.data) list.push(entry.data);
+                        if (entry.label === '已完成計時器') {
+                            const batch = Array.isArray(entry.data) ? entry.data : [entry.data];
+                            batch.forEach(t => { if (t) list.push(t); });
+                        }
+                    });
+                } catch (_) {}
+            });
+            undoStack.forEach(entry => {
+                if (!entry) return;
+                if (entry.label === '計時器' && entry.data) list.push(entry.data);
+                if (entry.label === '已完成計時器') {
+                    const batch = Array.isArray(entry.data) ? entry.data : [entry.data];
+                    batch.forEach(t => { if (t) list.push(t); });
+                }
+            });
+            return list;
+        }
+
+        function getRecoverableTimers() {
+            const currentIds = new Set(getActiveTimers().map(t => String(t.id)));
+            const map = new Map();
+            const tryAdd = (list) => {
+                (list || []).forEach(t => {
+                    if (!t || t.id == null) return;
+                    const id = String(t.id);
+                    if (currentIds.has(id) || map.has(id)) return;
+                    map.set(id, t);
+                });
+            };
+            try { tryAdd(JSON.parse(localStorage.getItem(ACTIVE_TIMERS_KEY) || '[]')); } catch (_) {}
+            tryAdd(collectTimersFromUndoStorage());
+            return [...map.values()];
+        }
+
+        function restoreRecoverableTimers() {
+            const recoverable = getRecoverableTimers();
+            if (!recoverable.length) {
+                alert(t('alertNothingToRecover'));
+                return;
+            }
+            if (!confirm(tp('confirmRecover', { n: recoverable.length }))) return;
+            const all = getActiveTimers();
+            recoverable.forEach(t => {
+                if (!all.some(x => String(x.id) === String(t.id))) all.push(t);
+            });
+            setActiveTimers(all);
+            dispatchTimersToDOM();
+            alert(tp('alertRecovered', { n: recoverable.length }));
+            renderSidePanel();
+        }
+
         function exportConfig() {
-            const b = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `timer_config.json`; a.click();
+            const payload = {
+                version: 2,
+                exportedAt: new Date().toISOString(),
+                config,
+                activeTimers: getActiveTimers()
+            };
+            const b = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(b);
+            a.download = `timer_backup_${Date.now()}.json`;
+            a.click();
         }
 
         function importConfig(e) {
             const r = new FileReader();
-            r.onload = (x) => { config = JSON.parse(x.target.result); saveConfig(); location.reload(); };
+            r.onload = (x) => {
+                const data = JSON.parse(x.target.result);
+                if (data.config) {
+                    config = data.config;
+                    if (Array.isArray(data.activeTimers)) {
+                        setActiveTimers(data.activeTimers);
+                    }
+                } else {
+                    config = data;
+                }
+                saveConfig();
+                location.reload();
+            };
             r.readAsText(e.target.files[0]);
         }
 
