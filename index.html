@@ -2764,13 +2764,15 @@
             const wrap = document.createElement('div');
             wrap.id = 'startContent';
             wrap.className = 'collapsible-content';
-            wrap.innerHTML = `<div class="start-form-inner">
+            wrap.innerHTML = `<div class="start-form-inner" data-start-form="v2">
                         <div class="start-field-row--2">
                             <label class="start-field"><span class="start-field-label" data-start-label="account">${t('startLabelAccount')}</span><select id="accSelect" onchange="updateCharSelect()"></select></label>
                             <label class="start-field"><span class="start-field-label" data-start-label="char">${t('startLabelChar')}</span><select id="charSelect"></select></label>
                         </div>
-                        <label class="start-field"><span class="start-field-label" data-start-label="task">${t('startLabelTask')}</span><select id="taskSelect" onchange="updateSubTaskSelect()"></select></label>
-                        <label class="start-field" id="subTaskFieldWrap" style="display:none;"><span class="start-field-label" data-start-label="sub">${t('startLabelSub')}</span><select id="subTaskSelect"></select></label>
+                        <div class="start-field-row--2 start-field-row--task-only" id="taskSubRow">
+                            <label class="start-field"><span class="start-field-label" data-start-label="task">${t('startLabelTask')}</span><select id="taskSelect" onchange="updateSubTaskSelect()"></select></label>
+                            <label class="start-field" id="subTaskFieldWrap" style="display:none;"><span class="start-field-label" data-start-label="sub">${t('startLabelSub')}</span><select id="subTaskSelect"></select></label>
+                        </div>
                         <div id="timeDisplay" style="text-align:center; background:var(--bg); padding:10px; border-radius:10px; margin:2px 0 4px 0; font-size:1.8rem; font-family:monospace; font-weight:bold; color:var(--section-color);">00:00:00</div>
                         <div class="dhms-container">
                             <div class="dhms-group"><input type="number" id="in-d" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span class="dhms-unit" data-dhms-unit="day">${t('dhmsDay')}</span></div>
