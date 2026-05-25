@@ -3384,11 +3384,12 @@
             if (!shouldPullCloudOnPageShow(e)) return;
             mergeCloudFromRemote().catch(err => console.error('mergeCloudFromRemote on pageshow', err));
         });
-        applyLangFromStorage();
-        updateTutorialModalChrome();
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTutorialModal(); });
         window.addEventListener('resize', () => { if (!isMobileLayout()) setSidePanelOpen(false); });
         (async () => {
+            await initI18n();
+            applyLangFromStorage();
+            updateTutorialModalChrome();
             await initCloudSync();
             renderSidePanel();
             syncPanelMobileControls();
