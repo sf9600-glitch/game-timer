@@ -1601,6 +1601,7 @@
             else { const el = document.getElementById('undoText'); if (el) el.textContent = t('undo'); }
             renderSidePanel();
             refreshMainDisplay();
+            syncStartSheetChrome();
             if (document.getElementById('tutorialModal')?.classList.contains('show')) updateTutorialModalChrome();
             if (!opts.skipCloud) scheduleCloudSync();
         }
