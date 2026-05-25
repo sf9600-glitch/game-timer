@@ -1920,7 +1920,8 @@
             tasks: cloneTasks(BUILTIN_DEFAULT_TASKS),
             defaultTasks: cloneTasks(BUILTIN_DEFAULT_TASKS),
             undoTime: 10,
-            neonGlow: true
+            neonGlow: true,
+            timerDisplay: 'clean'
         };
 
         let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
