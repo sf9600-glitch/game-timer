@@ -3598,15 +3598,18 @@
                 const activeTimers = timers.filter(t => new Date(t.finishDate).getTime() > now);
                 const finishedTimers = timers.filter(t => new Date(t.finishDate).getTime() <= now);
 
-                activeTimers.sort((a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime());
-                finishedTimers.sort((a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime());
-                const finishedCharGroups = finishedTimers.length ? getFinishedCharGroups(finishedTimers, acc) : [];
+                const sortActiveByFinish = (a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime();
+                const sortFinishedByFinish = (a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime();
+                const activeCharGroups = activeTimers.length ? getTimersCharGroups(activeTimers, acc) : [];
+                activeCharGroups.forEach(g => g.timers.sort(sortActiveByFinish));
+                const finishedCharGroups = finishedTimers.length ? getTimersCharGroups(finishedTimers, acc) : [];
+                finishedCharGroups.forEach(g => g.timers.sort(sortFinishedByFinish));
 
                 let html = '';
-                if (activeTimers.length) {
+                if (activeCharGroups.length) {
                     html += `<div class="timer-section timer-section-active">
                         <div class="timer-section-title">${t('sectionActive')}</div>
-                        <div class="timer-grid" id="grid-active-${safeId}"></div>
+                        <div class="timers-by-char active-by-char" id="active-by-char-${safeId}"></div>
                     </div>`;
                 }
                 if (finishedCharGroups.length) {
