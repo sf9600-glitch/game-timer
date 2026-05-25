@@ -2710,16 +2710,17 @@
         }
 
         function updateSyncNewBadgeOnCard(card, timer) {
-            const slot = card.querySelector('.active-slot-task') || card.querySelector('.finished-row-2');
-            if (!slot) return;
-            let badge = slot.querySelector('.sync-new-badge');
+            if (!card) return;
             const show = isTimerSyncNewBadgeVisible(timer);
+            card.classList.toggle('has-sync-new', show);
+            let badge = card.querySelector(':scope > .sync-new-badge');
             if (show && !badge) {
                 badge = document.createElement('span');
                 badge.className = 'sync-new-badge';
                 badge.textContent = t('syncNewBadge');
-                slot.appendChild(badge);
+                card.insertBefore(badge, card.firstChild);
             } else if (!show && badge) badge.remove();
+            else if (show && badge) badge.textContent = t('syncNewBadge');
         }
 
         function pruneExpiredSyncNewFlags() {
