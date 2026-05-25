@@ -3612,46 +3612,46 @@
             return `<span class="char-group-label">${charName || unspecified}</span>`;
         }
 
-        function buildActiveTimerListRow(t) {
+        function buildActiveTimerListRow(timer) {
             const row = document.createElement('div');
             row.className = 'timer-list-row timer-list-row--active';
-            row.id = `t-${t.id}`;
-            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            row.id = `t-${timer.id}`;
+            const taskObj = config.tasks.find(x => x.name === timer.taskBase);
             const taskHex = taskObj ? taskObj.color : '#475569';
             const spectrum = getLiteColorSpectrum(taskHex);
-            const charName = t.char || '';
-            const charColor = charName ? getCharColor(t.email, charName) : null;
+            const charName = timer.char || '';
+            const charColor = charName ? getCharColor(timer.email, charName) : null;
             applyTimerCardColorVars(row, taskHex, spectrum, charColor);
-            if (isTimerSyncNewBadgeVisible(t)) row.classList.add('has-sync-new');
+            if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
             row.innerHTML = `
-                ${getSyncNewBadgeHtml(t)}
+                ${getSyncNewBadgeHtml(timer)}
                 <span class="timer-list-dot" aria-hidden="true"></span>
-                <span class="timer-list-task"><span class="task-title-display">${t.taskName}</span></span>
+                <span class="timer-list-task"><span class="task-title-display">${timer.taskName}</span></span>
                 <span class="timer-list-time time-text">00:00:00</span>
                 <span class="timer-list-meta date-label">--</span>
-                <button type="button" class="timer-list-del" onclick="delTask(${t.id})" aria-label="${t('delTask') || '刪除'}">×</button>`;
+                <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
             return row;
         }
 
-        function buildFinishedTimerListRow(t) {
+        function buildFinishedTimerListRow(timer) {
             const row = document.createElement('div');
             row.className = 'timer-list-row timer-list-row--finished is-finished';
-            row.id = `t-${t.id}`;
-            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            row.id = `t-${timer.id}`;
+            const taskObj = config.tasks.find(x => x.name === timer.taskBase);
             const taskHex = taskObj ? taskObj.color : '#475569';
             const spectrum = getLiteColorSpectrum(taskHex);
-            const charName = t.char || '';
-            const finishTime = new Date(t.finishDate);
-            const charColor = charName ? getCharColor(t.email, charName) : null;
+            const charName = timer.char || '';
+            const finishTime = new Date(timer.finishDate);
+            const charColor = charName ? getCharColor(timer.email, charName) : null;
             applyTimerCardColorVars(row, taskHex, spectrum, charColor);
-            if (isTimerSyncNewBadgeVisible(t)) row.classList.add('has-sync-new');
+            if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
             row.innerHTML = `
-                ${getSyncNewBadgeHtml(t)}
+                ${getSyncNewBadgeHtml(timer)}
                 <span class="timer-list-dot" aria-hidden="true"></span>
-                <span class="timer-list-task"><span class="task-title-display">${t.taskName}</span></span>
+                <span class="timer-list-task"><span class="task-title-display">${timer.taskName}</span></span>
                 <span class="timer-list-time finished-end-line">${getFinishedEndLine(finishTime)}</span>
                 <span class="timer-list-meta finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
-                <button type="button" class="timer-list-del" onclick="delTask(${t.id})" aria-label="${t('delTask') || '刪除'}">×</button>`;
+                <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
             return row;
         }
 
