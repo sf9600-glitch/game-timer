@@ -1886,7 +1886,11 @@
             if (!needsMerge && !cloudNewer && cloudAt <= lastCloudUpdatedAt) return;
 
             if (!needsMerge && cloudNewer && cloudAt > lastCloudUpdatedAt) {
-                applyCloudPayload(cloudPayload);
+                const localBefore = getActiveTimers();
+                applyCloudPayload({
+                    ...cloudPayload,
+                    activeTimers: markTimersNewFromCloud(localBefore, cloudPayload.activeTimers)
+                });
                 lastCloudUpdatedAt = cloudAt;
                 updateCloudSyncUI('cloudUpdatedFromOther');
                 return;
