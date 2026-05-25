@@ -3236,27 +3236,7 @@
                                 <button class="btn-main btn-compact-main btn-secondary-main" onclick="document.getElementById('importFile').click()">${t('importBtn')}</button>
                             </div>
                             <input type="file" id="importFile" style="display:none" onchange="importConfig(event)">
-                            ${(() => {
-                                const rec = getRecoverableTimers();
-                                const cloudBtn = isCloudSyncActive() ? '' : 'disabled';
-                                const recOpen = uiState.recoveryExpanded ? ' recovery-panel--open' : '';
-                                const recActive = uiState.recoveryExpanded ? ' active' : '';
-                                return `<div class="recovery-panel${recOpen}" id="recoveryPanel">
-                                    <div class="recovery-panel-title" role="button" tabindex="0" onclick="toggleRecoveryPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleRecoveryPanel();}" aria-expanded="${uiState.recoveryExpanded}">
-                                        <span>${t('recoveryTitle')}</span>
-                                        <span class="recovery-panel-chevron" aria-hidden="true">›</span>
-                                    </div>
-                                    <div id="recoveryPanelBody" class="recovery-panel-body collapsible-content${recActive}"><div>
-                                        <p style="margin:0 0 4px; font-size:0.65rem; color:var(--text-sub); line-height:1.4;">${rec.length ? tp('recoveryFound', { n: rec.length }) : t('recoveryNone')}</p>
-                                        <p style="margin:0 0 8px; font-size:0.6rem; color:var(--text-sub); line-height:1.35;">${tp('recoveryScanned', { keys: localStorage.length })}</p>
-                                        <p style="margin:0 0 8px; font-size:0.6rem; color:var(--text-sub); line-height:1.35;">${t('recoveryHint')}</p>
-                                        <div style="display:grid; gap:6px;">
-                                            <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" ${rec.length ? '' : 'disabled'} onclick="restoreRecoverableTimers()">${rec.length ? tp('recoveryRestore', { n: rec.length }) : t('recoveryRestoreNone')}</button>
-                                            <button type="button" class="btn-adjust" style="width:100%; font-size:0.68rem;" ${cloudBtn} onclick="checkCloudForRecovery()">${t('recoveryCloudCheck')}</button>
-                                        </div>
-                                    </div></div>
-                                </div>`;
-                            })()}
+                            ${renderRecoveryPanelHtml()}
                         </div>
                         <div class="sys-block-divider"></div>
                         <div class="sys-block">
