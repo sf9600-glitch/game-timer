@@ -2459,6 +2459,7 @@
             }
 
             syncCollapsibleClasses();
+            syncStartContentExpandedState();
 
             if (leavingTask || hadOpenTaskSubs) {
                 document.querySelectorAll('.sub-edit-panel.open').forEach(el => el.classList.remove('open'));
