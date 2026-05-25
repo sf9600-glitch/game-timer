@@ -3297,7 +3297,7 @@
             const acc = config.accounts[i];
             if (!acc) return;
             if (!confirm(tp('confirmDeleteAcc', { name: acc.email }))) return;
-            triggerUndo('設定', JSON.parse(JSON.stringify(config)), acc.email);
+            triggerUndo(t('undoSettings'), JSON.parse(JSON.stringify(config)), acc.email);
             const email = acc.email;
             config.accounts.splice(i, 1);
             const allSavedData = getActiveTimers();
