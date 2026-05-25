@@ -2909,6 +2909,7 @@
                 timeEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
                 dateEl.textContent = getFinishDateLabel(new Date(t.finishDate));
                 applyTimerCardReadableText(card, taskHex, pPercent, false);
+                updateSyncNewBadgeOnCard(card, t);
             });
 
             if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
