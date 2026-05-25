@@ -3314,7 +3314,7 @@
         }
         function removeTask(i) {
             const taskName = config.tasks[i].name;
-            triggerUndo('設定', JSON.parse(JSON.stringify(config)), taskName);
+            triggerUndo(t('undoSettings'), JSON.parse(JSON.stringify(config)), taskName);
             config.tasks.splice(i, 1);
             saveConfig(); refreshMainDisplay();
         }
