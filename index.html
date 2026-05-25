@@ -135,6 +135,36 @@
             visibility: visible; opacity: 1;
             transition: opacity 0.28s ease-out 0.04s, visibility 0s;
         }
+        .recovery-panel {
+            margin-top: 10px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .recovery-panel-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .recovery-panel-chevron {
+            flex-shrink: 0;
+            font-size: 0.9rem;
+            line-height: 1;
+            color: var(--text-sub);
+            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .recovery-panel--open .recovery-panel-chevron { transform: rotate(90deg); }
+        .recovery-panel-body.collapsible-content.active { margin-top: 0; }
+        .recovery-panel-body > div { padding: 0 8px 8px; }
         .sub-edit-panel {
             display: grid; grid-template-rows: 0fr; overflow: hidden;
             transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.32s cubic-bezier(0.4, 0, 0.2, 1);
