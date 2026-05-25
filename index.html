@@ -1736,13 +1736,14 @@
             const cloudAt = cloudPayload.updatedAt || 0;
             const localAt = getLocalUpdatedAt();
             if (cloudPayload.clientId === getClientId() && cloudAt <= lastCloudUploadAt + 2000) return;
-            if (shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt) {
-                if (cloudAt > lastCloudUpdatedAt || shouldPreferCloudOnMerge(cloudPayload)) {
-                    applyCloudPayload(cloudPayload);
-                    updateCloudSyncUI('cloudUpdatedFromOther');
-                }
-            } else if (cloudAt > lastCloudUpdatedAt) {
-                lastCloudUpdatedAt = cloudAt;
+            const shouldPull = shouldPreferCloudOnMerge(cloudPayload) || cloudAt > localAt || cloudHasTimersNotInLocal(cloudPayload);
+            if (!shouldPull) {
+                if (cloudAt > lastCloudUpdatedAt) lastCloudUpdatedAt = cloudAt;
+                return;
+            }
+            if (cloudAt > lastCloudUpdatedAt || cloudHasTimersNotInLocal(cloudPayload) || shouldPreferCloudOnMerge(cloudPayload)) {
+                applyCloudPayload(cloudPayload);
+                updateCloudSyncUI('cloudUpdatedFromOther');
             }
         }
 
