@@ -3863,9 +3863,10 @@
 
                 const totalRemSec = (finishMs - now) / 1000;
                 const isFinished = totalRemSec <= 0;
-                const inFinishedGrid = !!card.closest('.finished-grid');
+                const inFinishedSection = !!card.closest('.finished-grid') || !!card.closest('.timer-list--finished');
+                const isListRow = card.classList.contains('timer-list-row');
 
-                if (isFinished !== inFinishedGrid) {
+                if (isFinished !== inFinishedSection) {
                     needsRelayout = true;
                     return;
                 }
