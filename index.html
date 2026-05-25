@@ -2757,20 +2757,27 @@
             const wrap = document.createElement('div');
             wrap.id = 'startContent';
             wrap.className = 'collapsible-content';
-            wrap.innerHTML = `<div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;"><select id="accSelect" onchange="updateCharSelect()"></select><select id="charSelect"></select></div>
-                        <select id="taskSelect" style="width:100%; margin-bottom:5px;" onchange="updateSubTaskSelect()"></select>
-                        <select id="subTaskSelect" style="width:100%; margin-bottom:5px; display:none;"></select>
-                        <div id="timeDisplay" style="text-align:center; background:var(--bg); padding:10px; border-radius:10px; margin:5px 0 6px 0; font-size:1.8rem; font-family:monospace; font-weight:bold; color:var(--section-color);">00:00:00</div>
-                        <div class="dhms-container">
-                            <div class="dhms-group"><input type="number" id="in-d" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>D</span></div>
-                            <div class="dhms-group"><input type="number" id="in-h" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>H</span></div>
-                            <div class="dhms-group"><input type="number" id="in-m" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>M</span></div>
-                            <div class="dhms-group"><input type="number" id="in-s" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>S</span></div>
+            wrap.innerHTML = `<div class="start-form-inner">
+                        <div class="start-field-row--2">
+                            <label class="start-field"><span class="start-field-label" data-start-label="account">${t('startLabelAccount')}</span><select id="accSelect" onchange="updateCharSelect()"></select></label>
+                            <label class="start-field"><span class="start-field-label" data-start-label="char">${t('startLabelChar')}</span><select id="charSelect"></select></label>
                         </div>
-                        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:6px;">
-                            <button class="btn-adjust" onclick="adj(86400)">+1d</button><button class="btn-adjust" onclick="adj(43200)">+12h</button><button class="btn-adjust" onclick="adj(3600)">+1h</button>
-                            <button class="btn-adjust" onclick="adj(600)">+10m</button><button class="btn-adjust" onclick="adj(60)">+1m</button><button class="btn-adjust" onclick="adj(30)">+30s</button>
+                        <label class="start-field"><span class="start-field-label" data-start-label="task">${t('startLabelTask')}</span><select id="taskSelect" onchange="updateSubTaskSelect()"></select></label>
+                        <label class="start-field" id="subTaskFieldWrap" style="display:none;"><span class="start-field-label" data-start-label="sub">${t('startLabelSub')}</span><select id="subTaskSelect"></select></label>
+                        <div id="timeDisplay" style="text-align:center; background:var(--bg); padding:10px; border-radius:10px; margin:2px 0 4px 0; font-size:1.8rem; font-family:monospace; font-weight:bold; color:var(--section-color);">00:00:00</div>
+                        <div class="dhms-container">
+                            <div class="dhms-group"><input type="number" id="in-d" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span class="dhms-unit" data-dhms-unit="day">${t('dhmsDay')}</span></div>
+                            <div class="dhms-group"><input type="number" id="in-h" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span class="dhms-unit" data-dhms-unit="hour">${t('dhmsHour')}</span></div>
+                            <div class="dhms-group"><input type="number" id="in-m" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span class="dhms-unit" data-dhms-unit="min">${t('dhmsMin')}</span></div>
+                            <div class="dhms-group"><input type="number" id="in-s" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span class="dhms-unit" data-dhms-unit="sec">${t('dhmsSec')}</span></div>
+                        </div>
+                        <div class="start-adj-grid">
+                            <button type="button" class="btn-adjust" data-adj-key="adj1d" onclick="adj(86400)">${t('adj1d')}</button>
+                            <button type="button" class="btn-adjust" data-adj-key="adj12h" onclick="adj(43200)">${t('adj12h')}</button>
+                            <button type="button" class="btn-adjust" data-adj-key="adj1h" onclick="adj(3600)">${t('adj1h')}</button>
+                            <button type="button" class="btn-adjust" data-adj-key="adj10m" onclick="adj(600)">${t('adj10m')}</button>
+                            <button type="button" class="btn-adjust" data-adj-key="adj1m" onclick="adj(60)">${t('adj1m')}</button>
+                            <button type="button" class="btn-adjust" data-adj-key="adj30s" onclick="adj(30)">${t('adj30s')}</button>
                         </div>
                         <div style="display:grid; grid-template-columns:1fr; gap:6px;">
                             <button class="btn-adjust" onclick="resetTime()" style="color:var(--danger);">${t('resetTime')}</button>
