@@ -3806,10 +3806,8 @@
 
                 const sortActiveByFinish = (a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime();
                 const sortFinishedByFinish = (a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime();
-                const activeCharGroups = activeTimers.length ? getTimersCharGroups(activeTimers, acc) : [];
-                activeCharGroups.forEach(g => g.timers.sort(sortActiveByFinish));
-                const finishedCharGroups = finishedTimers.length ? getTimersCharGroups(finishedTimers, acc) : [];
-                finishedCharGroups.forEach(g => g.timers.sort(sortFinishedByFinish));
+                const activeCharGroups = activeTimers.length ? getTimersCharGroupsByFinishOrder(activeTimers, sortActiveByFinish) : [];
+                const finishedCharGroups = finishedTimers.length ? getTimersCharGroupsByFinishOrder(finishedTimers, sortFinishedByFinish) : [];
 
                 let html = '';
                 if (activeCharGroups.length) {
