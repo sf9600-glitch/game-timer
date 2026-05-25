@@ -2022,38 +2022,15 @@
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
         }
 
-        function getSnapshotSummary(snapshot) {
-            const p = snapshot.payload || {};
-            const timers = Array.isArray(p.activeTimers) ? p.activeTimers : [];
-            const cfg = p.config || {};
-            const acc = Array.isArray(cfg.accounts) ? cfg.accounts.length : 0;
-            const tasks = Array.isArray(cfg.tasks) ? cfg.tasks.length : 0;
-            return {
-                date: formatSnapshotDateTime(snapshot.createdAt),
-                label: snapshot.label || '—',
-                timers: timers.length,
-                acc,
-                tasks,
-                line: tp('recoverySnapshotOption', {
-                    date: formatSnapshotDateTime(snapshot.createdAt),
-                    label: snapshot.label || '—',
-                    n: timers.length
-                }),
-                detail: tp('recoverySnapshotDetail', { acc, task: tasks, n: timers.length })
-            };
+        function getSnapshotSelectLabel(snapshot) {
+            const date = formatSnapshotDateTime(snapshot.createdAt);
+            return snapshot.label ? `${date} · ${snapshot.label}` : date;
         }
 
         function getSelectedRecoverySnapshot() {
             const sel = document.getElementById('recoverySnapshotSelect');
             if (!sel || !sel.value) return null;
             return getLocalSnapshots().find(s => String(s.id) === String(sel.value)) || null;
-        }
-
-        function updateRecoverySnapshotDetail() {
-            const el = document.getElementById('recoverySnapshotDetail');
-            if (!el) return;
-            const snap = getSelectedRecoverySnapshot();
-            el.textContent = snap ? getSnapshotSummary(snap).detail : '';
         }
 
         function applyLocalSnapshot(snapshot) {
