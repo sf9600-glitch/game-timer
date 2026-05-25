@@ -1747,10 +1747,16 @@
         }
 
         async function applyMergedCloudSync(cloudPayload, localPayload, statusKey) {
+            const localBefore = getActiveTimers();
             const merged = buildMergedSyncPayload(cloudPayload, localPayload);
+            merged.activeTimers = markTimersNewFromCloud(localBefore, merged.activeTimers);
             applyCloudPayload(merged);
             const updatedAt = touchLocalUpdated();
-            await putCloudRecord({ ...merged, updatedAt });
+            await putCloudRecord({
+                ...merged,
+                activeTimers: stripSyncNewFlagsForCloud(merged.activeTimers),
+                updatedAt
+            });
             lastCloudUploadAt = Date.now();
             lastCloudUpdatedAt = updatedAt;
             updateCloudSyncUI(statusKey);
