@@ -1989,23 +1989,32 @@
                 config.defaultTasks = cloneTasks(config.tasks.length ? config.tasks : BUILTIN_DEFAULT_TASKS);
             }
             if (config.neonGlow === undefined) config.neonGlow = true;
-            if (config.timerDisplay !== 'colorful') config.timerDisplay = 'clean';
+            if (!['clean', 'colorful', 'list'].includes(config.timerDisplay)) config.timerDisplay = 'clean';
             applyNeonGlow();
             applyTimerDisplayMode();
         }
 
+        function isTimerDisplayList() {
+            return config.timerDisplay === 'list';
+        }
+
+        function isTimerDisplayColorful() {
+            return config.timerDisplay === 'colorful';
+        }
+
         function isTimerDisplayClean() {
-            return config.timerDisplay !== 'colorful';
+            return config.timerDisplay === 'clean';
         }
 
         function applyTimerDisplayMode() {
-            const clean = isTimerDisplayClean();
-            document.documentElement.classList.toggle('timer-display-clean', clean);
-            document.documentElement.classList.toggle('timer-display-colorful', !clean);
+            const mode = config.timerDisplay;
+            document.documentElement.classList.toggle('timer-display-clean', mode === 'clean');
+            document.documentElement.classList.toggle('timer-display-colorful', mode === 'colorful');
+            document.documentElement.classList.toggle('timer-display-list', mode === 'list');
         }
 
         function setTimerDisplay(mode) {
-            config.timerDisplay = mode === 'colorful' ? 'colorful' : 'clean';
+            config.timerDisplay = (mode === 'colorful' || mode === 'list') ? mode : 'clean';
             applyTimerDisplayMode();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
             touchLocalUpdated();
