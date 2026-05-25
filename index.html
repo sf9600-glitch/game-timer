@@ -2078,6 +2078,12 @@
             </div>`;
         }
 
+        function syncMainTimerDisplayBar() {
+            const bar = document.getElementById('mainTimerDisplayBar');
+            if (!bar) return;
+            bar.innerHTML = renderTimerDisplayTabsHtml();
+        }
+
         function applyNeonGlow() {
             const on = config.neonGlow !== false;
             document.documentElement.classList.toggle('neon-glow-enabled', on);
