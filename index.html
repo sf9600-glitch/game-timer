@@ -1009,32 +1009,77 @@
                 padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
                 gap: 12px;
             }
-            body.side-panel-open { overflow: hidden; touch-action: none; }
+            body.side-panel-open,
+            body.start-sheet-open { overflow: hidden; touch-action: none; }
+            .account-group-header {
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                gap: 8px;
+                line-height: normal;
+            }
+            .main-header-actions {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                flex-shrink: 0;
+                padding-bottom: 2px;
+            }
+            .main-start-btn,
             .main-settings-btn {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                position: absolute;
-                left: 50%;
-                bottom: 0;
-                transform: translateX(-50%);
+                position: static;
+                transform: none;
                 z-index: 3;
-                padding: 4px 14px;
+                padding: 5px 12px;
                 border-radius: 999px;
-                border: 1px solid var(--border-color);
-                background: var(--card-bg);
-                color: var(--text-main);
                 font-size: 0.72rem;
                 font-weight: bold;
                 line-height: 1.2;
                 cursor: pointer;
-                box-shadow: 0 1px 6px rgba(15, 23, 42, 0.12);
                 -webkit-tap-highlight-color: transparent;
+                white-space: nowrap;
             }
-            body.side-panel-open .main-settings-btn {
+            .main-start-btn {
+                border: none;
+                background: var(--primary);
+                color: #fff;
+                box-shadow: 0 2px 0 color-mix(in srgb, var(--primary) 55%, #000);
+            }
+            .main-start-btn:active { transform: translateY(1px); box-shadow: none; }
+            .main-settings-btn {
+                border: 1px solid var(--border-color);
+                background: var(--card-bg);
+                color: var(--text-main);
+                box-shadow: 0 1px 6px rgba(15, 23, 42, 0.12);
+            }
+            body.side-panel-open .main-header-actions,
+            body.start-sheet-open .main-header-actions {
                 visibility: hidden;
                 pointer-events: none;
             }
+            .start-sheet #timeDisplay {
+                padding: 10px !important;
+                margin: 6px 0 8px 0 !important;
+                font-size: 1.65rem !important;
+            }
+            .start-sheet .btn-main {
+                padding: 10px 12px;
+                font-size: 0.92rem;
+            }
+            .start-sheet .btn-adjust {
+                min-height: 36px;
+                padding: 6px 4px;
+                font-size: 0.72rem;
+            }
+            .start-sheet input:not([type="color"]),
+            .start-sheet select {
+                min-height: 40px;
+                font-size: 16px;
+            }
+            #sec-start { display: none; }
             .panel-close-bar {
                 display: none;
                 flex-shrink: 0;
