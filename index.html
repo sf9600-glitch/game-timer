@@ -2472,6 +2472,14 @@
         }
         if (localStorage.getItem(THEME_KEY)) setTheme(localStorage.getItem(THEME_KEY), { skipCloud: true, skipRender: true });
 
+        function toggleRecoveryPanel() {
+            uiState.recoveryExpanded = !uiState.recoveryExpanded;
+            const panel = document.getElementById('recoveryPanel');
+            const body = document.getElementById('recoveryPanelBody');
+            if (panel) panel.classList.toggle('recovery-panel--open', uiState.recoveryExpanded);
+            if (body) body.classList.toggle('active', uiState.recoveryExpanded);
+        }
+
         function syncCollapsibleClasses() {
             SECTION_IDS.forEach(id => {
                 const el = document.getElementById(id);
