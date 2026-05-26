@@ -927,7 +927,10 @@
             }
         }
 
-        /* 文字列表：左側角色＋任務，右側時間（易讀） */
+        /* 文字列表：左側角色＋任務，右側固定欄寬時間（各列左緣對齊） */
+        html.timer-display-list {
+            --timer-list-side-col: 8.5rem;
+        }
         html.timer-display-list .timers-by-char.active-by-char,
         html.timer-display-list .timers-by-char.finished-by-char {
             gap: 10px;
@@ -941,7 +944,7 @@
         html.timer-display-list .timer-list-row {
             position: relative;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) auto 28px;
+            grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
             grid-template-areas: "info side del";
             align-items: center;
             gap: 8px 10px;
