@@ -2285,12 +2285,12 @@
             }
         }
 
-        /** 已完成卡片：縮短數字與單位字間距，不縮小字級 */
+        /** 已完成卡片：縮短數字與中文單位間距，不縮小字級 */
         function tightenFinishedCardText(text) {
             if (!text) return text;
             return text
-                .replace(/(\d)\s+/g, '$1')
-                .replace(/\s+(\d)/g, '$1');
+                .replace(/(\d)\s+([\u4e00-\u9fff])/g, '$1$2')
+                .replace(/([\u4e00-\u9fff])\s+(\d)/g, '$1$2');
         }
 
         function fitAdaptiveLetterSpacing(el, maxWidthPx, startEm, minEm) {
