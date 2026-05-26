@@ -1001,18 +1001,31 @@ html.timer-display-list .timer-list-info {
 }
 html.timer-display-list .timer-list-charline {
     margin-bottom: 4px;
+    max-width: 100%;
+    min-width: 0;
+    overflow: visible;
 }
 html.timer-display-list .timer-list-charline .char-title-badge {
     font-size: 0.7rem;
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 html.timer-display-list .timer-list-task {
     display: block;
     font-size: 0.84rem;
     font-weight: 600;
     color: var(--text-main);
-    line-height: 1.4;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+    line-height: 1.35;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: normal;
+    overflow-wrap: normal;
 }
 html.timer-display-list .timer-list-side {
     grid-column: 2;

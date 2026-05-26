@@ -356,6 +356,20 @@ function fitAllFinishedTimerCardLabels() {
     document.querySelectorAll('.timer-card.is-finished').forEach(fitFinishedTimerCardLabels);
 }
 
+/** 文字列表：角色名、任務名縮字以維持單行 */
+function fitListTimerRowLabels() {
+    if (!document.documentElement.classList.contains('timer-display-list')) return;
+    document.querySelectorAll('.timer-list-row').forEach(row => {
+        const info = row.querySelector('.timer-list-info');
+        if (!info) return;
+        const maxW = Math.max(48, info.clientWidth - 2);
+        const charBadge = row.querySelector('.timer-list-charline .char-title-badge');
+        if (charBadge) fitAdaptiveLabel(charBadge, maxW, 0.7, 0.52);
+        const taskEl = row.querySelector('.timer-list-task');
+        if (taskEl) fitAdaptiveLabel(taskEl, maxW, 0.84, 0.58);
+    });
+}
+
 /** 文字列表：統一任務欄寬，使時間與 × 在各列垂直對齊 */
 function syncTimerListSideAlign() {
     if (!document.documentElement.classList.contains('timer-display-list')) return;
