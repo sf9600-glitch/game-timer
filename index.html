@@ -2303,6 +2303,22 @@
             document.querySelectorAll('.timer-card--active').forEach(fitActiveTimerCardLabels);
         }
 
+        function fitFinishedTimerCardLabels(card) {
+            if (!card || !card.classList.contains('is-finished')) return;
+            const slot = card.querySelector('.finished-char-center');
+            const badge = card.querySelector('.finished-char-center .char-title-badge');
+            if (!slot || !badge) return;
+            const maxW = Math.max(36, slot.clientWidth - 2);
+            badge.style.overflow = 'visible';
+            badge.style.textOverflow = 'unset';
+            badge.style.fontSize = '0.68rem';
+            fitAdaptiveLabel(badge, maxW, 0.68, 0.52);
+        }
+
+        function fitAllFinishedTimerCardLabels() {
+            document.querySelectorAll('.timer-card.is-finished').forEach(fitFinishedTimerCardLabels);
+        }
+
         function normalizeConfig() {
             if (!config.tasks || !Array.isArray(config.tasks)) {
                 config.tasks = cloneTasks(BUILTIN_DEFAULT_TASKS);
