@@ -821,8 +821,14 @@
             box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
         }
         html.timer-display-clean .timer-card--active .timer-card-bg { display: none; }
-        html.timer-display-clean .timer-card--active .timer-card-inner { padding-bottom: 16px; }
+        html.timer-display-clean .timer-card--active .timer-card-inner {
+            padding-bottom: 16px;
+            background: var(--card-bg);
+        }
         html.timer-display-clean .timer-card--active .timer-card-progress-track { display: block; }
+        html.timer-display-colorful .timer-card--active .timer-card-inner {
+            background: transparent;
+        }
         html.timer-display-clean .timer-card--active .active-slot-id {
             border-color: var(--border-color);
             background: var(--bg);
