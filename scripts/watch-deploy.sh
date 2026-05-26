@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 背景監聽：index.html 一存檔就自動 deploy
+# 背景監聽：index.html / css/app.css / js/app.js 一存檔就自動 deploy
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

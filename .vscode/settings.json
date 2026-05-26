@@ -1,7 +1,7 @@
 {
   "runOnSave.commands": [
     {
-      "match": "index\\.html$",
+      "match": "(index\\.html|css/app\\.css|js/app\\.js)$",
       "command": "bash \"${workspaceFolder}/scripts/deploy.sh\"",
       "runIn": "terminal",
       "runningStatusMessage": "正在部署到 Netlify…",
