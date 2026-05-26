@@ -392,18 +392,25 @@
             z-index: 1;
         }
 
+        :root {
+            --timer-card-min-width: 156px;
+            --timer-card-width: 156px;
+        }
         .timer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(var(--timer-card-min-width), var(--timer-card-width)));
+            gap: 10px;
             align-items: start;
         }
         .timer-section-active .timer-grid {
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(var(--timer-card-min-width), var(--timer-card-width)));
         }
         .timer-card--active {
-            max-width: 380px;
+            width: var(--timer-card-width);
+            min-width: var(--timer-card-min-width);
+            max-width: var(--timer-card-width);
             justify-self: start;
+            box-sizing: border-box;
         }
         .timer-card--active .active-layout {
             position: relative;
