@@ -127,7 +127,7 @@
   "cloudTitle": "☁ 云端同步",
   "cloudResetTitle": "☁ 重置密码",
   "cloudForgotTitle": "☁ 忘记密码",
-  "cloudHintUnconfigured": "请先在 index.html 填入 SUPABASE_URL 与 SUPABASE_ANON_KEY，并按 DEPLOY.md 建立数据库后再部署上线。",
+  "cloudHintUnconfigured": "请先在 js/app.js 填入 SUPABASE_URL 与 SUPABASE_ANON_KEY，并按 DEPLOY.md 建立数据库后再部署上线。",
   "cloudHintLoggedIn": "已登录：新增／删除计时器与设置变更会自动上传云端；其他设备刷新页面即可取得更新（无需即时同步）。",
   "cloudHintLogin": "注册／登录后，你的账号、标签与进行中计时器会保存在云端，并在所有设备间同步。",
   "cloudHintNewPassword": "你已从邮箱链接进入，请设置新密码（至少 6 字）。",
