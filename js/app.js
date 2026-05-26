@@ -374,6 +374,11 @@ function fitListTimerRowLabels() {
 function syncTimerListSideAlign() {
     if (!document.documentElement.classList.contains('timer-display-list')) return;
     document.querySelectorAll('.timer-list').forEach(list => {
+        list.querySelectorAll('.timer-list-row').forEach(row => {
+            row.style.setProperty('--timer-list-info-w', 'max-content');
+            row.style.gridTemplateColumns = 'max-content max-content 26px';
+        });
+        fitListTimerRowLabels();
         let maxInfoW = 0;
         list.querySelectorAll('.timer-list-info').forEach(info => {
             maxInfoW = Math.max(maxInfoW, info.scrollWidth);
@@ -397,9 +402,7 @@ function syncTimerListSideAlign() {
             el.style.textAlign = 'left';
         });
     });
-    requestAnimationFrame(() => {
-        fitListTimerRowLabels();
-    });
+    requestAnimationFrame(() => fitListTimerRowLabels());
 }
 
 function normalizeConfig() {
