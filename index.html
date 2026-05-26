@@ -2314,14 +2314,31 @@
 
         function fitFinishedTimerCardLabels(card) {
             if (!card || !card.classList.contains('is-finished')) return;
+            const innerW = Math.max(48, card.clientWidth - 20);
             const slot = card.querySelector('.finished-char-center');
             const badge = card.querySelector('.finished-char-center .char-title-badge');
-            if (!slot || !badge) return;
-            const maxW = Math.max(36, slot.clientWidth - 2);
-            badge.style.overflow = 'visible';
-            badge.style.textOverflow = 'unset';
-            badge.style.fontSize = '0.68rem';
-            fitAdaptiveLabel(badge, maxW, 0.68, 0.52);
+            if (slot && badge) {
+                const maxW = Math.max(36, slot.clientWidth - 2);
+                badge.style.overflow = 'visible';
+                badge.style.textOverflow = 'unset';
+                badge.style.fontSize = '0.68rem';
+                fitAdaptiveLabel(badge, maxW, 0.68, 0.52);
+            }
+            const endEl = card.querySelector('.finished-end-line');
+            if (endEl) {
+                endEl.style.fontSize = '0.68rem';
+                fitAdaptiveLabel(endEl, innerW, 0.68, 0.52);
+            }
+            const elapsedEl = card.querySelector('.finished-elapsed-line');
+            if (elapsedEl) {
+                elapsedEl.style.fontSize = '0.68rem';
+                fitAdaptiveLabel(elapsedEl, innerW, 0.68, 0.52);
+            }
+            const taskEl = card.querySelector('.finished-row-2 .task-title-display');
+            if (taskEl) {
+                taskEl.style.fontSize = '0.72rem';
+                fitAdaptiveLabel(taskEl, innerW, 0.72, 0.55);
+            }
         }
 
         function fitAllFinishedTimerCardLabels() {
