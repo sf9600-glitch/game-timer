@@ -3785,14 +3785,27 @@
 
         function getStartSectionPanelHtml() {
             const taskColor = (config.tasks[0] && config.tasks[0].color) || config.colors.task;
-            const capsuleBtn = `<div class="config-section-start-head"><button type="button" class="start-capsule-btn btn-open-start-sheet" onclick="openStartSheet()" aria-expanded="false"><span class="start-capsule-btn-label">${t('taskStart')}</span></button></div>`;
+            const capsuleBtn = `<div class="config-section-start-head"><button type="button" class="start-capsule-btn btn-open-start-sheet" onclick="toggleStartSection()" aria-expanded="false"><span class="start-capsule-btn-label">${t('taskStart')}</span></button></div>`;
             if (isMobileLayout()) {
                 return `<div class="config-section sec-start-entry-mobile" id="sec-start-entry" style="--section-color: ${taskColor};">${capsuleBtn}</div>`;
             }
             return `<div class="config-section" id="sec-start" style="--section-color: ${taskColor};">
                     ${capsuleBtn}
-                    <div id="startContentDesktopMount" class="start-content-desktop-mount"></div>
                 </div>`;
+        }
+
+        function toggleStartSection() {
+            if (isMobileLayout()) {
+                closeSidePanel();
+                mountStartContent();
+                setStartSheetOpen(true);
+                return;
+            }
+            const opening = uiState.openSection !== 'startContent';
+            smartToggle('startContent');
+            if (opening && uiState.openSection === 'startContent') {
+                document.getElementById('sec-start')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
         function syncStartSheetChrome() {
