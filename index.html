@@ -3894,7 +3894,6 @@
         function appendGlobalFinishedCharGroups(parentEl, finishedCharGroups) {
             finishedCharGroups.forEach(({ charName, timers: groupTimers }) => {
                 const charSafe = safeDomIdPart(charName);
-                const repEmail = groupTimers[0] ? groupTimers[0].email : '';
                 const groupEl = document.createElement('div');
                 groupEl.className = 'char-timer-group finished-char-group char-timer-group--global-finished';
                 if (isTimerDisplayList()) {
