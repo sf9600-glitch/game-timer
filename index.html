@@ -784,7 +784,15 @@
             color: var(--local-dark-color, var(--text-main)) !important;
             font-weight: bold;
         }
-        .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
+        .timer-card.is-finished .char-title-badge {
+            display: inline-block;
+            font-size: 0.68rem;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
 
         .timer-card-progress-track {
             display: none;
