@@ -2201,8 +2201,9 @@
         }
 
         function getLongestDefaultTaskLabelPx() {
-            normalizeConfig();
-            const tasks = getUserDefaultTasks();
+            const tasks = (config.defaultTasks && config.defaultTasks.length)
+                ? config.defaultTasks
+                : cloneTasks((config.tasks && config.tasks.length) ? config.tasks : BUILTIN_DEFAULT_TASKS);
             const taskFont = 'bold 0.78rem "Microsoft JhengHei", sans-serif';
             const timeFont = 'bold 1.5rem "Microsoft JhengHei", sans-serif';
             let max = measureTimerUILabelPx('88:88:88', timeFont);
