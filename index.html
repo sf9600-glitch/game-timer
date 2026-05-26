@@ -3953,7 +3953,9 @@
         function renderFinishedGlobalPanelHeader() {
             const header = document.getElementById('finishedGlobalHeader');
             const panel = document.getElementById('finishedGlobalPanel');
+            const mount = document.getElementById('finishedGlobalMount');
             if (!header || !panel) return;
+            if (mount) mount.setAttribute('aria-label', t('sectionFinishedGlobal'));
             panel.setAttribute('aria-label', t('sectionFinishedGlobal'));
             header.setAttribute('aria-label', t('sectionFinishedClearTitleAll'));
             header.setAttribute('title', t('sectionFinishedClearTitleAll'));
