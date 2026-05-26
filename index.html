@@ -507,12 +507,22 @@
             grid-area: date;
             width: 100%;
             text-align: center;
+            position: relative;
+            z-index: 2;
+            min-width: 0;
         }
         .timer-card--active .active-slot-date .date-label {
+            display: inline-block;
+            max-width: 100%;
             font-size: 0.875rem;
             text-align: center;
-            margin: 0;
+            margin: 0 auto;
             color: var(--local-dark-color);
+            white-space: nowrap;
+        }
+        .timer-card--active .timer-card-inner {
+            overflow: visible;
+            background: var(--card-bg);
         }
         
         /* 計時器卡片基礎外殼：任務色延伸為整圈邊框（進行中維持原比例，不設固定寬高） */
