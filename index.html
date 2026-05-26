@@ -927,9 +927,9 @@
             }
         }
 
-        /* 文字列表：flex 版面（Safari 相容），右欄固定寬、內容靠左 */
+        /* 文字列表：grid 三欄（Safari 用 px 固定時間欄，內容靠左） */
         html.timer-display-list {
-            --timer-list-side-col: 8.5rem;
+            --timer-list-side-col: 136px;
         }
         html.timer-display-list .timers-by-char.active-by-char,
         html.timer-display-list .timers-by-char.finished-by-char {
@@ -943,10 +943,11 @@
         }
         html.timer-display-list .timer-list-row {
             position: relative;
-            display: flex;
-            flex-direction: row;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
+            grid-template-areas: "info side del";
+            column-gap: 10px;
             align-items: center;
-            gap: 10px;
             padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--local-raw-color, var(--border-color));
