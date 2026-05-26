@@ -2241,9 +2241,15 @@
 
         function fitActiveTimerCardLabels(card) {
             if (!card || !card.classList.contains('timer-card--active')) return;
+            const innerW = Math.max(48, card.clientWidth - 20);
             const charSlot = card.querySelector('.active-slot-char');
-            const maxW = Math.max(48, (charSlot ? charSlot.clientWidth : card.clientWidth) - 8);
-            fitAdaptiveLabel(card.querySelector('.char-title-badge'), maxW);
+            const charMax = Math.max(48, (charSlot ? charSlot.clientWidth : innerW) - 4);
+            fitAdaptiveLabel(card.querySelector('.char-title-badge'), charMax);
+            const taskEl = card.querySelector('.active-slot-task .task-title-display');
+            if (taskEl) {
+                taskEl.style.fontSize = '0.78rem';
+                fitAdaptiveLabel(taskEl, innerW);
+            }
         }
 
         function fitAllActiveTimerCardLabels() {
