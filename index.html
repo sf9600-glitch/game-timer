@@ -130,9 +130,17 @@
         /* 開新計時器：整列標題可點擊折疊，中央膠囊樣式 */
         .config-title--start {
             justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
             padding: 4px 0 8px;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+        }
+        #sec-start.config-section--collapsible {
+            cursor: pointer;
+        }
+        #sec-start.config-section--collapsible #startContent {
+            cursor: default;
         }
         .config-title--start-mobile {
             cursor: pointer;
