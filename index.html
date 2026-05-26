@@ -127,14 +127,17 @@
         ::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover); }
 
         .config-section { margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--section-color); background-color: color-mix(in srgb, var(--section-color) 4%, var(--panel-bg)); transition: border-color 0.3s ease, border-top-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; }
-        /* 開新計時器：原標籤外框內置中膠囊 3D 按鈕 */
-        #sec-start .config-section-start-head,
-        #sec-start-entry .config-section-start-head {
-            display: flex;
+        /* 開新計時器：整列標題可點擊折疊，中央膠囊樣式 */
+        .config-title--start {
             justify-content: center;
-            align-items: center;
-            padding: 2px 0 6px;
+            padding: 4px 0 8px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
+        .config-title--start-mobile {
+            cursor: pointer;
+        }
+        .config-title-start-pill,
         .start-capsule-btn {
             width: auto;
             max-width: calc(100% - 8px);
