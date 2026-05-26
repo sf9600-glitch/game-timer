@@ -3925,8 +3925,10 @@
                 <div class="timer-card-inner">
                     <div class="timer-card-progress-track" aria-hidden="true"><div class="timer-card-progress-fill"></div></div>
                     <div class="active-layout">
-                        <span class="card-id-badge active-slot-id">#${index + 1}</span>
-                        <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
+                        <div class="active-header">
+                            <span class="card-id-badge active-slot-id">#${index + 1}</span>
+                            <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
+                        </div>
                         <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div></div>
                         <div class="active-slot-time"><div class="time-text">00:00:00</div></div>
                         <div class="active-slot-date"><div class="date-label">--/--</div></div>
