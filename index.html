@@ -2251,10 +2251,10 @@
             document.documentElement.style.setProperty('--timer-card-width', `${clamped}px`);
         }
 
-        function fitAdaptiveLabel(el, maxWidthPx) {
+        function fitAdaptiveLabel(el, maxWidthPx, startRem, minRem) {
             if (!el || !maxWidthPx) return;
-            const minRem = 0.5;
-            let rem = 0.75;
+            const minSizeRem = minRem != null ? minRem : 0.5;
+            let rem = startRem != null ? startRem : 0.75;
             el.style.overflow = 'visible';
             el.style.textOverflow = 'unset';
             el.style.maxWidth = 'none';
