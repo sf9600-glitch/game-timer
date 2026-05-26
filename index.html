@@ -4472,9 +4472,9 @@
                     return;
                 }
 
-                const timeEl = card.querySelector('.time-text');
+                const timeEl = card.querySelector('.timer-list-time') || card.querySelector('.time-text');
                 if (!timeEl) return;
-                const dateEl = card.querySelector('.date-label');
+                const dateEl = card.querySelector('.timer-list-hint') || card.querySelector('.date-label');
 
                 card.classList.toggle('is-warning-blinking', totalRemSec <= parseInt(t.fThres));
                 const h = Math.floor(totalRemSec / 3600), m = Math.floor((totalRemSec % 3600) / 60), s = Math.floor(totalRemSec % 60);
