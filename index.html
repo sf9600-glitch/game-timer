@@ -4264,6 +4264,7 @@
                     <div class="finished-end-line">${getFinishedEndLine(finishTime)}</div>
                     <div class="finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</div>
                 </div>`;
+            requestAnimationFrame(() => fitFinishedTimerCardLabels(card));
             return card;
         }
 
