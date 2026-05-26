@@ -358,10 +358,21 @@ function fitAdaptiveLetterSpacing(el, maxWidthPx, startEm, minEm) {
 
 function fitActiveTimerCardLabels(card) {
     if (!card || !card.classList.contains('timer-card--active')) return;
+    applyActiveTimerCardWidth(card);
     const innerW = Math.max(48, card.clientWidth - 24);
     const charSlot = card.querySelector('.active-slot-char');
     const charMax = Math.max(48, (charSlot ? charSlot.clientWidth : innerW) - 4);
-    fitAdaptiveLabel(card.querySelector('.char-title-badge'), charMax);
+    const charBadge = card.querySelector('.char-title-badge');
+    if (charBadge) {
+        charBadge.style.fontSize = '';
+        charBadge.style.maxWidth = 'none';
+        charBadge.style.overflow = 'visible';
+        charBadge.style.textOverflow = 'unset';
+        charBadge.style.whiteSpace = 'nowrap';
+        if (charBadge.scrollWidth > charMax) {
+            fitAdaptiveLabel(charBadge, charMax, 0.75, 0.52);
+        }
+    }
     const taskEl = card.querySelector('.active-slot-task .task-title-display');
     if (taskEl) {
         taskEl.style.fontSize = '0.78rem';

@@ -426,14 +426,23 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     align-items: start;
 }
 .timer-section-active .timer-grid {
-    grid-template-columns: repeat(auto-fill, minmax(var(--timer-card-min-width), var(--timer-card-width)));
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+    align-content: flex-start;
 }
 .timer-card--active {
     width: var(--timer-card-width);
     min-width: var(--timer-card-min-width);
     max-width: var(--timer-card-width);
-    justify-self: start;
+    flex: 0 0 auto;
     box-sizing: border-box;
+}
+.timer-card--active.timer-card--width-expanded {
+    width: var(--timer-card-actual-width);
+    min-width: var(--timer-card-actual-width);
+    max-width: var(--timer-card-actual-width);
 }
 .timer-card--active .timer-card-inner {
     padding: 6px 14px;
@@ -1871,7 +1880,7 @@ html.timer-display-list .timer-list-row .timer-list-hint {
     }
     .timer-grid { grid-template-columns: 1fr; gap: 10px; }
     .timer-section-active .timer-grid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 8px;
     }
     .timer-card--active {
@@ -1879,6 +1888,11 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         min-width: var(--timer-card-min-width);
         max-width: var(--timer-card-width);
         border-width: 2px;
+    }
+    .timer-card--active.timer-card--width-expanded {
+        width: min(var(--timer-card-actual-width), 100%);
+        min-width: 0;
+        max-width: 100%;
     }
     .timer-card--active .timer-card-inner {
         padding: 5px 10px;
