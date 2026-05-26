@@ -3733,8 +3733,22 @@
             if (!sc) return;
             if (sc.closest('#startSheetBody')) {
                 sc.classList.add('active');
+            } else {
+                sc.classList.toggle('active', uiState.openSection === 'startContent');
             }
             syncStartSectionHeaderState();
+        }
+
+        function handleSecStartSectionClick(event) {
+            if (event.target.closest('#startContent')) return;
+            smartToggle('startContent');
+        }
+
+        function handleSecStartSectionKey(event) {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            if (event.target.closest('#startContent')) return;
+            event.preventDefault();
+            smartToggle('startContent');
         }
 
         function syncStartSectionHeaderState() {
