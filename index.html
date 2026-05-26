@@ -3824,15 +3824,17 @@
             });
         }
 
-        function getStartTitlePillHtml() {
+        function getStartTitlePillHtml(interactive) {
             const expanded = uiState.openSection === 'startContent';
-            return `<div class="config-title config-title--start${expanded ? ' is-expanded' : ''}" role="button" tabindex="0" aria-expanded="${expanded}" onkeydown="handleSecStartTitleKey(event)"><span class="config-title-start-pill${expanded ? ' is-pressed' : ''}"><span class="start-capsule-btn-label">${t('taskStart')}</span></span></div>`;
+            const a11y = interactive
+                ? ` role="button" tabindex="0" aria-expanded="${expanded}" onkeydown="handleSecStartTitleKey(event)"`
+                : ' aria-hidden="true"';
+            return `<div class="config-title config-title--start${expanded ? ' is-expanded' : ''}"${a11y}><span class="config-title-start-pill${expanded ? ' is-pressed' : ''}"><span class="start-capsule-btn-label">${t('taskStart')}</span></span></div>`;
         }
 
         function getStartSectionPanelHtml() {
             const taskColor = (config.tasks[0] && config.tasks[0].color) || config.colors.task;
-            const startExpanded = uiState.openSection === 'startContent';
-            const startTitle = getStartTitlePillHtml();
+            const startTitle = getStartTitlePillHtml(!isMobileLayout());
             if (isMobileLayout()) {
                 return `<div class="config-section sec-start-entry-mobile" id="sec-start-entry" style="--section-color: ${taskColor};" role="button" tabindex="0" aria-label="${t('taskStart')}" onclick="openStartSheet()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStartSheet();}">
                     <div class="config-title config-title--start config-title--start-mobile">${startTitle}</div>
