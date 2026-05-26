@@ -732,14 +732,15 @@
             width: 100%;
             min-height: 22px;
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            grid-template-columns: auto minmax(0, 1fr);
             align-items: center;
-            column-gap: 4px;
+            column-gap: 6px;
         }
         .timer-card.is-finished .finished-header .card-id-badge {
             position: static;
             grid-column: 1;
             justify-self: start;
+            flex-shrink: 0;
             z-index: 2;
         }
         .timer-card.is-finished .finished-char-center {
@@ -748,8 +749,9 @@
             justify-content: center;
             align-items: center;
             min-width: 0;
+            width: 100%;
             max-width: 100%;
-            justify-self: center;
+            overflow: hidden;
         }
         .timer-card.is-finished .finished-row-2 {
             width: 100%;
