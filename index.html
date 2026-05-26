@@ -3470,7 +3470,12 @@
 
             syncCollapsibleClasses();
             syncStartContentExpandedState();
-            if (uiState.openSection === 'startContent') mountStartContent();
+            if (uiState.openSection === 'startContent') {
+                mountStartContent();
+                if (id === 'startContent') {
+                    document.getElementById('sec-start')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
 
             if (leavingTask || hadOpenTaskSubs) {
                 document.querySelectorAll('.sub-edit-panel.open').forEach(el => el.classList.remove('open'));
