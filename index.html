@@ -128,13 +128,22 @@
 
         .config-section { margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--section-color); background-color: color-mix(in srgb, var(--section-color) 4%, var(--panel-bg)); transition: border-color 0.3s ease, border-top-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; }
         /* 開新計時器：整列標題可點擊折疊，中央膠囊樣式 */
-        .config-title--start {
+        .config-title.config-title--start {
             justify-content: center;
             width: 100%;
             box-sizing: border-box;
             padding: 4px 0 8px;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+        }
+        #sec-start-entry .config-title.config-title--start,
+        #sec-start-entry.config-section {
+            justify-content: center;
+        }
+        #sec-start-entry.config-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         #sec-start.config-section--collapsible {
             cursor: pointer;
