@@ -3428,6 +3428,15 @@
             if (!sc) return;
             if (sc.closest('#startSheetBody')) sc.classList.add('active');
             else sc.classList.toggle('active', uiState.openSection === 'startContent');
+            syncStartCapsuleBtnState();
+        }
+
+        function syncStartCapsuleBtnState() {
+            const expanded = uiState.openSection === 'startContent';
+            document.querySelectorAll('.start-capsule-btn').forEach(btn => {
+                btn.classList.toggle('is-pressed', expanded && !isMobileLayout());
+                btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            });
         }
 
         function mountStartContent() {
