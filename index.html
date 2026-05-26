@@ -769,17 +769,23 @@
             padding: 2px 10px;
         }
         .timer-card.is-finished .finished-end-line {
+            width: 100%;
             font-size: 0.68rem;
             line-height: 1.35;
             text-align: center;
             color: var(--text-sub) !important;
+            white-space: nowrap;
+            overflow: hidden;
         }
         .timer-card.is-finished .finished-elapsed-line {
+            width: 100%;
             font-size: 0.68rem;
             line-height: 1.35;
             text-align: center;
             color: var(--local-dark-color, var(--text-main)) !important;
             font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
         }
         .timer-card.is-finished .char-title-badge {
             display: inline-block;
