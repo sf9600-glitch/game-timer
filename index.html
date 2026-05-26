@@ -2404,9 +2404,20 @@
             document.querySelectorAll('.timer-card.is-finished').forEach(fitFinishedTimerCardLabels);
         }
 
-        /** 文字列表：清除舊版固定寬度 inline 樣式，時間緊貼任務區 */
+        /** 文字列表：統一任務欄寬，使時間與 × 在各列垂直對齊 */
         function syncTimerListSideAlign() {
             if (!document.documentElement.classList.contains('timer-display-list')) return;
+            document.querySelectorAll('.timer-list').forEach(list => {
+                let maxInfoW = 0;
+                list.querySelectorAll('.timer-list-info').forEach(info => {
+                    maxInfoW = Math.max(maxInfoW, info.scrollWidth);
+                });
+                const infoCol = maxInfoW > 0 ? `${Math.ceil(maxInfoW)}px` : 'max-content';
+                list.querySelectorAll('.timer-list-row').forEach(row => {
+                    row.style.setProperty('--timer-list-info-w', infoCol);
+                    row.style.gridTemplateColumns = `${infoCol} max-content 26px`;
+                });
+            });
             document.querySelectorAll('.timer-list-side').forEach(side => {
                 side.style.width = '';
                 side.style.minWidth = '';
