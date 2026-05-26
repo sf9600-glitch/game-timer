@@ -3345,9 +3345,9 @@
             const timeEl = card.querySelector('.time-text');
             const dateEl = card.querySelector('.date-label');
             if (!timeEl || !dateEl) return;
-            if (isFinished || card.classList.contains('is-finished') || card.classList.contains('is-warning-blinking') || card.classList.contains('timer-card--active')) {
+            if (isFinished || card.classList.contains('is-finished') || card.classList.contains('is-warning-blinking') || card.classList.contains('timer-card--active') || card.classList.contains('timer-list-row')) {
                 timeEl.style.color = '';
-                dateEl.style.color = '';
+                if (dateEl) dateEl.style.color = '';
                 return;
             }
             const spectrum = getLiteColorSpectrum(taskHex);
