@@ -1016,6 +1016,13 @@
         }
         html.timer-display-list .timer-list-hint,
         html.timer-display-list .timer-list-status {
+            display: block;
+            box-sizing: border-box;
+            width: auto;
+            max-width: var(--timer-list-side-col);
+            margin: 2px 0 0;
+            padding: 0;
+            text-align: left !important;
             font-size: 0.65rem;
             color: var(--text-sub);
             line-height: 1.2;
@@ -1024,9 +1031,10 @@
             text-overflow: ellipsis;
         }
         html.timer-display-list .timer-list-del {
-            flex: 0 0 26px;
+            grid-area: del;
+            justify-self: end;
             align-self: center;
-            margin-left: 0;
+            margin: 0;
             width: 26px;
             height: 26px;
             padding: 0;
