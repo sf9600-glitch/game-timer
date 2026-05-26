@@ -2350,6 +2350,7 @@
         if (config.undoTime === undefined) config.undoTime = 10;
         if (!localStorage.getItem(STORAGE_KEY)) config = JSON.parse(JSON.stringify(defaultConfig));
         normalizeConfig();
+        applyTimerCardMinWidth();
 
         let undoStack = [];
         let undoTimerInterval = null; 
