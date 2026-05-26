@@ -2346,15 +2346,9 @@
                 fitAdaptiveLabel(badge, maxW, 0.68, 0.52);
             }
             const endEl = card.querySelector('.finished-end-line');
-            if (endEl) {
-                endEl.style.fontSize = '0.68rem';
-                fitAdaptiveLabel(endEl, innerW, 0.68, 0.52);
-            }
+            if (endEl) fitAdaptiveLetterSpacing(endEl, innerW);
             const elapsedEl = card.querySelector('.finished-elapsed-line');
-            if (elapsedEl) {
-                elapsedEl.style.fontSize = '0.68rem';
-                fitAdaptiveLabel(elapsedEl, innerW, 0.68, 0.52);
-            }
+            if (elapsedEl) fitAdaptiveLetterSpacing(elapsedEl, innerW);
             const taskEl = card.querySelector('.finished-row-2 .task-title-display');
             if (taskEl) {
                 taskEl.style.fontSize = '0.72rem';
