@@ -456,6 +456,7 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     width: 100%;
     min-height: 20px;
     column-gap: 6px;
+    overflow: visible;
 }
 .timer-card--active .active-slot-id {
     position: static;
