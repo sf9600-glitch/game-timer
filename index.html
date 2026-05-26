@@ -489,13 +489,19 @@
             grid-area: time;
             width: 100%;
             text-align: center;
+            position: relative;
+            z-index: 2;
+            min-width: 0;
         }
         .timer-card--active .active-slot-time .time-text {
+            display: inline-block;
             text-align: center;
-            margin: 0;
-            width: 100%;
+            margin: 0 auto;
+            max-width: 100%;
             font-size: 1.5rem;
             color: var(--local-dark-color);
+            white-space: nowrap;
+            letter-spacing: 0.02em;
         }
         .timer-card--active .active-slot-date {
             grid-area: date;
