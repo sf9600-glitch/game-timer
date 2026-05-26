@@ -2190,6 +2190,66 @@
             return JSON.parse(JSON.stringify(tasks));
         }
 
+        let _timerLabelMeasureCanvas;
+
+        function measureTimerUILabelPx(text, fontCss) {
+            if (!text) return 0;
+            _timerLabelMeasureCanvas = _timerLabelMeasureCanvas || document.createElement('canvas');
+            const ctx = _timerLabelMeasureCanvas.getContext('2d');
+            ctx.font = fontCss;
+            return ctx.measureText(text).width;
+        }
+
+        function getLongestDefaultTaskLabelPx() {
+            normalizeConfig();
+            const tasks = getUserDefaultTasks();
+            const taskFont = 'bold 0.78rem "Microsoft JhengHei", sans-serif';
+            const timeFont = 'bold 1.5rem "Microsoft JhengHei", sans-serif';
+            let max = measureTimerUILabelPx('88:88:88', timeFont);
+            tasks.forEach(task => {
+                if (!task || !task.name) return;
+                max = Math.max(max, measureTimerUILabelPx(task.name, taskFont));
+                (task.subs || []).forEach(sub => {
+                    max = Math.max(max, measureTimerUILabelPx(`${task.name} (${sub})`, taskFont));
+                });
+            });
+            return max;
+        }
+
+        function applyTimerCardMinWidth() {
+            const labelPx = getLongestDefaultTaskLabelPx();
+            const cardW = Math.ceil(labelPx + 34);
+            const clamped = Math.max(128, Math.min(188, cardW));
+            document.documentElement.style.setProperty('--timer-card-min-width', `${clamped}px`);
+            document.documentElement.style.setProperty('--timer-card-width', `${clamped}px`);
+        }
+
+        function fitAdaptiveLabel(el, maxWidthPx) {
+            if (!el || !maxWidthPx) return;
+            const minRem = 0.5;
+            let rem = 0.75;
+            el.style.overflow = 'visible';
+            el.style.textOverflow = 'unset';
+            el.style.maxWidth = 'none';
+            el.style.whiteSpace = 'nowrap';
+            el.style.fontSize = `${rem}rem`;
+            while (el.scrollWidth > maxWidthPx && rem > minRem) {
+                rem -= 0.035;
+                el.style.fontSize = `${rem}rem`;
+            }
+        }
+
+        function fitActiveTimerCardLabels(card) {
+            if (!card || !card.classList.contains('timer-card--active')) return;
+            const charSlot = card.querySelector('.active-slot-char');
+            const maxW = Math.max(48, (charSlot ? charSlot.clientWidth : card.clientWidth) - 8);
+            fitAdaptiveLabel(card.querySelector('.char-title-badge'), maxW);
+        }
+
+        function fitAllActiveTimerCardLabels() {
+            document.querySelectorAll('.timer-card--active').forEach(fitActiveTimerCardLabels);
+        }
+
         function normalizeConfig() {
             if (!config.tasks || !Array.isArray(config.tasks)) {
                 config.tasks = cloneTasks(BUILTIN_DEFAULT_TASKS);
