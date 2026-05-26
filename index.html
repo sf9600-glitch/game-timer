@@ -4719,6 +4719,7 @@
 
         function saveConfig() {
             normalizeConfig();
+            applyTimerCardMinWidth();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
             touchLocalUpdated();
             scheduleCloudSync();
