@@ -477,8 +477,11 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     min-width: 0;
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
     text-align: center;
+}
+.timer-card--active .active-header {
+    overflow: visible;
 }
 .timer-card--active .char-title-badge {
     display: inline-block;
