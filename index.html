@@ -4086,10 +4086,15 @@
                         <div class="timers-by-char active-by-char" id="active-by-char-${safeId}"></div>
                     </div>`;
                 }
-                container.innerHTML = html || `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
-
-                const activeByChar = container.querySelector(`#active-by-char-${safeId}`);
-                if (activeByChar) appendActiveCharGroups(activeByChar, activeCharGroups, acc, safeId);
+                if (html) {
+                    container.innerHTML = html;
+                    const activeByChar = container.querySelector(`#active-by-char-${safeId}`);
+                    if (activeByChar) appendActiveCharGroups(activeByChar, activeCharGroups, acc, safeId);
+                } else if (!timers.length) {
+                    container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
+                } else {
+                    container.innerHTML = '';
+                }
             });
             dispatchFinishedGlobalPanel(allSavedData, now);
             reorderAccountGroupsInMain(allSavedData, now);
