@@ -1693,16 +1693,14 @@
                 font-size: 16px;
             }
             .main-column { width: 100%; min-width: 0; }
-            .main-body {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .finished-global-panel {
-                position: static;
-                max-height: none;
-                order: -1;
-            }
             #mainDisplay { width: 100%; min-width: 0; }
+            .finished-global-by-char .char-timer-group--global-finished .finished-grid,
+            .finished-global-by-char .char-timer-group--global-finished .timer-list {
+                flex-direction: column;
+            }
+            .finished-global-by-char .char-timer-group--global-finished .timer-list-row {
+                flex: 1 1 auto;
+            }
             .timer-grid { grid-template-columns: 1fr; gap: 10px; }
             .timer-section-active .timer-grid {
                 grid-template-columns: 1fr;
