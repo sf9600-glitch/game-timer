@@ -993,15 +993,23 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
+            justify-self: start;
             gap: 2px;
-            width: var(--timer-list-side-col);
-            min-width: var(--timer-list-side-col);
-            max-width: var(--timer-list-side-col);
-            flex-shrink: 0;
+            width: 100%;
+            min-width: 0;
             text-align: left;
         }
-        html.timer-display-list .timer-list-time {
+        html.timer-display-list .timer-list-side .timer-list-time,
+        html.timer-display-list .timer-list-side .timer-list-hint,
+        html.timer-display-list .timer-list-side .timer-list-status,
+        html.timer-display-list .timer-list-side .date-label {
+            display: block;
             width: 100%;
+            margin: 0;
+            text-align: left;
+            align-self: flex-start;
+        }
+        html.timer-display-list .timer-list-time {
             font-variant-numeric: tabular-nums;
             font-weight: 700;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -1009,16 +1017,13 @@
             line-height: 1.1;
             color: var(--text-main);
             white-space: nowrap;
-            text-align: left;
         }
         html.timer-display-list .timer-list-hint,
         html.timer-display-list .timer-list-status {
-            width: 100%;
             font-size: 0.65rem;
             color: var(--text-sub);
             line-height: 1.2;
             white-space: nowrap;
-            text-align: left;
             overflow: hidden;
             text-overflow: ellipsis;
         }
