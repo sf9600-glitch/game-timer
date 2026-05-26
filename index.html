@@ -176,8 +176,11 @@
         .start-capsule-btn:hover {
             filter: brightness(1.04);
         }
+        .config-title-start-pill:active,
         .start-capsule-btn:active,
-        .start-capsule-btn.is-pressed {
+        .config-title-start-pill.is-pressed,
+        .start-capsule-btn.is-pressed,
+        .config-title--start.is-expanded .config-title-start-pill {
             transform: translateY(1px);
             box-shadow:
                 inset 0 2px 4px color-mix(in srgb, black 22%, transparent),
@@ -188,6 +191,7 @@
             text-align: center;
             line-height: 1.25;
             white-space: nowrap;
+            pointer-events: none;
         }
         #sec-start > #startContent.collapsible-content {
             width: 100%;
