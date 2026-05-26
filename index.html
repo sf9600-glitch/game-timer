@@ -3717,17 +3717,29 @@
         function syncStartContentExpandedState() {
             const sc = document.getElementById('startContent');
             if (!sc) return;
-            if (sc.closest('#startSheetBody')) sc.classList.add('active');
-            else sc.classList.toggle('active', uiState.openSection === 'startContent');
-            syncStartCapsuleBtnState();
+            if (sc.closest('#startSheetBody')) {
+                sc.classList.add('active');
+            }
+            syncStartSectionHeaderState();
         }
 
-        function syncStartCapsuleBtnState() {
+        function syncStartSectionHeaderState() {
             const expanded = uiState.openSection === 'startContent';
-            document.querySelectorAll('.start-capsule-btn').forEach(btn => {
-                btn.classList.toggle('is-pressed', expanded && !isMobileLayout());
-                btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            document.querySelectorAll('.config-title--start').forEach(title => {
+                if (!title.closest('#sec-start')) return;
+                title.classList.toggle('is-expanded', expanded);
+                title.setAttribute('aria-expanded', expanded ? 'true' : 'false');
             });
+            document.querySelectorAll('.config-title-start-pill, .start-capsule-btn').forEach(pill => {
+                pill.classList.toggle('is-pressed', expanded && !isMobileLayout());
+            });
+        }
+
+        function handleStartSectionTitleKey(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleStartSection();
+            }
         }
 
         function mountStartContent() {
