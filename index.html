@@ -1733,8 +1733,9 @@
                 gap: 8px;
             }
             .timer-card--active {
-                max-width: 100%;
-                width: 100%;
+                width: var(--timer-card-width);
+                min-width: var(--timer-card-min-width);
+                max-width: var(--timer-card-width);
                 border-width: 2px;
             }
             .timer-card--active .timer-card-inner {
