@@ -3825,7 +3825,7 @@
 
         function getStartTitlePillHtml() {
             const expanded = uiState.openSection === 'startContent';
-            return `<div class="config-title config-title--start${expanded ? ' is-expanded' : ''}" aria-hidden="true"><span class="config-title-start-pill${expanded ? ' is-pressed' : ''}"><span class="start-capsule-btn-label">${t('taskStart')}</span></span></div>`;
+            return `<div class="config-title config-title--start${expanded ? ' is-expanded' : ''}" role="button" tabindex="0" aria-expanded="${expanded}" onkeydown="handleSecStartTitleKey(event)"><span class="config-title-start-pill${expanded ? ' is-pressed' : ''}"><span class="start-capsule-btn-label">${t('taskStart')}</span></span></div>`;
         }
 
         function getStartSectionPanelHtml() {
