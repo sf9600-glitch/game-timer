@@ -2404,24 +2404,20 @@
             document.querySelectorAll('.timer-card.is-finished').forEach(fitFinishedTimerCardLabels);
         }
 
-        /** Safari：強制文字列表時間欄靠左（避免 flex / 繼承樣式失效） */
+        /** 文字列表：清除舊版固定寬度 inline 樣式，時間緊貼任務區 */
         function syncTimerListSideAlign() {
             if (!document.documentElement.classList.contains('timer-display-list')) return;
-            const sideW = '136px';
             document.querySelectorAll('.timer-list-side').forEach(side => {
-                side.style.width = sideW;
-                side.style.minWidth = sideW;
-                side.style.maxWidth = sideW;
+                side.style.width = '';
+                side.style.minWidth = '';
+                side.style.maxWidth = '';
                 side.style.textAlign = 'left';
-                side.style.direction = 'ltr';
                 side.querySelectorAll('.timer-list-time, .timer-list-hint, .timer-list-status').forEach(el => {
-                    el.style.display = 'block';
-                    el.style.width = 'auto';
-                    el.style.maxWidth = sideW;
-                    el.style.marginLeft = '0';
-                    el.style.marginRight = 'auto';
+                    el.style.width = '';
+                    el.style.maxWidth = '';
+                    el.style.marginLeft = '';
+                    el.style.marginRight = '';
                     el.style.textAlign = 'left';
-                    el.style.direction = 'ltr';
                 });
             });
         }
