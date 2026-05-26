@@ -4118,13 +4118,15 @@
             if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
             row.innerHTML = `
                 ${getSyncNewBadgeHtml(timer)}
-                <div class="timer-list-info">
-                    ${getTimerListCharLine(timer)}
-                    <div class="timer-list-task">${timer.taskName}</div>
-                </div>
-                <div class="timer-list-side">
-                    <span class="timer-list-time" aria-hidden="true"></span>
-                    <span class="timer-list-status finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
+                <div class="timer-list-main">
+                    <div class="timer-list-info">
+                        ${getTimerListCharLine(timer)}
+                        <div class="timer-list-task">${timer.taskName}</div>
+                    </div>
+                    <div class="timer-list-side">
+                        <span class="timer-list-time" aria-hidden="true"></span>
+                        <span class="timer-list-status finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
+                    </div>
                 </div>
                 <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
             return row;
