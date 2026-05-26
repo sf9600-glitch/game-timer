@@ -4212,7 +4212,7 @@
 
                 const totalRemSec = (finishMs - now) / 1000;
                 const isFinished = totalRemSec <= 0;
-                const inFinishedSection = card.classList.contains('is-finished') || !!card.closest('.finished-grid') || !!card.closest('.timer-list--finished') || !!card.closest('#finishedGlobalByChar');
+                const inFinishedSection = card.classList.contains('is-finished') || !!card.closest('.timer-section-finished') || !!card.closest('.finished-global-mount');
                 const isListRow = card.classList.contains('timer-list-row');
 
                 if (isFinished !== inFinishedSection) {
