@@ -3744,9 +3744,8 @@
             smartToggle('startContent');
         }
 
-        function handleSecStartSectionKey(event) {
+        function handleSecStartTitleKey(event) {
             if (event.key !== 'Enter' && event.key !== ' ') return;
-            if (event.target.closest('#startContent')) return;
             event.preventDefault();
             smartToggle('startContent');
         }
