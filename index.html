@@ -927,7 +927,7 @@
             }
         }
 
-        /* 文字列表：任務區＋時間緊貼，刪除鈕在最右 */
+        /* 文字列表：任務｜時間｜× 皆靠左，時間欄垂直對齊 */
         html.timer-display-list .timers-by-char.active-by-char,
         html.timer-display-list .timers-by-char.finished-by-char {
             gap: 10px;
@@ -940,10 +940,12 @@
         }
         html.timer-display-list .timer-list-row {
             position: relative;
-            display: flex;
-            flex-direction: row;
+            display: grid;
+            grid-template-columns: var(--timer-list-info-w, max-content) max-content 26px;
+            column-gap: 10px;
             align-items: center;
-            gap: 0;
+            justify-content: start;
+            justify-items: start;
             padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--local-raw-color, var(--border-color));
@@ -954,12 +956,7 @@
             text-align: left;
         }
         html.timer-display-list .timer-list-main {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            flex: 0 1 auto;
-            min-width: 0;
-            gap: 10px;
+            display: contents;
         }
         html.timer-display-list .timer-list-row.has-sync-new {
             padding-top: 22px;
