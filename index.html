@@ -989,14 +989,15 @@
             overflow-wrap: anywhere;
         }
         html.timer-display-list .timer-list-side {
-            flex: 0 0 auto;
+            grid-column: 2;
             box-sizing: border-box;
-            width: auto;
-            min-width: 0;
+            width: max-content;
+            min-width: 6.75rem;
             max-width: none;
             margin: 0;
             padding: 0;
             text-align: left !important;
+            justify-self: start;
             direction: ltr;
             unicode-bidi: isolate;
         }
