@@ -442,8 +442,17 @@
             grid-area: char;
             justify-self: center;
             width: 100%;
+            max-width: 100%;
             text-align: center;
             padding-top: 2px;
+        }
+        .timer-card--active .char-title-badge {
+            display: inline-block;
+            max-width: 100%;
+            overflow: visible;
+            text-overflow: unset;
+            white-space: nowrap;
+            vertical-align: middle;
         }
         .timer-card--active .active-slot-task {
             grid-area: task;
