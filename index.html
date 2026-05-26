@@ -3474,6 +3474,7 @@
         }
 
         function refreshStartContentLabels() {
+            document.querySelectorAll('.start-capsule-btn-label').forEach(el => { el.textContent = t('taskStart'); });
             const root = document.getElementById('startContent');
             if (!root) return;
             const startBtn = document.getElementById('btnStartTask');
