@@ -1700,11 +1700,15 @@
             }
             .main-column { width: 100%; min-width: 0; }
             #mainDisplay { width: 100%; min-width: 0; }
-            .finished-global-by-char .char-timer-group--global-finished .finished-grid,
-            .finished-global-by-char .char-timer-group--global-finished .timer-list {
-                flex-direction: column;
+            .finished-global-by-char > .finished-global-row.finished-grid,
+            .finished-global-by-char > .finished-global-row.timer-list {
+                flex-direction: column !important;
             }
-            .finished-global-by-char .char-timer-group--global-finished .timer-list-row {
+            .finished-global-by-char > .finished-global-row .timer-card.is-finished {
+                width: 100%;
+                max-width: 100%;
+            }
+            .finished-global-by-char > .finished-global-row .timer-list-row {
                 flex: 1 1 auto;
             }
             .timer-grid { grid-template-columns: 1fr; gap: 10px; }
