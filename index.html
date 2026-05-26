@@ -4343,7 +4343,10 @@
             });
 
             if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
-            else updateClearFinishedButtonHighlight();
+            else {
+                updateClearFinishedButtonHighlight();
+                requestAnimationFrame(fitAllActiveTimerCardLabels);
+            }
         }
 
         function runGlobalClockTick() { updateTimersDataTicker(); requestAnimationFrame(runGlobalClockTick); }
