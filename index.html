@@ -3978,14 +3978,21 @@
         }
 
         function dispatchFinishedGlobalPanel(allSavedData, now) {
-            const panel = document.getElementById('finishedGlobalPanel');
-            const container = document.getElementById('finishedGlobalByChar');
-            if (!panel || !container) return;
-            renderFinishedGlobalPanelHeader();
+            const mount = document.getElementById('finishedGlobalMount');
+            if (!mount) return;
             const groups = getFinishedTimersByRoleGroups(allSavedData, now);
-            panel.classList.toggle('is-empty', !groups.length);
-            container.innerHTML = '';
-            if (groups.length) appendGlobalFinishedCharGroups(container, groups);
+            mount.classList.toggle('is-empty', !groups.length);
+            mount.innerHTML = '';
+            if (!groups.length) return;
+            const panel = document.createElement('div');
+            panel.id = 'finishedGlobalPanel';
+            panel.className = 'finished-global-panel timer-section timer-section-finished';
+            panel.innerHTML = `
+                <div class="finished-global-header timer-section-title timer-section-title--clear-finished" id="finishedGlobalHeader" role="button" tabindex="0"></div>
+                <div id="finishedGlobalByChar" class="timers-by-char finished-by-char finished-global-by-char"></div>`;
+            mount.appendChild(panel);
+            renderFinishedGlobalPanelHeader();
+            appendGlobalFinishedCharGroups(document.getElementById('finishedGlobalByChar'), groups);
         }
 
         function getCharGroupKey(char) {
