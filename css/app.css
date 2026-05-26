@@ -414,9 +414,6 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     margin-top: 0;
     overflow: visible;
 }
-.account-group {
-    overflow: visible;
-}
 
 :root {
     --timer-card-min-width: 156px;
