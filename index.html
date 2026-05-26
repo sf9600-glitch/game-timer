@@ -4420,7 +4420,10 @@
             if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
             else {
                 updateClearFinishedButtonHighlight();
-                requestAnimationFrame(fitAllActiveTimerCardLabels);
+                requestAnimationFrame(() => {
+                    fitAllActiveTimerCardLabels();
+                    fitAllFinishedTimerCardLabels();
+                });
             }
         }
 
