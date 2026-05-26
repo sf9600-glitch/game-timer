@@ -85,26 +85,32 @@
         }
         .finished-global-header { margin-bottom: 10px; }
         .finished-global-by-char {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+            display: block;
+            width: 100%;
         }
-        .finished-global-by-char .char-timer-group--global-finished .finished-grid {
-            display: flex;
+        .finished-global-by-char > .finished-global-row.finished-grid {
+            display: flex !important;
             flex-direction: row;
             flex-wrap: wrap;
             gap: 10px;
             align-items: flex-start;
+            width: 100%;
+            grid-template-columns: unset;
         }
-        .finished-global-by-char .char-timer-group--global-finished .timer-list {
-            display: flex;
+        .finished-global-by-char > .finished-global-row.timer-list {
+            display: flex !important;
             flex-direction: row;
             flex-wrap: wrap;
             gap: 8px;
             align-items: stretch;
             width: 100%;
         }
-        .finished-global-by-char .char-timer-group--global-finished .timer-list-row {
+        .finished-global-by-char > .finished-global-row .timer-card.is-finished {
+            flex: 0 0 auto;
+            width: 148px;
+            max-width: 148px;
+        }
+        .finished-global-by-char > .finished-global-row .timer-list-row {
             flex: 1 1 260px;
             max-width: 100%;
         }
