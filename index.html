@@ -4284,6 +4284,7 @@
             }
             updateClearFinishedButtonHighlight();
             updateTimersDataTicker(true);
+            requestAnimationFrame(fitAllActiveTimerCardLabels);
         }
 
         function updateTimersDataTicker(skipRelayout = false) {
