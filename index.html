@@ -2260,7 +2260,7 @@
             el.style.maxWidth = 'none';
             el.style.whiteSpace = 'nowrap';
             el.style.fontSize = `${rem}rem`;
-            while (el.scrollWidth > maxWidthPx && rem > minRem) {
+            while (el.scrollWidth > maxWidthPx && rem > minSizeRem) {
                 rem -= 0.035;
                 el.style.fontSize = `${rem}rem`;
             }
@@ -2268,7 +2268,7 @@
 
         function fitActiveTimerCardLabels(card) {
             if (!card || !card.classList.contains('timer-card--active')) return;
-            const innerW = Math.max(48, card.clientWidth - 20);
+            const innerW = Math.max(48, card.clientWidth - 24);
             const charSlot = card.querySelector('.active-slot-char');
             const charMax = Math.max(48, (charSlot ? charSlot.clientWidth : innerW) - 4);
             fitAdaptiveLabel(card.querySelector('.char-title-badge'), charMax);
@@ -2276,6 +2276,16 @@
             if (taskEl) {
                 taskEl.style.fontSize = '0.78rem';
                 fitAdaptiveLabel(taskEl, innerW);
+            }
+            const timeEl = card.querySelector('.active-slot-time .time-text');
+            if (timeEl) {
+                timeEl.style.fontSize = '1.5rem';
+                fitAdaptiveLabel(timeEl, innerW, 1.5, 0.9);
+            }
+            const dateEl = card.querySelector('.active-slot-date .date-label');
+            if (dateEl) {
+                dateEl.style.fontSize = '0.875rem';
+                fitAdaptiveLabel(dateEl, innerW, 0.875, 0.65);
             }
         }
 
