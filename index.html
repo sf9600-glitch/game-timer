@@ -3898,16 +3898,12 @@
                 const groupEl = document.createElement('div');
                 groupEl.className = 'char-timer-group finished-char-group char-timer-group--global-finished';
                 if (isTimerDisplayList()) {
-                    groupEl.innerHTML = `
-                        <div class="char-group-title char-group-title--global">${getCharGroupTitleHtml(repEmail, charName)}</div>
-                        <div class="timer-list timer-list--finished" id="list-finished-global-${charSafe}"></div>`;
+                    groupEl.innerHTML = `<div class="timer-list timer-list--finished" id="list-finished-global-${charSafe}"></div>`;
                     parentEl.appendChild(groupEl);
                     const list = groupEl.querySelector('.timer-list');
                     groupTimers.forEach(timer => list.appendChild(buildFinishedTimerListRow(timer)));
                 } else {
-                    groupEl.innerHTML = `
-                        <div class="char-group-title char-group-title--global">${getCharGroupTitleHtml(repEmail, charName)}</div>
-                        <div class="timer-grid finished-grid" id="grid-finished-global-${charSafe}"></div>`;
+                    groupEl.innerHTML = `<div class="timer-grid finished-grid" id="grid-finished-global-${charSafe}"></div>`;
                     parentEl.appendChild(groupEl);
                     const grid = groupEl.querySelector('.finished-grid');
                     groupTimers.forEach((timer, i) => grid.appendChild(buildFinishedTimerCard(timer, i)));
