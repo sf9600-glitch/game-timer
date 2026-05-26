@@ -1,0 +1,11 @@
+---
+description: After successful multi-turn UI layout work, offer to save a prompt playbook to docs/
+globs: index.html
+alwaysApply: false
+---
+
+# UI 滿意後產生 Playbook
+
+當 `index.html`（或同次對話）的版面／樣式經多輪修改且用戶表示滿意（對、就是這樣、可以了），主動問一句是否要整理成 `docs/*-提示詞範本.md`。
+
+用戶同意或說「整理 playbook / 存提示詞 / 給 Notion」時，讀取並遵循專案 skill：`ui-iteration-playbook`（`.cursor/skills/ui-iteration-playbook/SKILL.md`），寫入 Markdown，勿自動 commit。
