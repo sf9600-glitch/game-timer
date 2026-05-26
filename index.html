@@ -936,18 +936,21 @@
             gap: 10px;
         }
         html.timer-display-list .timer-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
+            column-gap: 10px;
+            row-gap: 6px;
             width: 100%;
+            align-items: center;
         }
         html.timer-display-list .timer-list-row {
             position: relative;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
+            grid-column: 1 / -1;
+            grid-template-columns: subgrid;
             grid-template-areas: "info side del";
             align-items: center;
-            gap: 8px 10px;
+            gap: 8px 0;
             padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--local-raw-color, var(--border-color));
