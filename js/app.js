@@ -397,6 +397,9 @@ function syncTimerListSideAlign() {
             el.style.textAlign = 'left';
         });
     });
+    requestAnimationFrame(() => {
+        fitListTimerRowLabels();
+    });
 }
 
 function normalizeConfig() {

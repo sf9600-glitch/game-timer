@@ -1346,7 +1346,21 @@ html.timer-display-list .timer-list-row .timer-list-hint {
 }
 
 /* 角色標籤 */
-.char-title-badge { font-size: 0.75rem; border-radius: 4px; padding: 2px 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-weight: bold; text-shadow: 0 1px 1px rgba(0,0,0,0.2); }
+.char-title-badge {
+    font-size: 0.75rem;
+    border-radius: 4px;
+    padding: 2px 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-weight: bold;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
 
 /* 任務標籤：膠囊形、同色系深字 */
 .task-title-display {
