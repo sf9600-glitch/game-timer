@@ -2285,6 +2285,27 @@
             }
         }
 
+        /** 已完成卡片：縮短數字與單位字間距，不縮小字級 */
+        function tightenFinishedCardText(text) {
+            if (!text) return text;
+            return text
+                .replace(/(\d)\s+/g, '$1')
+                .replace(/\s+(\d)/g, '$1');
+        }
+
+        function fitAdaptiveLetterSpacing(el, maxWidthPx, startEm, minEm) {
+            if (!el || !maxWidthPx) return;
+            const minSpacingEm = minEm != null ? minEm : -0.08;
+            let em = startEm != null ? startEm : 0;
+            el.style.fontSize = '';
+            el.style.whiteSpace = 'nowrap';
+            el.style.letterSpacing = `${em}em`;
+            while (el.scrollWidth > maxWidthPx && em > minSpacingEm) {
+                em -= 0.008;
+                el.style.letterSpacing = `${em}em`;
+            }
+        }
+
         function fitActiveTimerCardLabels(card) {
             if (!card || !card.classList.contains('timer-card--active')) return;
             const innerW = Math.max(48, card.clientWidth - 24);
