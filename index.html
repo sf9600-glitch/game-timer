@@ -3914,12 +3914,12 @@
         function getFinishedEndLine(finishDate) {
             const target = new Date(finishDate);
             const dateStr = `${target.getMonth() + 1}/${target.getDate()} ${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
-            return tp('finishedEnd', { date: dateStr });
+            return tightenFinishedCardText(tp('finishedEnd', { date: dateStr }));
         }
 
         function getFinishedElapsedLine(finishDate) {
             const elapsedSec = Math.max(0, Math.floor((Date.now() - new Date(finishDate).getTime()) / 1000));
-            return tp('finishedElapsed', { elapsed: formatElapsedSinceFinish(elapsedSec) });
+            return tightenFinishedCardText(tp('finishedElapsed', { elapsed: formatElapsedSinceFinish(elapsedSec) }));
         }
 
         function applyTimerCardColorVars(card, taskHex, spectrum, charColor) {
