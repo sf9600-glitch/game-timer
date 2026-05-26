@@ -3763,13 +3763,6 @@
             });
         }
 
-        function handleStartSectionTitleKey(event) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                toggleStartSection();
-            }
-        }
-
         function mountStartContent() {
             const sc = ensureStartContent();
             const mobile = isMobileLayout();
