@@ -3752,9 +3752,11 @@
 
         function syncStartSectionHeaderState() {
             const expanded = uiState.openSection === 'startContent';
-            const sec = document.getElementById('sec-start');
-            if (sec) sec.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-            document.querySelectorAll('#sec-start .config-title--start, #sec-start-entry .config-title--start').forEach(title => {
+            document.querySelectorAll('#sec-start .config-title--start').forEach(title => {
+                title.classList.toggle('is-expanded', expanded);
+                title.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            });
+            document.querySelectorAll('#sec-start-entry .config-title--start').forEach(title => {
                 title.classList.toggle('is-expanded', expanded);
             });
             document.querySelectorAll('.config-title-start-pill, .start-capsule-btn').forEach(pill => {
