@@ -397,6 +397,9 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     position: relative;
     z-index: 2;
     line-height: normal;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: visible;
 }
 .main-settings-btn { display: none; }
 .account-content { 
