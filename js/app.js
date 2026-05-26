@@ -266,6 +266,60 @@ function applyTimerCardMinWidth() {
     document.documentElement.style.setProperty('--timer-card-width', `${clamped}px`);
 }
 
+const ACTIVE_CARD_WIDTH_MIN = 132;
+const ACTIVE_CARD_WIDTH_MAX = 300;
+const ACTIVE_CARD_INNER_PAD_X = 28;
+const ACTIVE_CARD_ID_COL_PX = 38;
+
+function getTimerCardBaseWidthPx() {
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--timer-card-width').trim();
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : 156;
+}
+
+function measureCharBadgeLabelPx(charName) {
+    if (!charName) return 0;
+    return measureTimerUILabelPx(charName, 'bold 0.75rem "Microsoft JhengHei", sans-serif') + 14;
+}
+
+function measureTaskPillLabelPx(text) {
+    if (!text) return 0;
+    return measureTimerUILabelPx(text, 'bold 0.78rem "Microsoft JhengHei", sans-serif') + 24;
+}
+
+/** 依角色／任務／時間文字估算卡片所需寬度（可超過全站預設，上限 ACTIVE_CARD_WIDTH_MAX） */
+function computeActiveTimerCardWidthPx(card) {
+    const base = getTimerCardBaseWidthPx();
+    let need = base;
+    const badge = card.querySelector('.char-title-badge');
+    const charName = badge?.textContent?.trim() || '';
+    if (charName) {
+        need = Math.max(need, ACTIVE_CARD_INNER_PAD_X + ACTIVE_CARD_ID_COL_PX + measureCharBadgeLabelPx(charName));
+    }
+    const taskEl = card.querySelector('.active-slot-task .task-title-display');
+    if (taskEl?.textContent) {
+        need = Math.max(need, ACTIVE_CARD_INNER_PAD_X + measureTaskPillLabelPx(taskEl.textContent.trim()));
+    }
+    const timeEl = card.querySelector('.active-slot-time .time-text');
+    const timeText = timeEl?.textContent?.trim() || '88:88:88';
+    need = Math.max(need, ACTIVE_CARD_INNER_PAD_X + measureTimerUILabelPx(timeText, 'bold 1.5rem ui-monospace, SFMono-Regular, Menlo, monospace') + 4);
+    return Math.max(ACTIVE_CARD_WIDTH_MIN, Math.min(ACTIVE_CARD_WIDTH_MAX, Math.ceil(need)));
+}
+
+function applyActiveTimerCardWidth(card) {
+    if (!card?.classList.contains('timer-card--active')) return;
+    if (document.documentElement.classList.contains('timer-display-list')) return;
+    const target = computeActiveTimerCardWidthPx(card);
+    const base = getTimerCardBaseWidthPx();
+    if (target > base + 1) {
+        card.style.setProperty('--timer-card-actual-width', `${target}px`);
+        card.classList.add('timer-card--width-expanded');
+    } else {
+        card.style.removeProperty('--timer-card-actual-width');
+        card.classList.remove('timer-card--width-expanded');
+    }
+}
+
 function fitAdaptiveLabel(el, maxWidthPx, startRem, minRem) {
     if (!el || !maxWidthPx) return;
     const minSizeRem = minRem != null ? minRem : 0.5;
