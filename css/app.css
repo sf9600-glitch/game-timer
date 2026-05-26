@@ -353,7 +353,8 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 6px;
-    line-height: 0;
+    line-height: normal;
+    overflow: visible;
 }
 .timer-display-header-tabs {
     display: inline-flex;
