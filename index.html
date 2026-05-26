@@ -3445,7 +3445,6 @@
                 || !!document.querySelector('.sub-edit-panel.open');
 
             uiState.openSection = (uiState.openSection === id) ? null : id;
-            if (!uiState.openSection) uiState.openSection = 'startContent';
 
             if (uiState.openSection !== 'taskContent') {
                 uiState.allTasksExpanded = false;
