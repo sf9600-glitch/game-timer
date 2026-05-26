@@ -14,7 +14,7 @@ echo "👀 監聽中：儲存 index.html / css/app.css / js/app.js 會自動部�
 echo "   按 Ctrl+C 停止"
 echo ""
 
-fswatch -o "$ROOT/index.html" | while read -r _; do
+fswatch -o "$ROOT/index.html" "$ROOT/css/app.css" "$ROOT/js/app.js" | while read -r _; do
   if "$ROOT/scripts/deploy.sh"; then
     echo ""
   fi

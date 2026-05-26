@@ -16,10 +16,10 @@
 1. 到 https://supabase.com 註冊並 **New project**。
 2. 左側 **SQL Editor** → 貼上並執行 `supabase/schema.sql` 的全部內容。
 3. **Project Settings → API** 複製：
-   - **Project URL** → 填進 `index.html` 的 `SUPABASE_URL`
+   - **Project URL** → 填進 `js/app.js` 的 `SUPABASE_URL`
    - **anon public** key → 填進 `SUPABASE_ANON_KEY`
 
-在 `index.html` 約第 553 行：
+在 `js/app.js` 搜尋 `SUPABASE_URL`：
 
 ```javascript
 const SUPABASE_URL = 'https://xxxxx.supabase.co';
@@ -39,7 +39,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 ## 第二步：放到 GitHub Pages
 
 1. 在 GitHub 建立新 repo，例如 `game-timer`。
-2. 把 `index.html`、`supabase/`、`DEPLOY.md` 推上去。
+2. 把 `index.html`、`css/app.css`、`js/app.js`、`locales/`、`supabase/`、`DEPLOY.md` 推上去。
 3. **Settings → Pages** → Source: **Deploy from branch** → `main` / `/ (root)`。
 4. 幾分鐘後網址類似：`https://你的帳號.github.io/game-timer/`
 

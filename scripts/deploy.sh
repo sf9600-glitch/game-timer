@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 將 index.html 提交並推送到 GitHub → Netlify 自動重新部署
+# 將網站檔案提交並推送到 GitHub → GitHub Pages 自動重新部署
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
