@@ -2245,8 +2245,8 @@
 
         function applyTimerCardMinWidth() {
             const labelPx = getLongestDefaultTaskLabelPx();
-            const cardW = Math.ceil(labelPx + 34);
-            const clamped = Math.max(128, Math.min(188, cardW));
+            const cardW = Math.ceil(labelPx + 48);
+            const clamped = Math.max(132, Math.min(210, cardW));
             document.documentElement.style.setProperty('--timer-card-min-width', `${clamped}px`);
             document.documentElement.style.setProperty('--timer-card-width', `${clamped}px`);
         }
