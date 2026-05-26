@@ -5,11 +5,11 @@ set -euo pipefail
 input=$(cat)
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
-if ! echo "$input" | grep -q 'index\.html'; then
+if ! echo "$input" | grep -qE 'index\.html|css/app\.css|js/app\.js'; then
   exit 0
 fi
 
-if [[ ! -f "$ROOT/index.html" ]]; then
+if [[ ! -f "$ROOT/index.html" || ! -f "$ROOT/css/app.css" || ! -f "$ROOT/js/app.js" ]]; then
   exit 0
 fi
 

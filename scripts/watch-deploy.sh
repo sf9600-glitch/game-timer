@@ -10,7 +10,7 @@ if ! command -v fswatch >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "👀 監聽中：儲存 index.html 會自動部署到 Netlify"
+echo "👀 監聽中：儲存 index.html / css/app.css / js/app.js 會自動部署"
 echo "   按 Ctrl+C 停止"
 echo ""
 
