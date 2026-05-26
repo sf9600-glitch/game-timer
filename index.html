@@ -927,10 +927,7 @@
             }
         }
 
-        /* 文字列表：grid 三欄（Safari 用 px 固定時間欄，內容靠左） */
-        html.timer-display-list {
-            --timer-list-side-col: 136px;
-        }
+        /* 文字列表：任務區＋時間緊貼，刪除鈕在最右 */
         html.timer-display-list .timers-by-char.active-by-char,
         html.timer-display-list .timers-by-char.finished-by-char {
             gap: 10px;
@@ -943,11 +940,10 @@
         }
         html.timer-display-list .timer-list-row {
             position: relative;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
-            grid-template-areas: "info side del";
-            column-gap: 10px;
+            display: flex;
+            flex-direction: row;
             align-items: center;
+            gap: 0;
             padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--local-raw-color, var(--border-color));
@@ -956,6 +952,14 @@
             font-size: 0.8rem;
             line-height: 1.35;
             text-align: left;
+        }
+        html.timer-display-list .timer-list-main {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex: 0 1 auto;
+            min-width: 0;
+            gap: 10px;
         }
         html.timer-display-list .timer-list-row.has-sync-new {
             padding-top: 22px;
