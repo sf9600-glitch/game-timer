@@ -927,7 +927,7 @@
             }
         }
 
-        /* 文字列表：左側角色＋任務，右側固定欄寬時間（各列左緣對齊） */
+        /* 文字列表：flex 版面（Safari 相容），右欄固定寬、內容靠左 */
         html.timer-display-list {
             --timer-list-side-col: 8.5rem;
         }
@@ -935,38 +935,18 @@
         html.timer-display-list .timers-by-char.finished-by-char {
             gap: 10px;
         }
-        @supports (grid-template-columns: subgrid) {
-            html.timer-display-list .timer-list {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
-                column-gap: 10px;
-                row-gap: 6px;
-                width: 100%;
-                align-items: center;
-            }
-            html.timer-display-list .timer-list-row {
-                grid-column: 1 / -1;
-                grid-template-columns: subgrid;
-                column-gap: 0;
-            }
-        }
-        @supports not (grid-template-columns: subgrid) {
-            html.timer-display-list .timer-list {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                width: 100%;
-            }
-            html.timer-display-list .timer-list-row {
-                grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
-                gap: 8px 10px;
-            }
+        html.timer-display-list .timer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
         }
         html.timer-display-list .timer-list-row {
             position: relative;
-            display: grid;
-            grid-template-areas: "info side del";
+            display: flex;
+            flex-direction: row;
             align-items: center;
+            gap: 10px;
             padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--local-raw-color, var(--border-color));
@@ -974,6 +954,7 @@
             background: var(--card-bg);
             font-size: 0.8rem;
             line-height: 1.35;
+            text-align: left;
         }
         html.timer-display-list .timer-list-row.has-sync-new {
             padding-top: 22px;
