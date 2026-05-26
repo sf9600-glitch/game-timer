@@ -987,37 +987,30 @@
             overflow-wrap: anywhere;
         }
         html.timer-display-list .timer-list-side {
-            flex: 0 0 var(--timer-list-side-col);
+            grid-area: side;
+            box-sizing: border-box;
             width: var(--timer-list-side-col);
+            min-width: var(--timer-list-side-col);
             max-width: var(--timer-list-side-col);
-            display: flex;
-            flex-direction: column;
-            -webkit-box-align: start;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 2px;
             margin: 0;
             padding: 0;
             text-align: left !important;
             direction: ltr;
-        }
-        html.timer-display-list .timer-list-side > * {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            margin: 0;
-            padding: 0;
-            text-align: left !important;
-            -webkit-align-self: flex-start;
-            align-self: flex-start;
-            direction: ltr;
+            unicode-bidi: isolate;
         }
         html.timer-display-list .timer-list-time {
+            display: block;
+            box-sizing: border-box;
+            width: auto;
+            max-width: var(--timer-list-side-col);
+            margin: 0;
+            padding: 0;
+            text-align: left !important;
             font-variant-numeric: tabular-nums;
             font-weight: 700;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 1.05rem;
-            line-height: 1.1;
+            line-height: 1.2;
             color: var(--text-main);
             white-space: nowrap;
         }
