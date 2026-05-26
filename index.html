@@ -3501,11 +3501,11 @@
 
         function getStartSectionPanelHtml() {
             const taskColor = (config.tasks[0] && config.tasks[0].color) || config.colors.task;
-            const capsuleBtn = `<button type="button" class="start-capsule-btn btn-open-start-sheet" onclick="openStartSheet()" aria-expanded="false"><span class="start-capsule-btn-label">${t('taskStart')}</span></button>`;
+            const capsuleBtn = `<div class="config-section-start-head"><button type="button" class="start-capsule-btn btn-open-start-sheet" onclick="openStartSheet()" aria-expanded="false"><span class="start-capsule-btn-label">${t('taskStart')}</span></button></div>`;
             if (isMobileLayout()) {
-                return `<div class="config-section config-section--start sec-start-entry-mobile" id="sec-start-entry" style="--section-color: ${taskColor};">${capsuleBtn}</div>`;
+                return `<div class="config-section sec-start-entry-mobile" id="sec-start-entry" style="--section-color: ${taskColor};">${capsuleBtn}</div>`;
             }
-            return `<div class="config-section config-section--start" id="sec-start" style="--section-color: ${taskColor};">
+            return `<div class="config-section" id="sec-start" style="--section-color: ${taskColor};">
                     ${capsuleBtn}
                     <div id="startContentDesktopMount" class="start-content-desktop-mount"></div>
                 </div>`;
