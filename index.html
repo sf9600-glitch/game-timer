@@ -947,21 +947,26 @@
             html.timer-display-list .timer-list-row {
                 grid-column: 1 / -1;
                 grid-template-columns: subgrid;
+                column-gap: 0;
             }
         }
-        html.timer-display-list .timer-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            width: 100%;
+        @supports not (grid-template-columns: subgrid) {
+            html.timer-display-list .timer-list {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                width: 100%;
+            }
+            html.timer-display-list .timer-list-row {
+                grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
+                gap: 8px 10px;
+            }
         }
         html.timer-display-list .timer-list-row {
             position: relative;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) var(--timer-list-side-col) 28px;
             grid-template-areas: "info side del";
             align-items: center;
-            gap: 8px 10px;
             padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--local-raw-color, var(--border-color));
