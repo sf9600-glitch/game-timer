@@ -4109,6 +4109,10 @@
 
         function refreshMainDisplay() { 
             const main = document.getElementById('mainDisplay'); main.innerHTML = ''; 
+            const finishedMount = document.createElement('div');
+            finishedMount.id = 'finishedGlobalMount';
+            finishedMount.className = 'finished-global-mount is-empty';
+            main.appendChild(finishedMount);
             const mobile = isMobileLayout();
             const now = Date.now();
             const allSavedData = getActiveTimers();
