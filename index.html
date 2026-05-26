@@ -3836,7 +3836,7 @@
                     <div class="config-title config-title--start config-title--start-mobile">${startTitle}</div>
                 </div>`;
             }
-            return `<div class="config-section config-section--collapsible" id="sec-start" style="--section-color: ${taskColor};" role="button" tabindex="0" aria-expanded="${startExpanded}" aria-label="${t('taskStart')}" onclick="handleSecStartSectionClick(event)" onkeydown="handleSecStartSectionKey(event)">
+            return `<div class="config-section config-section--collapsible" id="sec-start" style="--section-color: ${taskColor};" onclick="handleSecStartSectionClick(event)">
                     ${startTitle}
                 </div>`;
         }
