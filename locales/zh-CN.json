@@ -12,6 +12,8 @@
   "sectionFinishedClearHover": "清除全部已完成",
   "sectionFinishedClearHint": "点击清除",
   "sectionFinishedClearTitle": "点击清除此账号下全部已完成计时器",
+  "sectionFinishedGlobal": "已完成",
+  "sectionFinishedClearTitleAll": "点击清除所有账号的已完成计时器",
   "noTimers": "暂无计时器",
   "accMgmt": "账号管理",
   "accNamePh": "账号名称",

@@ -4075,12 +4075,9 @@
 
                 const timers = allSavedData.filter(t => t.email === acc.email);
                 const activeTimers = timers.filter(t => new Date(t.finishDate).getTime() > now);
-                const finishedTimers = timers.filter(t => new Date(t.finishDate).getTime() <= now);
 
                 const sortActiveByFinish = (a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime();
-                const sortFinishedByFinish = (a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime();
                 const activeCharGroups = activeTimers.length ? getTimersCharGroupsByFinishOrder(activeTimers, sortActiveByFinish) : [];
-                const finishedCharGroups = finishedTimers.length ? getTimersCharGroupsByFinishOrder(finishedTimers, sortFinishedByFinish) : [];
 
                 let html = '';
                 if (activeCharGroups.length) {
@@ -4089,30 +4086,12 @@
                         <div class="timers-by-char active-by-char" id="active-by-char-${safeId}"></div>
                     </div>`;
                 }
-                if (finishedCharGroups.length) {
-                    const accEmailJs = String(acc.email).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-                    html += `<div class="timer-section timer-section-finished">
-                        <div class="timer-section-title timer-section-title--clear-finished" role="button" tabindex="0" aria-label="${t('sectionFinishedClearTitle')}" title="${t('sectionFinishedClearTitle')}" onclick="clearFinishedTasks('${accEmailJs}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();clearFinishedTasks('${accEmailJs}');}">
-                            <span class="finished-clear-chip">
-                                <span class="finished-clear-icon" aria-hidden="true">×</span>
-                                <span class="finished-title-label">
-                                    <span class="finished-title-default">${t('sectionFinished')}</span>
-                                    <span class="finished-title-hover">${t('sectionFinishedClearHover')}</span>
-                                </span>
-                                <span class="finished-clear-affordance">${t('sectionFinishedClearHint')}</span>
-                            </span>
-                        </div>
-                        <div class="timers-by-char finished-by-char" id="finished-by-char-${safeId}"></div>
-                    </div>`;
-                }
                 container.innerHTML = html || `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
 
                 const activeByChar = container.querySelector(`#active-by-char-${safeId}`);
                 if (activeByChar) appendActiveCharGroups(activeByChar, activeCharGroups, acc, safeId);
-
-                const finishedByChar = container.querySelector(`#finished-by-char-${safeId}`);
-                if (finishedByChar) appendFinishedCharGroups(finishedByChar, finishedCharGroups, acc, safeId);
             });
+            dispatchFinishedGlobalPanel(allSavedData, now);
             reorderAccountGroupsInMain(allSavedData, now);
             } finally {
                 isDispatchingTimers = false;
