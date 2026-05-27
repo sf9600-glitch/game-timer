@@ -2185,3 +2185,4 @@ html.timer-display-list .timer-list-row .timer-list-hint {
     box-shadow: none;
 }
 body.onboarding-active { overflow: hidden; }
+body.onboarding-active .undo-toast.show { z-index: 2203; }

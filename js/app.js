@@ -567,14 +567,15 @@ function positionOnboardingUi() {
         return;
     }
     el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    const pad = 8;
+    const pad = step.id === 'undo-tip' ? 10 : 8;
     const r = el.getBoundingClientRect();
     spot.style.display = 'block';
     spot.style.top = `${Math.max(0, r.top - pad)}px`;
     spot.style.left = `${Math.max(0, r.left - pad)}px`;
-    spot.style.width = `${r.width + pad * 2}px`;
-    spot.style.height = `${r.height + pad * 2}px`;
-    requestAnimationFrame(() => positionOnboardingCard(spot.getBoundingClientRect()));
+    spot.style.width = `${Math.max(40, r.width + pad * 2)}px`;
+    spot.style.height = `${Math.max(32, r.height + pad * 2)}px`;
+    const dockCard = step.id !== 'undo-tip' && step.id !== 'welcome';
+    requestAnimationFrame(() => positionOnboardingCard(dockCard ? spot.getBoundingClientRect() : null));
 }
 
 function stopOnboardingPoll() {
