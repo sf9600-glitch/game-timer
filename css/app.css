@@ -307,6 +307,25 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
     width: 100%; box-sizing: border-box;
     font-size: 0.68rem; padding: 6px 8px;
 }
+.recovery-source-note {
+    margin: 6px 0 0;
+    font-size: 0.68rem;
+    font-weight: bold;
+    color: var(--primary);
+    text-align: right;
+}
+.recovery-restore-btn {
+    width: 100%;
+    font-size: 0.68rem;
+    margin-top: 6px;
+}
+.recovery-retention-hint,
+.recovery-empty {
+    margin: 8px 0 0;
+    font-size: 0.62rem;
+    color: var(--text-sub);
+    line-height: 1.45;
+}
 .sub-edit-panel {
     display: grid; grid-template-rows: 0fr; overflow: hidden;
     transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.32s cubic-bezier(0.4, 0, 0.2, 1);
