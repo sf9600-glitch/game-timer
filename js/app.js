@@ -529,15 +529,13 @@ function updateOnboardingChrome() {
     if (skipBtn) skipBtn.textContent = t('onboardSkip');
     if (nextBtn) nextBtn.textContent = t(step.nextKey || 'onboardNext');
     const ready = onboardingWaitSatisfied(step);
-    if (nextBtn) nextBtn.disabled = !!step.waitFor && !ready && step.id !== 'welcome';
+    const blockNext = step.waitFor && ONBOARDING_STRICT_WAITS.has(step.waitFor) && !ready;
+    if (nextBtn) nextBtn.disabled = !!blockNext;
     if (hint) {
         let hintKey = '';
-        if (step.waitFor === 'panel-open' && !ready) hintKey = 'onboardNeedPanelOpen';
-        else if (step.waitFor === 'time-set' && !ready) hintKey = 'onboardNeedTimeHint';
+        if (step.waitFor === 'time-set' && !ready) hintKey = 'onboardNeedTimeHint';
         else if (step.waitFor === 'timer-created' && !ready) hintKey = 'onboardNeedStartHint';
-        else if (step.waitFor === 'start-open' && !ready) hintKey = isMobileLayout() ? 'onboardNeedOpenStartMobile' : 'onboardNeedOpenStartDesktop';
         else if (step.waitFor === 'timer-deleted' && !ready) hintKey = 'onboardNeedDeleteHint';
-        else if (step.waitFor === 'undo-visible' && !ready) hintKey = 'onboardNeedUndoHint';
         if (hintKey) {
             hint.hidden = false;
             hint.textContent = t(hintKey);
