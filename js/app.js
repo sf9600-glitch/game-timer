@@ -2461,6 +2461,10 @@ function createStartContentElement() {
                     <button class="btn-adjust" onclick="resetTime()" style="color:var(--danger);">${t('resetTime')}</button>
                 </div>
                 <div style="margin-top:15px; font-size:0.75rem; background-color:var(--bg); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:2px;">${t('flashWarning')} <input type="number" id="fMin" value="0" style="width:28px; text-align:center;">:<input type="number" id="fSec" value="30" style="width:28px; text-align:center;"></div>
+                <label class="start-notify-toggle">
+                    <input type="checkbox" id="notifyOnFinish" checked>
+                    <span data-start-label="notify">${t('notifyOnFinishLabel')}</span>
+                </label>
                 <button class="btn-main" id="btnStartTask" onclick="startTask()">${t('startTask')}</button>
                 <button class="btn-main" id="btn-clear-finished" onclick="clearFinishedTasks()">${t('clearFinished')}</button>
             </div>`;
