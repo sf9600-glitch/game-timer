@@ -3419,6 +3419,7 @@ function updateTimersDataTicker(skipRelayout = false) {
         const isListRow = card.classList.contains('timer-list-row') || card.classList.contains('clean-table-row');
 
         if (isFinished !== inFinishedSection) {
+            if (isFinished && !inFinishedSection) triggerFinishNotification(t);
             needsRelayout = true;
             return;
         }
