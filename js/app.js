@@ -1998,7 +1998,8 @@ function syncLayoutForViewport() {
     renderSidePanel();
     refreshMainDisplay();
     syncPanelMobileControls();
-    if (mobile && !getActiveTimers().length) openStartSheet();
+    if (mobile && !getActiveTimers().length && !onboardingActive) openStartSheet();
+    if (onboardingActive) showOnboardingStep(onboardingStepIndex);
 }
 
 function syncPanelMobileControls() {
