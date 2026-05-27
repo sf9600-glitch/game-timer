@@ -1443,7 +1443,7 @@ function applyRecoveryPayload(p) {
         currentLang = p.lang;
         localStorage.setItem(LANG_KEY, p.lang);
         document.documentElement.lang = p.lang;
-        document.title = t('appAppTitle') || t('appTitle');
+        document.title = t('appTitle');
     }
     const timers = Array.isArray(p.activeTimers) ? JSON.parse(JSON.stringify(p.activeTimers)) : [];
     setActiveTimers(timers, { immediateCloud: true });
