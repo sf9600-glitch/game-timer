@@ -583,7 +583,10 @@ function positionOnboardingUi() {
         positionOnboardingCard(null);
         return;
     }
-    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (onboardingPositionedStepId !== step.id) {
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        onboardingPositionedStepId = step.id;
+    }
     const pad = step.id === 'undo-tip' ? 10 : 8;
     const r = el.getBoundingClientRect();
     spot.style.display = 'block';
