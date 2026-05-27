@@ -3429,6 +3429,14 @@ function delTask(id) {
     if(target) triggerUndo('計時器', target, target.taskName || '計時器');
     setActiveTimers(allSavedData.filter(t => String(t.id) !== String(id)), { immediateCloud: true });
     dispatchTimersToDOM();
+    if (onboardingActive && onboardingCreatedTimerId != null && String(id) === String(onboardingCreatedTimerId)) {
+        setTimeout(() => {
+            if (!onboardingActive) return;
+            const steps = getOnboardingSteps();
+            const cur = steps[onboardingStepIndex];
+            if (cur?.id === 'delete-timer') goOnboardingStepById('undo-tip');
+        }, 320);
+    }
 }
 
 function removeAcc(i) {
