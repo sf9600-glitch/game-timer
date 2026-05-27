@@ -427,7 +427,6 @@ function getOnboardingSteps() {
                 }
                 return document.getElementById('sec-start') || document.getElementById('startContent');
             },
-            waitFor: 'start-open',
             prepare: ensureStartFormForOnboarding
         },
         {
