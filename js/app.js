@@ -3334,7 +3334,10 @@ function removeSubTask(ti, si) {
 }
 
 function startTask() { 
-    if(totalSec <= 0) return; 
+    if(totalSec <= 0) {
+        if (onboardingActive) updateOnboardingChrome();
+        return;
+    }
     const acc = document.getElementById('accSelect').value;
     const char = document.getElementById('charSelect').value; 
     const tObj = config.tasks[document.getElementById('taskSelect').value]; 
