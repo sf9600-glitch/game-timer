@@ -2346,6 +2346,7 @@ function renderSidePanel() {
             <div id="sysContent" class="collapsible-content ${uiState.openSection === 'sysContent' ? 'active' : ''}"><div>
                 <div class="sys-block">
                     <div class="sys-block-title">${t('sysSectionSystem')}</div>
+                    <button type="button" class="btn-adjust" onclick="startInteractiveTutorial({ force: true })" style="width:100%; margin-bottom:6px; font-size:0.72rem;">${t('openInteractiveGuide')}</button>
                     <button type="button" class="btn-adjust" onclick="openTutorialModal()" style="width:100%; margin-bottom:10px; font-size:0.72rem;">${t('openTutorial')}</button>
                     ${renderCloudSyncHtml()}
                     <div style="display:grid; grid-template-columns:1fr; gap:6px; margin-bottom:10px;">
