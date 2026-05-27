@@ -1468,6 +1468,23 @@ html.timer-display-list .timer-list-row .timer-list-hint {
     font-size: 0.68rem; font-weight: bold; color: var(--text-sub); line-height: 1.2;
 }
 .start-field select { flex: 1; min-width: 0; box-sizing: border-box; }
+.start-notify-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    margin-top: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg);
+    font-size: 0.72rem;
+    color: var(--text-main);
+}
+.start-notify-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
 .dhms-container {
     display: flex; justify-content: center; align-items: flex-end;
     background: var(--bg); padding: 6px 8px; border-radius: 8px;
