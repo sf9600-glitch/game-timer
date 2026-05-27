@@ -172,6 +172,313 @@ function closeTutorialModal() {
     document.getElementById('tutorialModal')?.classList.remove('show');
 }
 
+const ONBOARDING_STORAGE_KEY = 'GameTimer_InteractiveTutorial_v1';
+let onboardingActive = false;
+let onboardingStepIndex = 0;
+let onboardingPollId = null;
+let onboardingBaselineTimerCount = 0;
+let onboardingResizeHandler = null;
+
+function isStartFormOpen() {
+    if (isMobileLayout()) return !!document.getElementById('startSheet')?.classList.contains('show');
+    const sc = document.getElementById('startContent');
+    return uiState.openSection === 'startContent' && !!sc?.classList.contains('active');
+}
+
+function ensureStartFormForOnboarding() {
+    mountStartContent();
+    if (isMobileLayout()) {
+        closeSidePanel();
+        setStartSheetOpen(true);
+        return;
+    }
+    if (uiState.openSection !== 'startContent') smartToggle('startContent');
+    else {
+        syncStartContentExpandedState();
+        mountStartContent();
+    }
+}
+
+function getOnboardingSteps() {
+    const mobile = isMobileLayout();
+    return [
+        {
+            id: 'welcome',
+            titleKey: 'onboardWelcomeTitle',
+            bodyKey: 'onboardWelcomeBody',
+            nextKey: 'onboardNext',
+            target: null
+        },
+        {
+            id: 'open-start',
+            titleKey: 'onboardOpenStartTitle',
+            bodyKey: mobile ? 'onboardOpenStartBodyMobile' : 'onboardOpenStartBodyDesktop',
+            nextKey: 'onboardNext',
+            target: () => {
+                if (mobile) {
+                    if (isStartFormOpen()) return document.getElementById('startSheet') || document.querySelector('.main-start-btn');
+                    return document.querySelector('.main-start-btn') || document.getElementById('sec-start-entry');
+                }
+                return document.getElementById('sec-start') || document.getElementById('startContent');
+            },
+            waitFor: 'start-open',
+            prepare: ensureStartFormForOnboarding
+        },
+        {
+            id: 'pick-role',
+            titleKey: 'onboardPickRoleTitle',
+            bodyKey: 'onboardPickRoleBody',
+            nextKey: 'onboardNext',
+            target: () => document.querySelector('#startContent .start-field-row--2'),
+            prepare: ensureStartFormForOnboarding
+        },
+        {
+            id: 'pick-task',
+            titleKey: 'onboardPickTaskTitle',
+            bodyKey: 'onboardPickTaskBody',
+            nextKey: 'onboardNext',
+            target: () => document.getElementById('taskSubRow'),
+            prepare: ensureStartFormForOnboarding
+        },
+        {
+            id: 'set-time',
+            titleKey: 'onboardSetTimeTitle',
+            bodyKey: 'onboardSetTimeBody',
+            nextKey: 'onboardNext',
+            target: () => document.querySelector('#startContent .start-adj-grid') || document.getElementById('timeDisplay'),
+            waitFor: 'time-set',
+            prepare: ensureStartFormForOnboarding
+        },
+        {
+            id: 'start-btn',
+            titleKey: 'onboardStartTitle',
+            bodyKey: 'onboardStartBody',
+            nextKey: 'onboardNext',
+            target: () => document.getElementById('btnStartTask'),
+            waitFor: 'timer-created',
+            prepare: () => {
+                onboardingBaselineTimerCount = getActiveTimers().length;
+                ensureStartFormForOnboarding();
+            }
+        },
+        {
+            id: 'done',
+            titleKey: 'onboardDoneTitle',
+            bodyKey: 'onboardDoneBody',
+            nextKey: 'onboardFinish',
+            target: () => document.querySelector('#mainDisplay .timer-card') || document.getElementById('mainDisplay')
+        }
+    ];
+}
+
+function resolveOnboardingTarget(step) {
+    if (!step || !step.target) return null;
+    const t = step.target;
+    return typeof t === 'function' ? t() : document.querySelector(t);
+}
+
+function onboardingWaitSatisfied(step) {
+    if (!step?.waitFor) return true;
+    if (step.waitFor === 'start-open') return isStartFormOpen();
+    if (step.waitFor === 'time-set') return totalSec > 0;
+    if (step.waitFor === 'timer-created') return getActiveTimers().length > onboardingBaselineTimerCount;
+    return true;
+}
+
+function updateOnboardingChrome() {
+    const tour = document.getElementById('onboardingTour');
+    if (!tour?.classList.contains('is-active')) return;
+    const steps = getOnboardingSteps();
+    const step = steps[onboardingStepIndex];
+    if (!step) return;
+    const label = document.getElementById('onboardingStepLabel');
+    const title = document.getElementById('onboardingTitle');
+    const body = document.getElementById('onboardingBody');
+    const hint = document.getElementById('onboardingHint');
+    const skipBtn = document.getElementById('onboardingSkipBtn');
+    const nextBtn = document.getElementById('onboardingNextBtn');
+    if (label) label.textContent = tp('onboardStepLabel', { n: onboardingStepIndex + 1, total: steps.length });
+    if (title) title.textContent = t(step.titleKey);
+    if (body) body.textContent = t(step.bodyKey);
+    if (skipBtn) skipBtn.textContent = t('onboardSkip');
+    if (nextBtn) nextBtn.textContent = t(step.nextKey || 'onboardNext');
+    const ready = onboardingWaitSatisfied(step);
+    if (nextBtn) nextBtn.disabled = !!step.waitFor && !ready && step.id !== 'welcome';
+    if (hint) {
+        if (step.waitFor === 'time-set' && !ready) {
+            hint.hidden = false;
+            hint.textContent = t('onboardNeedTimeHint');
+        } else if (step.waitFor === 'timer-created' && !ready) {
+            hint.hidden = false;
+            hint.textContent = t('onboardNeedStartHint');
+        } else if (step.waitFor === 'start-open' && !ready) {
+            hint.hidden = false;
+            hint.textContent = t(isMobileLayout() ? 'onboardNeedOpenStartMobile' : 'onboardNeedOpenStartDesktop');
+        } else {
+            hint.hidden = true;
+            hint.textContent = '';
+        }
+    }
+}
+
+function positionOnboardingCard(rect) {
+    const card = document.getElementById('onboardingCard');
+    if (!card) return;
+    const margin = 12;
+    const cardW = Math.min(360, window.innerWidth - 28);
+    const cardH = card.offsetHeight || 200;
+    if (!rect || rect.width < 4 || rect.height < 4) {
+        card.classList.remove('is-docked');
+        card.style.left = '50%';
+        card.style.top = '50%';
+        card.style.transform = 'translate(-50%, -50%)';
+        return;
+    }
+    card.classList.add('is-docked');
+    let top = rect.bottom + margin;
+    if (top + cardH > window.innerHeight - margin) top = rect.top - cardH - margin;
+    if (top < margin) top = margin;
+    let left = rect.left + rect.width / 2 - cardW / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - cardW - margin));
+    card.style.left = `${left}px`;
+    card.style.top = `${top}px`;
+    card.style.transform = 'none';
+    card.style.width = `${cardW}px`;
+}
+
+function positionOnboardingUi() {
+    const steps = getOnboardingSteps();
+    const step = steps[onboardingStepIndex];
+    const spot = document.getElementById('onboardingSpot');
+    const card = document.getElementById('onboardingCard');
+    if (!spot || !card || !step) return;
+    const el = resolveOnboardingTarget(step);
+    if (!el) {
+        spot.style.display = 'none';
+        positionOnboardingCard(null);
+        return;
+    }
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const pad = 8;
+    const r = el.getBoundingClientRect();
+    spot.style.display = 'block';
+    spot.style.top = `${Math.max(0, r.top - pad)}px`;
+    spot.style.left = `${Math.max(0, r.left - pad)}px`;
+    spot.style.width = `${r.width + pad * 2}px`;
+    spot.style.height = `${r.height + pad * 2}px`;
+    requestAnimationFrame(() => positionOnboardingCard(spot.getBoundingClientRect()));
+}
+
+function stopOnboardingPoll() {
+    if (onboardingPollId) {
+        clearInterval(onboardingPollId);
+        onboardingPollId = null;
+    }
+}
+
+function startOnboardingPoll() {
+    stopOnboardingPoll();
+    onboardingPollId = setInterval(() => {
+        if (!onboardingActive) return;
+        const steps = getOnboardingSteps();
+        const step = steps[onboardingStepIndex];
+        if (!step) return;
+        updateOnboardingChrome();
+        positionOnboardingUi();
+        if (step.waitFor && onboardingWaitSatisfied(step)) {
+            if (step.waitFor === 'timer-created') {
+                stopOnboardingPoll();
+                setTimeout(() => {
+                    if (!onboardingActive) return;
+                    onboardingStepIndex = steps.findIndex(s => s.id === 'done');
+                    if (onboardingStepIndex < 0) onboardingStepIndex = steps.length - 1;
+                    showOnboardingStep(onboardingStepIndex);
+                }, 350);
+            }
+        }
+    }, 280);
+}
+
+function showOnboardingStep(index) {
+    const steps = getOnboardingSteps();
+    if (index < 0 || index >= steps.length) {
+        finishInteractiveTutorial(false);
+        return;
+    }
+    onboardingStepIndex = index;
+    const step = steps[index];
+    if (step.prepare) step.prepare();
+    updateOnboardingChrome();
+    requestAnimationFrame(() => {
+        positionOnboardingUi();
+        requestAnimationFrame(() => positionOnboardingUi());
+    });
+    startOnboardingPoll();
+}
+
+function startInteractiveTutorial(opts = {}) {
+    if (onboardingActive) return;
+    if (!opts.force && localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
+    closeTutorialModal();
+    onboardingActive = true;
+    onboardingStepIndex = 0;
+    onboardingBaselineTimerCount = getActiveTimers().length;
+    const tour = document.getElementById('onboardingTour');
+    if (!tour) return;
+    tour.classList.add('is-active');
+    tour.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('onboarding-active');
+    if (!onboardingResizeHandler) {
+        onboardingResizeHandler = () => {
+            if (!onboardingActive) return;
+            positionOnboardingUi();
+            updateOnboardingChrome();
+        };
+        window.addEventListener('resize', onboardingResizeHandler);
+    }
+    showOnboardingStep(0);
+}
+
+function finishInteractiveTutorial(skipped) {
+    stopOnboardingPoll();
+    onboardingActive = false;
+    localStorage.setItem(ONBOARDING_STORAGE_KEY, 'done');
+    const tour = document.getElementById('onboardingTour');
+    tour?.classList.remove('is-active');
+    tour?.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('onboarding-active');
+    document.getElementById('onboardingSpot')?.style.setProperty('display', 'none');
+}
+
+function skipInteractiveTutorial() {
+    finishInteractiveTutorial(true);
+}
+
+function advanceInteractiveTutorial() {
+    const steps = getOnboardingSteps();
+    const step = steps[onboardingStepIndex];
+    if (!step) return;
+    if (step.waitFor && !onboardingWaitSatisfied(step)) {
+        updateOnboardingChrome();
+        const hint = document.getElementById('onboardingHint');
+        if (hint) {
+            hint.hidden = false;
+            hint.classList.add('onboarding-hint--warn');
+        }
+        return;
+    }
+    if (step.id === 'done') {
+        finishInteractiveTutorial(false);
+        return;
+    }
+    showOnboardingStep(onboardingStepIndex + 1);
+}
+
+function maybeStartInteractiveTutorial() {
+    if (localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
+    setTimeout(() => startInteractiveTutorial(), 500);
+}
+
 async function setLang(lang, opts = {}) {
     if (!I18N[lang]) {
         try { await loadLocaleFile(lang); } catch (e) {
