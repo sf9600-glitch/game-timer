@@ -880,7 +880,7 @@ function computeActiveTimerCardWidthPx(card) {
 
 function applyActiveTimerCardWidth(card) {
     if (!card?.classList.contains('timer-card--active')) return;
-    if (document.documentElement.classList.contains('timer-display-list')) return;
+    if (document.documentElement.classList.contains('timer-display-list') || document.documentElement.classList.contains('timer-display-clean')) return;
     const target = computeActiveTimerCardWidthPx(card);
     const base = getTimerCardBaseWidthPx();
     if (target > base + 1) {
