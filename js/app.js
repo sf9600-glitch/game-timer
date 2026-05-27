@@ -266,7 +266,7 @@ let onboardingBaselineTimerCount = 0;
 let onboardingCreatedTimerId = null;
 let onboardingResizeHandler = null;
 let onboardingPositionedStepId = null;
-const ONBOARDING_STRICT_WAITS = new Set(['time-set', 'timer-created', 'timer-deleted']);
+const ONBOARDING_STRICT_WAITS = new Set(['timer-created', 'timer-deleted']);
 
 function openOnboardingSection(sectionId) {
     if (!SECTION_IDS.includes(sectionId)) return;
@@ -717,6 +717,11 @@ function advanceInteractiveTutorial() {
     const steps = getOnboardingSteps();
     const step = steps[onboardingStepIndex];
     if (!step) return;
+    if (step.waitFor === 'time-set' && !onboardingWaitSatisfied(step)) {
+        // 手機版容易被教學浮層遮住快捷鍵，先自動補一分鐘避免卡關
+        adj(60);
+        updateOnboardingChrome();
+    }
     if (step.waitFor && ONBOARDING_STRICT_WAITS.has(step.waitFor) && !onboardingWaitSatisfied(step)) {
         updateOnboardingChrome();
         const hint = document.getElementById('onboardingHint');
