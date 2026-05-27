@@ -446,9 +446,12 @@ function resolveOnboardingTarget(step) {
 
 function onboardingWaitSatisfied(step) {
     if (!step?.waitFor) return true;
+    if (step.waitFor === 'panel-open') return isSidePanelOpen();
     if (step.waitFor === 'start-open') return isStartFormOpen();
     if (step.waitFor === 'time-set') return totalSec > 0;
     if (step.waitFor === 'timer-created') return getActiveTimers().length > onboardingBaselineTimerCount;
+    if (step.waitFor === 'timer-deleted') return onboardingCreatedTimerId != null && !isOnboardingTutorialTimerActive();
+    if (step.waitFor === 'undo-visible') return document.getElementById('undoToast')?.classList.contains('show');
     return true;
 }
 
