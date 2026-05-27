@@ -3605,6 +3605,10 @@ window.addEventListener('pageshow', (e) => {
 });
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
+    if (onboardingActive) {
+        skipInteractiveTutorial();
+        return;
+    }
     closeTutorialModal();
     closeStartSheet();
 });
