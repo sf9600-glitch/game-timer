@@ -930,6 +930,7 @@ function fitAdaptiveLetterSpacing(el, maxWidthPx, startEm, minEm) {
 
 function fitActiveTimerCardLabels(card) {
     if (!card || !card.classList.contains('timer-card--active')) return;
+    if (document.documentElement.classList.contains('timer-display-clean')) return;
     applyActiveTimerCardWidth(card);
     const innerW = Math.max(48, card.clientWidth - 24);
     const charSlot = card.querySelector('.active-slot-char');
