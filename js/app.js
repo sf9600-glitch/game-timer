@@ -640,6 +640,7 @@ function showOnboardingStep(index) {
         return;
     }
     onboardingStepIndex = index;
+    onboardingPositionedStepId = null;
     const step = steps[index];
     if (step.prepare) step.prepare();
     updateOnboardingChrome();
@@ -693,7 +694,7 @@ function advanceInteractiveTutorial() {
     const steps = getOnboardingSteps();
     const step = steps[onboardingStepIndex];
     if (!step) return;
-    if (step.waitFor && !onboardingWaitSatisfied(step)) {
+    if (step.waitFor && ONBOARDING_STRICT_WAITS.has(step.waitFor) && !onboardingWaitSatisfied(step)) {
         updateOnboardingChrome();
         const hint = document.getElementById('onboardingHint');
         if (hint) {
