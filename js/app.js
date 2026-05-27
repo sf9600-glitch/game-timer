@@ -3838,7 +3838,9 @@ function startTask() {
     const tObj = config.tasks[document.getElementById('taskSelect').value]; 
     const ts = (tObj.subs.length && document.getElementById('subTaskSelect').value) ? document.getElementById('subTaskSelect').value : ''; 
     const fThres = parseInt(document.getElementById('fMin').value)*60 + parseInt(document.getElementById('fSec').value); 
-    const newTimerData = { id: Date.now(), email: acc, char: char, taskName: tObj.name + (ts ? ` (${ts})` : ''), dur: totalSec, fThres: fThres, finishDate: new Date(Date.now() + totalSec * 1000).toISOString(), taskBase: tObj.name };
+    const notifyOnFinish = document.getElementById('notifyOnFinish')?.checked !== false;
+    requestNotificationPermissionIfNeeded();
+    const newTimerData = { id: Date.now(), email: acc, char: char, taskName: tObj.name + (ts ? ` (${ts})` : ''), dur: totalSec, fThres: fThres, finishDate: new Date(Date.now() + totalSec * 1000).toISOString(), taskBase: tObj.name, notifyOnFinish };
     const allSavedData = getActiveTimers();
     allSavedData.push(newTimerData);
     setActiveTimers(allSavedData, { immediateCloud: true });
