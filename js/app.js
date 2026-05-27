@@ -265,6 +265,27 @@ let onboardingPollId = null;
 let onboardingBaselineTimerCount = 0;
 let onboardingCreatedTimerId = null;
 let onboardingResizeHandler = null;
+let onboardingPositionedStepId = null;
+const ONBOARDING_STRICT_WAITS = new Set(['time-set', 'timer-created', 'timer-deleted']);
+
+function openOnboardingSection(sectionId) {
+    if (!SECTION_IDS.includes(sectionId)) return;
+    uiState.openSection = sectionId;
+    if (sectionId !== 'taskContent') {
+        uiState.allTasksExpanded = false;
+        uiState.editingTaskIdx = null;
+        uiState.collapsedTaskIndices.clear();
+        document.querySelectorAll('.sub-edit-panel.open').forEach(el => el.classList.remove('open'));
+    }
+    syncCollapsibleClasses();
+    syncStartContentExpandedState();
+    if (sectionId === 'startContent') {
+        mountStartContent();
+        if (!isMobileLayout()) {
+            document.getElementById('sec-start')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+}
 
 function isStartFormOpen() {
     if (isMobileLayout()) return !!document.getElementById('startSheet')?.classList.contains('show');
