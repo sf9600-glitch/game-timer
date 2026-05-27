@@ -3242,7 +3242,7 @@ function updateTimersDataTicker(skipRelayout = false) {
         const totalRemSec = (finishMs - now) / 1000;
         const isFinished = totalRemSec <= 0;
         const inFinishedSection = card.classList.contains('is-finished') || !!card.closest('.timer-section-finished') || !!card.closest('.finished-global-mount');
-        const isListRow = card.classList.contains('timer-list-row');
+        const isListRow = card.classList.contains('timer-list-row') || card.classList.contains('clean-table-row');
 
         if (isFinished !== inFinishedSection) {
             needsRelayout = true;
