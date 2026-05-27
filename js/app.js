@@ -2802,7 +2802,7 @@ function appendListRowsFromCharGroups(listEl, charGroups, buildRowFn) {
 }
 
 function appendActiveCharGroups(parentEl, activeCharGroups, acc, safeId) {
-    if (isTimerDisplayList()) {
+    if (isTimerDisplayList() || isTimerDisplayClean()) {
         const wrap = document.createElement('div');
         wrap.className = 'timer-list-wrap';
         wrap.innerHTML = `<div class="timer-list timer-list--active" id="list-active-${safeId}"></div>`;
