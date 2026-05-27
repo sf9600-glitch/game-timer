@@ -2098,7 +2098,7 @@ html.timer-display-list .timer-list-row .timer-list-hint {
     top: 50%;
     transform: translate(-50%, -50%);
     width: min(360px, calc(100vw - 28px));
-    max-height: min(70vh, 420px);
+    max-height: min(70dvh, 420px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     background: var(--panel-bg);
@@ -2186,3 +2186,31 @@ html.timer-display-list .timer-list-row .timer-list-hint {
 }
 body.onboarding-active { overflow: hidden; }
 body.onboarding-active .undo-toast.show { z-index: 2203; }
+
+@media (max-width: 768px) {
+    .onboarding-tour {
+        padding-top: max(8px, env(safe-area-inset-top, 0px));
+        padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
+    }
+    .onboarding-card {
+        width: min(340px, calc(100vw - 20px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+        max-height: calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        padding: 12px 12px 14px;
+        border-radius: 12px;
+    }
+    .onboarding-card.is-docked {
+        max-height: min(48dvh, 300px);
+    }
+    .onboarding-actions {
+        gap: 6px;
+    }
+    .onboarding-skip {
+        font-size: 0.72rem;
+        padding: 4px 2px;
+    }
+    .onboarding-next {
+        min-width: 6.6em;
+        padding: 9px 12px;
+        font-size: 0.78rem;
+    }
+}
