@@ -1454,67 +1454,69 @@ function applyRecoveryPayload(p) {
 }
 
 function applyLocalSnapshot(snapshot) {
-    const p = snapshot.payload;
-    if (p.config) {
-        config = JSON.parse(JSON.stringify(p.config));
-        normalizeConfig();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    }
-    if (Array.isArray(p.undoStack)) {
-        undoStack = JSON.parse(JSON.stringify(p.undoStack));
-        persistUndoStack({ skipCloud: true });
-    }
-    if (p.theme) {
-        localStorage.setItem(THEME_KEY, p.theme);
-        setTheme(p.theme, { skipCloud: true, skipRender: true });
-    }
-    if (p.lang && I18N[p.lang]) {
-        currentLang = p.lang;
-        localStorage.setItem(LANG_KEY, p.lang);
-        document.documentElement.lang = p.lang;
-        document.title = t('appTitle');
-    }
-    const timers = Array.isArray(p.activeTimers) ? JSON.parse(JSON.stringify(p.activeTimers)) : [];
-    setActiveTimers(timers, { immediateCloud: true });
-    renderSidePanel();
-    refreshMainDisplay();
-    dispatchTimersToDOM();
-    if (undoStack.length) updateUndoToastText();
+    applyRecoveryPayload(snapshot.payload);
 }
 
-function restoreSelectedSnapshot() {
-    const snap = getSelectedRecoverySnapshot();
-    if (!snap) {
+function syncRecoverySourceNote() {
+    const note = document.getElementById('recoverySourceNote');
+    if (!note) return;
+    const entry = getSelectedRecoveryEntry();
+    if (!entry) {
+        note.textContent = '';
+        return;
+    }
+    note.textContent = entry.source === 'cloud' ? t('recoverySourceCloud') : t('recoverySourceLocal');
+}
+
+async function restoreSelectedSnapshot() {
+    const entry = getSelectedRecoveryEntry();
+    if (!entry) {
         alert(t('recoveryNoSnapshots'));
         return;
     }
-    const date = formatSnapshotDateTime(snap.createdAt);
+    const date = formatSnapshotDateTime(entry.createdAt);
+    if (entry.source === 'cloud') {
+        if (!confirm(tp('recoveryCloudRestoreConfirm', { date }))) return;
+        try {
+            const cloud = await fetchCloudRecord();
+            if (!cloud) {
+                alert(t('recoveryCloudEmpty'));
+                return;
+            }
+            applyRecoveryPayload(cloud);
+            alert(t('alertSnapshotRestored'));
+        } catch (e) {
+            console.error(e);
+            alert(tp('alertSyncFailed', { msg: e.message || e }));
+        }
+        return;
+    }
     if (!confirm(tp('confirmRestoreSnapshot', { date }))) return;
-    applyLocalSnapshot(snap);
+    applyLocalSnapshot(entry.snapshot);
     alert(t('alertSnapshotRestored'));
 }
 
 function renderRecoveryPanelHtml() {
-    const snapshots = getLocalSnapshots();
+    const entries = getRecoveryOptionEntries();
     const recOpen = uiState.recoveryExpanded ? ' recovery-panel--open' : '';
     const recActive = uiState.recoveryExpanded ? ' active' : '';
-    if (!uiState.selectedRecoverySnapshotId && snapshots[0]) {
-        uiState.selectedRecoverySnapshotId = snapshots[0].id;
-    }
-    if (snapshots.length && !snapshots.some(s => String(s.id) === String(uiState.selectedRecoverySnapshotId))) {
-        uiState.selectedRecoverySnapshotId = snapshots[0].id;
-    }
+    uiState.selectedRecoverySnapshotId = normalizeRecoverySelectionId(entries);
+    const retentionHint = tp('recoveryRetentionHint', { max: LOCAL_SNAPSHOTS_MAX });
     let bodyInner;
-    if (!snapshots.length) {
-        bodyInner = `<p style="margin:0;font-size:0.65rem;color:var(--text-sub);line-height:1.4;">${t('recoveryNoSnapshots')}</p>`;
+    if (!entries.length) {
+        bodyInner = `<p class="recovery-empty">${t('recoveryNoSnapshots')}</p>`;
     } else {
-        const opts = snapshots.map(s => {
-            const sel = String(s.id) === String(uiState.selectedRecoverySnapshotId) ? ' selected' : '';
-            return `<option value="${escSnapshotText(s.id)}"${sel}>${escSnapshotText(getSnapshotSelectLabel(s))}</option>`;
+        const opts = entries.map(e => {
+            const sel = e.id === uiState.selectedRecoverySnapshotId ? ' selected' : '';
+            return `<option value="${escSnapshotText(e.id)}"${sel}>${escSnapshotText(e.text)}</option>`;
         }).join('');
-        bodyInner = `<select id="recoverySnapshotSelect" class="recovery-version-select" onchange="uiState.selectedRecoverySnapshotId=this.value">${opts}</select>
-            <button type="button" class="btn-adjust" style="width:100%;font-size:0.68rem;margin-top:6px;" onclick="restoreSelectedSnapshot()">${t('recoveryRestoreVersion')}</button>`;
+        const first = entries.find(e => e.id === uiState.selectedRecoverySnapshotId) || entries[0];
+        const sourceNote = first.source === 'cloud' ? t('recoverySourceCloud') : t('recoverySourceLocal');
+        bodyInner = `<select id="recoverySnapshotSelect" class="recovery-version-select" onchange="uiState.selectedRecoverySnapshotId=this.value;syncRecoverySourceNote()">${opts}</select>
+            <p class="recovery-source-note" id="recoverySourceNote">${escSnapshotText(sourceNote)}</p>
+            <button type="button" class="btn-adjust recovery-restore-btn" onclick="restoreSelectedSnapshot()">${t('recoveryRestoreVersion')}</button>`;
     }
+    bodyInner += `<p class="recovery-retention-hint">${escSnapshotText(retentionHint)}</p>`;
     return `<div class="recovery-panel${recOpen}" id="recoveryPanel">
         <div class="recovery-panel-title" role="button" tabindex="0" onclick="toggleRecoveryPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleRecoveryPanel();}" aria-expanded="${uiState.recoveryExpanded}">
             <span>${t('recoveryTitle')}</span>
