@@ -854,118 +854,123 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     border-radius: 0 0 0 2px;
 }
 
-/* 簡潔顯示：純文字表格列（list 結構，避免卡片高度無限延伸） */
+/* 簡潔顯示：主畫面純文字表格（每列一筆、每欄一種資訊） */
+html.timer-display-clean .timer-section-title,
+html.timer-display-clean .char-group-title,
+html.timer-display-clean .sync-new-badge,
+html.timer-display-clean .char-title-badge {
+    display: none !important;
+}
 html.timer-display-clean .timers-by-char.active-by-char,
-html.timer-display-clean .timers-by-char.finished-by-char {
-    gap: 8px;
-}
-html.timer-display-clean .timer-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+html.timer-display-clean .timers-by-char.finished-by-char,
+html.timer-display-clean .clean-table-mount {
+    display: block;
     width: 100%;
 }
-html.timer-display-clean .timer-list-row {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) max-content 28px;
-    column-gap: 0;
-    align-items: stretch;
-    justify-content: stretch;
+html.timer-display-clean .clean-table {
     width: 100%;
-    max-width: 100%;
-    padding: 0;
     border: 1px solid var(--border-color);
-    border-left: 4px solid var(--local-raw-color, var(--border-color));
     border-radius: 0;
     background: var(--card-bg);
-    box-shadow: none;
-    font-size: 0.8rem;
-    line-height: 1.35;
-    text-align: left;
+    overflow: hidden;
 }
-html.timer-display-clean .timer-list-row + .timer-list-row {
+html.timer-display-clean .clean-table-head,
+html.timer-display-clean .clean-table-row {
+    display: grid;
+    grid-template-columns: minmax(4.8em, 18%) minmax(0, 1fr) minmax(5.8em, 22%) minmax(4.8em, 20%) 28px;
+    align-items: center;
+    min-height: 34px;
+}
+html.timer-display-clean .clean-table--finished .clean-table-head,
+html.timer-display-clean .clean-table--finished .clean-table-row {
+    grid-template-columns: minmax(4.8em, 20%) minmax(0, 1fr) minmax(0, 1fr) 28px;
+}
+html.timer-display-clean .clean-table-head {
+    background: color-mix(in srgb, var(--bg) 88%, var(--card-bg));
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-sub);
+}
+html.timer-display-clean .clean-table-body .clean-table-row {
+    border-top: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    line-height: 1.25;
+    color: var(--text-main);
+}
+html.timer-display-clean .clean-table-body .clean-table-row:first-child {
     border-top: none;
 }
-html.timer-display-clean .timer-list-main {
-    display: contents;
-}
-html.timer-display-clean .timer-list-info {
-    grid-column: 1;
-    min-width: 0;
-    padding: 8px 10px;
+html.timer-display-clean .clean-col {
+    padding: 6px 8px;
     border-right: 1px solid var(--border-color);
-}
-html.timer-display-clean .timer-list-charline {
-    margin: 0 0 4px;
-}
-html.timer-display-clean .timer-list-charline .char-title-badge {
-    background: transparent !important;
-    color: var(--text-main) !important;
-    border: none !important;
-    border-left: 3px solid var(--local-char-accent, var(--local-raw-color));
-    border-radius: 0;
-    box-shadow: none;
-    text-shadow: none !important;
-    padding: 2px 4px 2px 6px;
-    font-size: 0.72rem;
-}
-html.timer-display-clean .timer-list-task {
-    display: block;
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
 }
-html.timer-display-clean .timer-list-side {
-    grid-column: 2;
-    box-sizing: border-box;
-    min-width: 6.75rem;
-    margin: 0;
-    padding: 8px;
-    border-right: 1px solid var(--border-color);
-    text-align: left !important;
+html.timer-display-clean .clean-col-char {
+    font-weight: 600;
 }
-html.timer-display-clean .timer-list-time {
+html.timer-display-clean .clean-col-task {
+    font-weight: 600;
+}
+html.timer-display-clean .clean-col-remain {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--text-main);
-    text-align: left !important;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }
-html.timer-display-clean .timer-list-hint,
-html.timer-display-clean .timer-list-status {
-    margin-top: 2px;
-    font-size: 0.64rem;
+html.timer-display-clean .clean-col-end,
+html.timer-display-clean .clean-col-status {
     color: var(--text-sub);
-    text-align: left !important;
+    font-size: 0.72rem;
 }
-html.timer-display-clean .timer-list-del {
-    grid-column: 3;
-    align-self: stretch;
-    width: 28px;
-    min-height: 44px;
+html.timer-display-clean .clean-col-del {
+    border-right: none;
+    padding: 0;
+}
+html.timer-display-clean .clean-table-row.is-warning-blinking {
+    background: color-mix(in srgb, var(--danger) 10%, var(--card-bg));
+}
+html.timer-display-clean .clean-table-row.is-warning-blinking .clean-col-remain {
+    color: var(--danger);
+}
+html.timer-display-clean .clean-table-row.is-finished {
+    opacity: 0.88;
+}
+html.timer-display-clean .timer-list-del,
+html.timer-display-clean .clean-col-del.timer-list-del {
+    width: 100%;
+    height: 100%;
+    min-height: 34px;
     margin: 0;
     border: none;
     border-radius: 0;
-    background: color-mix(in srgb, var(--text-sub) 8%, transparent);
+    background: transparent;
     color: var(--text-sub);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
 }
 html.timer-display-clean .timer-list-del:hover {
-    background: color-mix(in srgb, var(--danger) 14%, transparent);
     color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 10%, transparent);
 }
-html.timer-display-clean .timer-list-row.is-finished {
-    opacity: 0.9;
-}
-html.timer-display-clean .timer-list-row.is-finished .timer-list-time {
-    display: none;
+html.timer-display-clean .finished-global-panel {
+    border-radius: 0;
 }
 @media (max-width: 768px) {
-    html.timer-display-clean .timer-list-time {
-        font-size: 0.88rem;
+    html.timer-display-clean .clean-table-head,
+    html.timer-display-clean .clean-table-row {
+        grid-template-columns: minmax(3.6em, 22%) minmax(0, 1fr) minmax(4.8em, 24%) minmax(3.6em, 22%) 24px;
+        min-height: 32px;
+    }
+    html.timer-display-clean .clean-col {
+        padding: 5px 6px;
+        font-size: 0.74rem;
+    }
+    html.timer-display-clean .clean-col-remain {
+        font-size: 0.78rem;
     }
 }
 html.neon-glow-enabled.timer-display-clean[data-theme="dark"] .timer-card:not(.is-warning-blinking) {
