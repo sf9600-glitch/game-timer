@@ -741,6 +741,15 @@ function advanceInteractiveTutorial() {
     const steps = getOnboardingSteps();
     const step = steps[onboardingStepIndex];
     if (!step) return;
+    // 這兩步是純說明，不需要任何前置條件，直接精準跳下一步避免手機上重排導致要多按
+    if (step.id === 'task-tags') {
+        goOnboardingStepById('add-sub');
+        return;
+    }
+    if (step.id === 'add-sub') {
+        goOnboardingStepById('open-start');
+        return;
+    }
     if (step.waitFor === 'time-set' && !onboardingWaitSatisfied(step)) {
         // 手機版容易被教學浮層遮住快捷鍵，先自動補一分鐘避免卡關
         adj(60);
