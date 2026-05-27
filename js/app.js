@@ -313,18 +313,22 @@ function ensureMainViewForOnboarding() {
 function ensureAccSectionForOnboarding() {
     ensureSidePanelForOnboarding();
     closeStartSheet();
-    if (uiState.openSection !== 'accContent') smartToggle('accContent');
+    openOnboardingSection('accContent');
 }
 
 function ensureTaskSectionForOnboarding() {
     ensureSidePanelForOnboarding();
     closeStartSheet();
-    if (uiState.openSection !== 'taskContent') smartToggle('taskContent');
+    openOnboardingSection('taskContent');
 }
 
 function ensureFirstTaskSubPanelForOnboarding() {
     ensureTaskSectionForOnboarding();
-    if (config.tasks.length && !isTaskSubPanelOpen(0)) toggleEditTask(0);
+    if (!config.tasks.length) return;
+    uiState.editingTaskIdx = 0;
+    uiState.allTasksExpanded = false;
+    uiState.collapsedTaskIndices.clear();
+    syncSubEditPanels();
 }
 
 function ensureStartFormForOnboarding() {
@@ -334,11 +338,7 @@ function ensureStartFormForOnboarding() {
         setStartSheetOpen(true);
         return;
     }
-    if (uiState.openSection !== 'startContent') smartToggle('startContent');
-    else {
-        syncStartContentExpandedState();
-        mountStartContent();
-    }
+    openOnboardingSection('startContent');
 }
 
 function captureOnboardingCreatedTimerId() {
