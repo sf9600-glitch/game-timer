@@ -558,12 +558,17 @@ function startOnboardingPoll() {
         positionOnboardingUi();
         if (step.waitFor && onboardingWaitSatisfied(step)) {
             if (step.waitFor === 'timer-created') {
+                onboardingCreatedTimerId = captureOnboardingCreatedTimerId();
                 stopOnboardingPoll();
                 setTimeout(() => {
                     if (!onboardingActive) return;
-                    onboardingStepIndex = steps.findIndex(s => s.id === 'done');
-                    if (onboardingStepIndex < 0) onboardingStepIndex = steps.length - 1;
-                    showOnboardingStep(onboardingStepIndex);
+                    goOnboardingStepById('delete-timer');
+                }, 400);
+            } else if (step.waitFor === 'timer-deleted') {
+                stopOnboardingPoll();
+                setTimeout(() => {
+                    if (!onboardingActive) return;
+                    goOnboardingStepById('undo-tip');
                 }, 350);
             }
         }
