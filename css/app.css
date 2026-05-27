@@ -854,32 +854,80 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     border-radius: 0 0 0 2px;
 }
 
-/* 簡潔顯示：任務色僅作左側色條與小色點，文字固定深淺色 */
+/* 簡潔顯示：改為近似 Excel 試算表列樣式 */
+html.timer-display-clean .timer-section-active .timer-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
 html.timer-display-clean .timer-card:not(.is-warning-blinking) {
     background: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
-    border-left-width: 4px !important;
-    border-left-color: var(--local-raw-color) !important;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    border-left: 5px solid var(--local-raw-color) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+html.timer-display-clean .timer-card--active {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0;
+}
+html.timer-display-clean .timer-card--active + .timer-card--active {
+    border-top: none !important;
 }
 html.timer-display-clean .timer-card--active .timer-card-bg { display: none; }
 html.timer-display-clean .timer-card--active .timer-card-inner {
-    padding: 6px 14px 10px;
+    padding: 0;
     background: var(--card-bg);
 }
-html.timer-display-clean .timer-card--active .timer-card-progress-track { display: block; }
+html.timer-display-clean .timer-card--active .timer-card-progress-track {
+    display: block;
+    height: 3px;
+}
 html.timer-display-colorful .timer-card--active .timer-card-inner {
     background: transparent;
 }
+html.timer-display-clean .timer-card--active .active-layout {
+    display: grid;
+    grid-template-columns: 84px minmax(150px, 1fr) minmax(118px, max-content) 28px;
+    grid-template-areas:
+        "char task time del"
+        "char date time del";
+    align-items: center;
+    gap: 0;
+    min-height: 54px;
+}
+html.timer-display-clean .timer-card--active .active-header {
+    grid-area: char;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100%;
+    padding: 8px 8px;
+    border-right: 1px solid var(--border-color);
+}
 html.timer-display-clean .timer-card--active .active-slot-id {
-    border-color: var(--border-color);
-    background: var(--bg);
-    color: var(--text-sub);
+    display: none;
+}
+html.timer-display-clean .timer-card--active .active-slot-char {
+    width: 100%;
+    text-align: left;
+}
+html.timer-display-clean .timer-card--active .active-slot-task {
+    grid-area: task;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100%;
+    text-align: left;
+    padding: 8px 10px 4px;
+    border-right: 1px solid var(--border-color);
 }
 html.timer-display-clean .timer-card--active .active-slot-task .task-title-display {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 6px;
     padding: 0;
     border: none;
@@ -887,40 +935,82 @@ html.timer-display-clean .timer-card--active .active-slot-task .task-title-displ
     background: transparent !important;
     color: var(--text-main) !important;
     font-weight: 700;
+    font-size: 0.82rem;
+    white-space: nowrap;
 }
 html.timer-display-clean .timer-card--active .active-slot-task .task-title-display::before {
     content: '';
     flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
     background: var(--local-raw-color);
+}
+html.timer-display-clean .timer-card--active .active-slot-date {
+    grid-area: date;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100%;
+    padding: 0 10px 8px;
+    border-right: 1px solid var(--border-color);
+}
+html.timer-display-clean .timer-card--active .active-slot-date .date-label {
+    font-size: 0.68rem;
+    color: var(--text-sub) !important;
+}
+html.timer-display-clean .timer-card--active .active-slot-time {
+    grid-area: time;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 100%;
+    padding: 8px 8px;
+    border-right: 1px solid var(--border-color);
 }
 html.timer-display-clean .timer-card--active .active-slot-time .time-text {
     color: var(--text-main) !important;
     font-weight: 800;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1.03rem;
+    letter-spacing: 0.01em;
 }
-html.timer-display-clean .timer-card--active .active-slot-date .date-label {
+html.timer-display-clean .timer-card--active .btn-close-circle {
+    grid-area: del;
+    align-self: stretch;
+    justify-self: stretch;
+    width: 100%;
+    height: 100%;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
     color: var(--text-sub) !important;
+    background: color-mix(in srgb, var(--text-sub) 8%, transparent) !important;
+    box-shadow: none !important;
+}
+html.timer-display-clean .timer-card--active .btn-close-circle:hover {
+    color: var(--danger) !important;
+    background: color-mix(in srgb, var(--danger) 14%, transparent) !important;
 }
 html.timer-display-clean .char-title-badge {
-    background-color: var(--bg) !important;
+    background-color: transparent !important;
     color: var(--text-main) !important;
-    border: 1px solid var(--border-color) !important;
+    border: none !important;
     text-shadow: none !important;
-    box-shadow: inset 3px 0 0 var(--local-char-accent, var(--local-raw-color));
-}
-html.timer-display-clean .btn-close-circle {
-    color: var(--text-sub) !important;
-    border-color: var(--border-color) !important;
-    background-color: var(--card-bg) !important;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
+    border-left: 4px solid var(--local-char-accent, var(--local-raw-color));
+    border-radius: 0;
+    padding: 2px 4px 2px 6px;
+    box-shadow: none;
 }
 html.timer-display-clean .timer-card.is-finished {
     background: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
-    border-left-width: 4px !important;
-    border-left-color: var(--local-raw-color) !important;
+    border-left: 5px solid var(--local-raw-color) !important;
+    border-radius: 0 !important;
+}
+html.timer-display-clean .timer-card.is-finished .timer-card-inner {
+    padding: 6px 10px;
 }
 html.timer-display-clean .timer-card.is-finished .finished-row-2 .task-title-display {
     display: inline-flex;
@@ -938,12 +1028,23 @@ html.timer-display-clean .timer-card.is-finished .finished-row-2 .task-title-dis
     flex-shrink: 0;
     width: 7px;
     height: 7px;
-    border-radius: 50%;
+    border-radius: 2px;
     background: var(--local-raw-color);
 }
 html.timer-display-clean .timer-card.is-finished .finished-elapsed-line {
     color: var(--text-sub) !important;
     font-weight: 600;
+}
+@media (max-width: 768px) {
+    html.timer-display-clean .timer-card--active .active-layout {
+        grid-template-columns: 72px minmax(90px, 1fr) minmax(94px, max-content) 24px;
+    }
+    html.timer-display-clean .timer-card--active .active-slot-time .time-text {
+        font-size: 0.9rem;
+    }
+    html.timer-display-clean .timer-card--active .active-slot-date .date-label {
+        font-size: 0.62rem;
+    }
 }
 html.neon-glow-enabled.timer-display-clean[data-theme="dark"] .timer-card:not(.is-warning-blinking) {
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
