@@ -2071,3 +2071,99 @@ html.timer-display-list .timer-list-row .timer-list-hint {
     color: var(--text-sub);
 }
 .tutorial-modal-body a { color: var(--primary); }
+
+/* 互動新手導覽 */
+.onboarding-tour {
+    position: fixed; inset: 0; z-index: 2200;
+    pointer-events: none;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s;
+}
+.onboarding-tour.is-active {
+    opacity: 1; visibility: visible;
+}
+.onboarding-spot {
+    position: fixed;
+    display: none;
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.62);
+    border: 2px solid var(--primary);
+    pointer-events: none;
+    z-index: 2201;
+    transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
+}
+.onboarding-card {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(360px, calc(100vw - 28px));
+    max-height: min(70vh, 420px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+    padding: 14px 16px 16px;
+    pointer-events: auto;
+    z-index: 2202;
+}
+.onboarding-card.is-docked {
+    transform: none;
+    max-height: min(42vh, 320px);
+}
+.onboarding-step-label {
+    margin: 0 0 6px;
+    font-size: 0.68rem;
+    font-weight: bold;
+    color: var(--primary);
+    letter-spacing: 0.02em;
+}
+.onboarding-title {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: var(--text-main);
+}
+.onboarding-body {
+    margin: 0 0 12px;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--text-sub);
+}
+.onboarding-hint {
+    margin: -4px 0 10px;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    color: var(--text-sub);
+}
+.onboarding-hint--warn { color: var(--danger); }
+.onboarding-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+.onboarding-skip {
+    margin-right: auto;
+    border: none;
+    background: none;
+    color: var(--text-sub);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 6px 4px;
+}
+.onboarding-skip:hover { color: var(--text-main); }
+.onboarding-next {
+    flex: 0 1 auto;
+    min-width: 7.5em;
+    margin-top: 0 !important;
+    font-size: 0.82rem !important;
+    padding: 10px 14px !important;
+}
+.onboarding-next:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+body.onboarding-active { overflow: hidden; }
