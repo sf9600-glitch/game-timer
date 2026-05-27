@@ -599,6 +599,7 @@ function startInteractiveTutorial(opts = {}) {
     onboardingActive = true;
     onboardingStepIndex = 0;
     onboardingBaselineTimerCount = getActiveTimers().length;
+    onboardingCreatedTimerId = null;
     const tour = document.getElementById('onboardingTour');
     if (!tour) return;
     tour.classList.add('is-active');
