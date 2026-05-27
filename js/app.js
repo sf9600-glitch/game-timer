@@ -549,22 +549,32 @@ function updateOnboardingChrome() {
 function positionOnboardingCard(rect) {
     const card = document.getElementById('onboardingCard');
     if (!card) return;
-    const margin = 12;
-    const cardW = Math.min(360, window.innerWidth - 28);
+    const vv = window.visualViewport;
+    const viewportWidth = Math.max(240, Math.floor(vv?.width || window.innerWidth));
+    const viewportHeight = Math.max(280, Math.floor(vv?.height || window.innerHeight));
+    const offsetLeft = Math.floor(vv?.offsetLeft || 0);
+    const offsetTop = Math.floor(vv?.offsetTop || 0);
+    const margin = isMobileLayout() ? 8 : 12;
+    const cardW = Math.min(360, viewportWidth - (margin * 2));
     const cardH = card.offsetHeight || 200;
     if (!rect || rect.width < 4 || rect.height < 4) {
         card.classList.remove('is-docked');
-        card.style.left = '50%';
-        card.style.top = '50%';
+        card.style.left = `${offsetLeft + (viewportWidth / 2)}px`;
+        card.style.top = `${offsetTop + (viewportHeight / 2)}px`;
         card.style.transform = 'translate(-50%, -50%)';
+        card.style.width = `${cardW}px`;
         return;
     }
     card.classList.add('is-docked');
     let top = rect.bottom + margin;
-    if (top + cardH > window.innerHeight - margin) top = rect.top - cardH - margin;
-    if (top < margin) top = margin;
+    const maxTop = offsetTop + viewportHeight - cardH - margin;
+    if (top > maxTop) top = rect.top - cardH - margin;
+    if (top > maxTop) top = maxTop;
+    if (top < offsetTop + margin) top = offsetTop + margin;
     let left = rect.left + rect.width / 2 - cardW / 2;
-    left = Math.max(margin, Math.min(left, window.innerWidth - cardW - margin));
+    const minLeft = offsetLeft + margin;
+    const maxLeft = offsetLeft + viewportWidth - cardW - margin;
+    left = Math.max(minLeft, Math.min(left, maxLeft));
     card.style.left = `${left}px`;
     card.style.top = `${top}px`;
     card.style.transform = 'none';
@@ -587,13 +597,26 @@ function positionOnboardingUi() {
         el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         onboardingPositionedStepId = step.id;
     }
+    const vv = window.visualViewport;
+    const viewportWidth = Math.max(240, Math.floor(vv?.width || window.innerWidth));
+    const viewportHeight = Math.max(280, Math.floor(vv?.height || window.innerHeight));
+    const offsetLeft = Math.floor(vv?.offsetLeft || 0);
+    const offsetTop = Math.floor(vv?.offsetTop || 0);
     const pad = step.id === 'undo-tip' ? 10 : 8;
     const r = el.getBoundingClientRect();
+    const minLeft = offsetLeft + 2;
+    const maxLeft = offsetLeft + viewportWidth - 2;
+    const minTop = offsetTop + 2;
+    const maxTop = offsetTop + viewportHeight - 2;
+    const safeLeft = Math.max(minLeft, r.left - pad);
+    const safeTop = Math.max(minTop, r.top - pad);
+    const safeRight = Math.min(maxLeft, r.right + pad);
+    const safeBottom = Math.min(maxTop, r.bottom + pad);
     spot.style.display = 'block';
-    spot.style.top = `${Math.max(0, r.top - pad)}px`;
-    spot.style.left = `${Math.max(0, r.left - pad)}px`;
-    spot.style.width = `${Math.max(40, r.width + pad * 2)}px`;
-    spot.style.height = `${Math.max(32, r.height + pad * 2)}px`;
+    spot.style.top = `${safeTop}px`;
+    spot.style.left = `${safeLeft}px`;
+    spot.style.width = `${Math.max(24, safeRight - safeLeft)}px`;
+    spot.style.height = `${Math.max(24, safeBottom - safeTop)}px`;
     const dockCard = step.id !== 'undo-tip' && step.id !== 'welcome';
     requestAnimationFrame(() => positionOnboardingCard(dockCard ? spot.getBoundingClientRect() : null));
 }
