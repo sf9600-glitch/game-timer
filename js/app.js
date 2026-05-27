@@ -2823,7 +2823,7 @@ function appendActiveCharGroups(parentEl, activeCharGroups, acc, safeId) {
 
 function appendGlobalFinishedCharGroups(parentEl, finishedCharGroups) {
     if (!finishedCharGroups.length) return;
-    if (isTimerDisplayList()) {
+    if (isTimerDisplayList() || isTimerDisplayClean()) {
         const list = document.createElement('div');
         list.className = 'timer-list timer-list--finished finished-global-row';
         list.id = 'list-finished-global-all';
