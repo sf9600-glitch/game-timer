@@ -2752,6 +2752,77 @@ function getTimerListCharLine(timer) {
     return `<div class="timer-list-charline">${getCharBadgeHtml(timer.email, charKey)}</div>`;
 }
 
+function getCleanCharPlainText(timer) {
+    const key = getCharGroupKey(timer.char);
+    return key === '（未指定角色）' ? '—' : key;
+}
+
+function getCleanTableHeadHtml(kind) {
+    if (kind === 'finished') {
+        return `<div class="clean-table-head" role="row">
+            <span class="clean-col clean-col-char">${t('cleanColChar')}</span>
+            <span class="clean-col clean-col-task">${t('cleanColTask')}</span>
+            <span class="clean-col clean-col-status">${t('cleanColStatus')}</span>
+            <span class="clean-col clean-col-del" aria-hidden="true"></span>
+        </div>`;
+    }
+    return `<div class="clean-table-head" role="row">
+        <span class="clean-col clean-col-char">${t('cleanColChar')}</span>
+        <span class="clean-col clean-col-task">${t('cleanColTask')}</span>
+        <span class="clean-col clean-col-remain">${t('cleanColRemain')}</span>
+        <span class="clean-col clean-col-end">${t('cleanColEnd')}</span>
+        <span class="clean-col clean-col-del" aria-hidden="true"></span>
+    </div>`;
+}
+
+function buildActiveTimerCleanRow(timer) {
+    const row = document.createElement('div');
+    row.className = 'clean-table-row timer-list-row timer-list-row--active';
+    row.id = `t-${timer.id}`;
+    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
+    const taskHex = taskObj ? taskObj.color : '#475569';
+    row.dataset.taskColor = taskHex;
+    if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
+    row.innerHTML = `
+        <span class="clean-col clean-col-char">${getCleanCharPlainText(timer)}</span>
+        <span class="clean-col clean-col-task">${timer.taskName}</span>
+        <span class="clean-col clean-col-remain timer-list-time">00:00:00</span>
+        <span class="clean-col clean-col-end timer-list-hint">--</span>
+        <button type="button" class="clean-col-del timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
+    return row;
+}
+
+function buildFinishedTimerCleanRow(timer) {
+    const row = document.createElement('div');
+    row.className = 'clean-table-row timer-list-row timer-list-row--finished is-finished';
+    row.id = `t-${timer.id}`;
+    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
+    const taskHex = taskObj ? taskObj.color : '#475569';
+    const finishTime = new Date(timer.finishDate);
+    row.dataset.taskColor = taskHex;
+    if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
+    row.innerHTML = `
+        <span class="clean-col clean-col-char">${getCleanCharPlainText(timer)}</span>
+        <span class="clean-col clean-col-task">${timer.taskName}</span>
+        <span class="clean-col clean-col-status timer-list-status finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</span>
+        <button type="button" class="clean-col-del timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
+    return row;
+}
+
+function appendCleanTableRows(tableBody, charGroups, buildRowFn) {
+    charGroups.forEach(({ timers }) => {
+        timers.forEach(timer => tableBody.appendChild(buildRowFn(timer)));
+    });
+}
+
+function mountCleanTable(parentEl, charGroups, kind, buildRowFn) {
+    const table = document.createElement('div');
+    table.className = `clean-table clean-table--${kind}`;
+    table.innerHTML = `${getCleanTableHeadHtml(kind)}<div class="clean-table-body" role="rowgroup"></div>`;
+    parentEl.appendChild(table);
+    appendCleanTableRows(table.querySelector('.clean-table-body'), charGroups, buildRowFn);
+}
+
 function buildActiveTimerListRow(timer) {
     const row = document.createElement('div');
     row.className = 'timer-list-row timer-list-row--active';
