@@ -2039,7 +2039,8 @@ function smartToggle(id) {
     }
 
     if (hadOpenTaskSubs && uiState.openSection !== 'taskContent') {
-        setTimeout(() => renderSidePanel(), 320);
+        if (onboardingActive) syncSubEditPanels();
+        else setTimeout(() => renderSidePanel(), 320);
     }
 }
 
