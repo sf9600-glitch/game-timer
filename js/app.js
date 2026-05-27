@@ -759,6 +759,12 @@ function advanceInteractiveTutorial() {
         finishInteractiveTutorial(false);
         return;
     }
+    const nextStep = steps[onboardingStepIndex + 1];
+    // iOS 點擊有時會被視覺重排吃掉，若下一步已是結尾就直接完成，避免要多按
+    if (nextStep && nextStep.id === 'done') {
+        finishInteractiveTutorial(false);
+        return;
+    }
     showOnboardingStep(onboardingStepIndex + 1);
 }
 
