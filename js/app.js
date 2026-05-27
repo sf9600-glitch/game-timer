@@ -3219,8 +3219,10 @@ function dispatchTimersToDOM() {
     updateClearFinishedButtonHighlight();
     updateTimersDataTicker(true);
     requestAnimationFrame(() => {
-        fitAllActiveTimerCardLabels();
-        fitAllFinishedTimerCardLabels();
+        if (!isTimerDisplayClean()) {
+            fitAllActiveTimerCardLabels();
+            fitAllFinishedTimerCardLabels();
+        }
         syncTimerListSideAlign();
     });
 }
