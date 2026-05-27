@@ -103,7 +103,31 @@ const LOCALE_INLINE_FALLBACK = {
         timerDisplayHint: '简洁／彩色为卡片；文字列表按角色分组，每行一笔，组内即将结束的排最前。',
         timerDisplayClean: '简洁',
         timerDisplayColorful: '彩色进度',
-        timerDisplayList: '文字列表'
+        timerDisplayList: '文字列表',
+        openInteractiveGuide: '🎯 互动新手教学',
+        onboardWelcomeTitle: '欢迎！我们带你建立第一个计时器',
+        onboardWelcomeBody: '这个 App 和一般程序不太一样：左侧（或手机的「管理」）负责设定，右侧主画面显示倒数。接下来会一步一步带你操作。',
+        onboardOpenStartTitle: '打开「开新计时器」',
+        onboardOpenStartBodyDesktop: '请点左侧高亮的「开新计时器」，展开启动表单（若已展开可直接按下一步）。',
+        onboardOpenStartBodyMobile: '请点主画面上方高亮的「开新计时器」，从底部拉出启动表单。',
+        onboardPickRoleTitle: '选账号与角色',
+        onboardPickRoleBody: '在这里选要用哪个游戏账号、哪个角色。第一次使用可先沿用预设的「账号1／角色1」。',
+        onboardPickTaskTitle: '选任务类型',
+        onboardPickTaskBody: '选一个任务标签（例如训练、采集）。若该标签有子项目，会多一个「内容」下拉选单。',
+        onboardSetTimeTitle: '设定倒数时间',
+        onboardSetTimeBody: '输入天、时、分、秒，或点快捷键（建议先试「+1分」）。上方大字会同步显示总时长。',
+        onboardStartTitle: '开始计时',
+        onboardStartBody: '时间设好后，点「开始计时」。成功后主画面会出现倒数卡片。',
+        onboardDoneTitle: '完成！',
+        onboardDoneBody: '你的第一个计时器已在主画面运作。之后可从「系统与主题」重新开启互动教学或阅读完整说明。',
+        onboardSkip: '跳过教学',
+        onboardNext: '下一步',
+        onboardFinish: '完成教学',
+        onboardStepLabel: '步骤 {n} / {total}',
+        onboardNeedTimeHint: '请先设定时间（例如点「+1分」），再按下一步。',
+        onboardNeedStartHint: '请点击「开始计时」建立你的第一个计时器。',
+        onboardNeedOpenStartDesktop: '请先点左侧「开新计时器」展开表单。',
+        onboardNeedOpenStartMobile: '请先点上方「开新计时器」打开表单。'
     }
 };
 const I18N = {};
