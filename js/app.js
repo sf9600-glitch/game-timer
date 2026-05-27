@@ -475,15 +475,16 @@ function updateOnboardingChrome() {
     const ready = onboardingWaitSatisfied(step);
     if (nextBtn) nextBtn.disabled = !!step.waitFor && !ready && step.id !== 'welcome';
     if (hint) {
-        if (step.waitFor === 'time-set' && !ready) {
+        let hintKey = '';
+        if (step.waitFor === 'panel-open' && !ready) hintKey = 'onboardNeedPanelOpen';
+        else if (step.waitFor === 'time-set' && !ready) hintKey = 'onboardNeedTimeHint';
+        else if (step.waitFor === 'timer-created' && !ready) hintKey = 'onboardNeedStartHint';
+        else if (step.waitFor === 'start-open' && !ready) hintKey = isMobileLayout() ? 'onboardNeedOpenStartMobile' : 'onboardNeedOpenStartDesktop';
+        else if (step.waitFor === 'timer-deleted' && !ready) hintKey = 'onboardNeedDeleteHint';
+        else if (step.waitFor === 'undo-visible' && !ready) hintKey = 'onboardNeedUndoHint';
+        if (hintKey) {
             hint.hidden = false;
-            hint.textContent = t('onboardNeedTimeHint');
-        } else if (step.waitFor === 'timer-created' && !ready) {
-            hint.hidden = false;
-            hint.textContent = t('onboardNeedStartHint');
-        } else if (step.waitFor === 'start-open' && !ready) {
-            hint.hidden = false;
-            hint.textContent = t(isMobileLayout() ? 'onboardNeedOpenStartMobile' : 'onboardNeedOpenStartDesktop');
+            hint.textContent = t(hintKey);
         } else {
             hint.hidden = true;
             hint.textContent = '';
