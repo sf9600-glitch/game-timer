@@ -3623,5 +3623,6 @@ window.addEventListener('resize', () => syncLayoutForViewport());
     syncPanelMobileControls();
     lastLayoutWasMobile = isMobileLayout();
     initMobilePanelState();
+    maybeStartInteractiveTutorial();
     runGlobalClockTick();
 })();
