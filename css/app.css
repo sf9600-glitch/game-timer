@@ -2158,12 +2158,30 @@ html.timer-display-list .timer-list-row .timer-list-hint {
 .onboarding-next {
     flex: 0 1 auto;
     min-width: 7.5em;
-    margin-top: 0 !important;
-    font-size: 0.82rem !important;
-    padding: 10px 14px !important;
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: bold;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #fff;
+    background-color: var(--primary);
+    box-shadow: 0 3px 0 color-mix(in srgb, #000 28%, var(--primary));
+    transform: none;
+    transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+.onboarding-next:not(:disabled):hover {
+    filter: brightness(1.06);
+}
+.onboarding-next:not(:disabled):active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 color-mix(in srgb, #000 28%, var(--primary));
 }
 .onboarding-next:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 body.onboarding-active { overflow: hidden; }
