@@ -1070,6 +1070,7 @@ function normalizeConfig() {
     }
     if (config.neonGlow === undefined) config.neonGlow = true;
     if (!['clean', 'colorful', 'list'].includes(config.timerDisplay)) config.timerDisplay = 'clean';
+    if (config.showAccountHeader === undefined) config.showAccountHeader = true;
     applyNeonGlow();
     applyTimerDisplayMode();
 }
@@ -1100,6 +1101,19 @@ function setTimerDisplay(mode) {
     touchLocalUpdated();
     scheduleCloudSync();
     syncMainTimerDisplayBar();
+    refreshMainDisplay();
+    renderSidePanel();
+}
+
+function isAccountHeaderVisible() {
+    return config.showAccountHeader !== false;
+}
+
+function setAccountHeaderVisible(show) {
+    config.showAccountHeader = !!show;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    touchLocalUpdated();
+    scheduleCloudSync();
     refreshMainDisplay();
     renderSidePanel();
 }
@@ -1147,7 +1161,8 @@ const defaultConfig = {
     defaultTasks: cloneTasks(BUILTIN_DEFAULT_TASKS),
     undoTime: 10,
     neonGlow: true,
-    timerDisplay: 'clean'
+    timerDisplay: 'clean',
+    showAccountHeader: true
 };
 
 let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
