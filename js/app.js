@@ -220,17 +220,52 @@ function closeTutorialModal() {
     document.getElementById('tutorialModal')?.classList.remove('show');
 }
 
-const ONBOARDING_STORAGE_KEY = 'GameTimer_InteractiveTutorial_v1';
+const ONBOARDING_STORAGE_KEY = 'GameTimer_InteractiveTutorial_v2';
 let onboardingActive = false;
 let onboardingStepIndex = 0;
 let onboardingPollId = null;
 let onboardingBaselineTimerCount = 0;
+let onboardingCreatedTimerId = null;
 let onboardingResizeHandler = null;
 
 function isStartFormOpen() {
     if (isMobileLayout()) return !!document.getElementById('startSheet')?.classList.contains('show');
     const sc = document.getElementById('startContent');
     return uiState.openSection === 'startContent' && !!sc?.classList.contains('active');
+}
+
+function isSidePanelOpen() {
+    return !!document.getElementById('sidePanel')?.classList.contains('panel-open');
+}
+
+function ensureSidePanelForOnboarding() {
+    if (!isMobileLayout()) return;
+    closeStartSheet();
+    setSidePanelOpen(true);
+}
+
+function ensureMainViewForOnboarding() {
+    if (isMobileLayout()) {
+        closeStartSheet();
+        setSidePanelOpen(false);
+    }
+}
+
+function ensureAccSectionForOnboarding() {
+    ensureSidePanelForOnboarding();
+    closeStartSheet();
+    if (uiState.openSection !== 'accContent') smartToggle('accContent');
+}
+
+function ensureTaskSectionForOnboarding() {
+    ensureSidePanelForOnboarding();
+    closeStartSheet();
+    if (uiState.openSection !== 'taskContent') smartToggle('taskContent');
+}
+
+function ensureFirstTaskSubPanelForOnboarding() {
+    ensureTaskSectionForOnboarding();
+    if (config.tasks.length && !isTaskSubPanelOpen(0)) toggleEditTask(0);
 }
 
 function ensureStartFormForOnboarding() {
@@ -247,6 +282,30 @@ function ensureStartFormForOnboarding() {
     }
 }
 
+function captureOnboardingCreatedTimerId() {
+    const timers = getActiveTimers();
+    if (!timers.length) return null;
+    return timers[timers.length - 1].id;
+}
+
+function isOnboardingTutorialTimerActive() {
+    if (onboardingCreatedTimerId == null) return false;
+    return getActiveTimers().some(t => String(t.id) === String(onboardingCreatedTimerId));
+}
+
+function getOnboardingTimerDeleteButton() {
+    if (onboardingCreatedTimerId == null) return null;
+    const id = onboardingCreatedTimerId;
+    return document.querySelector(`button[onclick="delTask(${id})"]`)
+        || document.querySelector(`.timer-card button[onclick*="delTask(${id})"]`);
+}
+
+function goOnboardingStepById(stepId) {
+    const steps = getOnboardingSteps();
+    const idx = steps.findIndex(s => s.id === stepId);
+    if (idx >= 0) showOnboardingStep(idx);
+}
+
 function getOnboardingSteps() {
     const mobile = isMobileLayout();
     return [
@@ -256,6 +315,47 @@ function getOnboardingSteps() {
             bodyKey: 'onboardWelcomeBody',
             nextKey: 'onboardNext',
             target: null
+        },
+        {
+            id: 'layout',
+            titleKey: mobile ? 'onboardLayoutTitleMobile' : 'onboardLayoutTitleDesktop',
+            bodyKey: mobile ? 'onboardLayoutBodyMobile' : 'onboardLayoutBodyDesktop',
+            nextKey: 'onboardNext',
+            target: () => mobile ? (document.querySelector('.main-settings-btn') || document.getElementById('sidePanel')) : document.getElementById('sidePanel'),
+            waitFor: mobile ? 'panel-open' : null,
+            prepare: ensureSidePanelForOnboarding
+        },
+        {
+            id: 'add-account',
+            titleKey: 'onboardAddAccountTitle',
+            bodyKey: 'onboardAddAccountBody',
+            nextKey: 'onboardNext',
+            target: () => document.getElementById('newEmailInput')?.closest('div') || document.getElementById('sec-acc'),
+            prepare: ensureAccSectionForOnboarding
+        },
+        {
+            id: 'add-character',
+            titleKey: 'onboardAddCharTitle',
+            bodyKey: 'onboardAddCharBody',
+            nextKey: 'onboardNext',
+            target: () => document.querySelector('#emailList .btn-mini[onclick^="addCharacter"]') || document.getElementById('emailList'),
+            prepare: ensureAccSectionForOnboarding
+        },
+        {
+            id: 'task-tags',
+            titleKey: 'onboardTaskTagsTitle',
+            bodyKey: 'onboardTaskTagsBody',
+            nextKey: 'onboardNext',
+            target: () => document.getElementById('newTaskInput')?.closest('div') || document.getElementById('sec-task'),
+            prepare: ensureTaskSectionForOnboarding
+        },
+        {
+            id: 'add-sub',
+            titleKey: 'onboardAddSubTitle',
+            bodyKey: 'onboardAddSubBody',
+            nextKey: 'onboardNext',
+            target: () => document.getElementById('subIn-0')?.closest('.sub-edit-panel') || document.getElementById('subIn-0') || document.getElementById('taskList'),
+            prepare: ensureFirstTaskSubPanelForOnboarding
         },
         {
             id: 'open-start',
@@ -306,15 +406,34 @@ function getOnboardingSteps() {
             waitFor: 'timer-created',
             prepare: () => {
                 onboardingBaselineTimerCount = getActiveTimers().length;
+                onboardingCreatedTimerId = null;
                 ensureStartFormForOnboarding();
             }
+        },
+        {
+            id: 'delete-timer',
+            titleKey: 'onboardDeleteTimerTitle',
+            bodyKey: 'onboardDeleteTimerBody',
+            nextKey: 'onboardNext',
+            target: () => getOnboardingTimerDeleteButton() || document.querySelector('#mainDisplay .timer-card'),
+            waitFor: 'timer-deleted',
+            prepare: ensureMainViewForOnboarding
+        },
+        {
+            id: 'undo-tip',
+            titleKey: 'onboardUndoTitle',
+            bodyKey: 'onboardUndoBody',
+            nextKey: 'onboardNext',
+            target: () => document.getElementById('undoToast'),
+            waitFor: 'undo-visible',
+            prepare: ensureMainViewForOnboarding
         },
         {
             id: 'done',
             titleKey: 'onboardDoneTitle',
             bodyKey: 'onboardDoneBody',
             nextKey: 'onboardFinish',
-            target: () => document.querySelector('#mainDisplay .timer-card') || document.getElementById('mainDisplay')
+            target: () => document.querySelector('#mainDisplay .account-group') || document.getElementById('mainDisplay')
         }
     ];
 }
