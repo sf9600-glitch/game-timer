@@ -42,6 +42,20 @@
         <span onclick="dismissUndo()" style="margin-left:10px; cursor:pointer; font-weight: bold;">&times;</span>
     </div>
 
+    <div class="onboarding-tour" id="onboardingTour" aria-hidden="true">
+        <div class="onboarding-spot" id="onboardingSpot" aria-hidden="true"></div>
+        <div class="onboarding-card" id="onboardingCard" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+            <p class="onboarding-step-label" id="onboardingStepLabel"></p>
+            <h2 class="onboarding-title" id="onboardingTitle"></h2>
+            <p class="onboarding-body" id="onboardingBody"></p>
+            <p class="onboarding-hint onboarding-hint--warn" id="onboardingHint" hidden></p>
+            <div class="onboarding-actions">
+                <button type="button" class="onboarding-skip" id="onboardingSkipBtn" onclick="skipInteractiveTutorial()"></button>
+                <button type="button" class="onboarding-next btn-main" id="onboardingNextBtn" onclick="advanceInteractiveTutorial()"></button>
+            </div>
+        </div>
+    </div>
+
     <div class="tutorial-modal" id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialModalTitle" onclick="if(event.target===this)closeTutorialModal()">
         <div class="tutorial-modal-card" onclick="event.stopPropagation()">
             <div class="tutorial-modal-header">
