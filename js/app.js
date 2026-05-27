@@ -463,7 +463,6 @@ function getOnboardingSteps() {
             bodyKey: 'onboardUndoBody',
             nextKey: 'onboardNext',
             target: () => document.getElementById('undoToast'),
-            waitFor: 'undo-visible',
             prepare: ensureMainViewForOnboarding
         },
         {
