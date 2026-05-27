@@ -381,7 +381,6 @@ function getOnboardingSteps() {
             bodyKey: mobile ? 'onboardLayoutBodyMobile' : 'onboardLayoutBodyDesktop',
             nextKey: 'onboardNext',
             target: () => mobile ? (document.querySelector('.main-settings-btn') || document.getElementById('sidePanel')) : document.getElementById('sidePanel'),
-            waitFor: mobile ? 'panel-open' : null,
             prepare: ensureSidePanelForOnboarding
         },
         {
