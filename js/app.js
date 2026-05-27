@@ -2908,7 +2908,14 @@ function appendActiveCharGroups(parentEl, activeCharGroups, acc, safeId) {
 
 function appendGlobalFinishedCharGroups(parentEl, finishedCharGroups) {
     if (!finishedCharGroups.length) return;
-    if (isTimerDisplayList() || isTimerDisplayClean()) {
+    if (isTimerDisplayClean()) {
+        const mount = document.createElement('div');
+        mount.className = 'clean-table-mount finished-global-row';
+        parentEl.appendChild(mount);
+        mountCleanTable(mount, finishedCharGroups, 'finished', buildFinishedTimerCleanRow);
+        return;
+    }
+    if (isTimerDisplayList()) {
         const list = document.createElement('div');
         list.className = 'timer-list timer-list--finished finished-global-row';
         list.id = 'list-finished-global-all';
