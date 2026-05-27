@@ -1384,10 +1384,73 @@ function getSnapshotSelectLabel(snapshot) {
     return snapshot.label ? `${date} · ${snapshot.label}` : date;
 }
 
-function getSelectedRecoverySnapshot() {
+function getRecoveryOptionEntries() {
+    const entries = getLocalSnapshots().map(s => ({
+        id: `local:${s.id}`,
+        source: 'local',
+        createdAt: s.createdAt || 0,
+        text: `${getSnapshotSelectLabel(s)}　${t('recoverySourceLocal')}`,
+        snapshot: s
+    }));
+    if (isCloudSyncActive() && lastCloudUpdatedAt > 0) {
+        entries.push({
+            id: 'cloud',
+            source: 'cloud',
+            createdAt: lastCloudUpdatedAt,
+            text: `${formatSnapshotDateTime(lastCloudUpdatedAt)}　${t('recoverySourceCloud')}`,
+            snapshot: null
+        });
+    }
+    entries.sort((a, b) => b.createdAt - a.createdAt);
+    return entries;
+}
+
+function normalizeRecoverySelectionId(entries) {
+    if (!entries.length) return null;
+    const cur = uiState.selectedRecoverySnapshotId;
+    if (cur && entries.some(e => e.id === cur)) return cur;
+    return entries[0].id;
+}
+
+function getSelectedRecoveryEntry() {
     const sel = document.getElementById('recoverySnapshotSelect');
-    if (!sel || !sel.value) return null;
-    return getLocalSnapshots().find(s => String(s.id) === String(sel.value)) || null;
+    if (!sel?.value) return null;
+    return getRecoveryOptionEntries().find(e => e.id === sel.value) || null;
+}
+
+function getSelectedRecoverySnapshot() {
+    const entry = getSelectedRecoveryEntry();
+    if (!entry || entry.source !== 'local') return null;
+    return entry.snapshot;
+}
+
+function applyRecoveryPayload(p) {
+    if (!p) return;
+    if (p.config) {
+        config = JSON.parse(JSON.stringify(p.config));
+        normalizeConfig();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    }
+    if (Array.isArray(p.undoStack)) {
+        undoStack = JSON.parse(JSON.stringify(p.undoStack));
+        persistUndoStack({ skipCloud: true });
+    }
+    if (p.theme) {
+        localStorage.setItem(THEME_KEY, p.theme);
+        setTheme(p.theme, { skipCloud: true, skipRender: true });
+    }
+    if (p.lang && I18N[p.lang]) {
+        currentLang = p.lang;
+        localStorage.setItem(LANG_KEY, p.lang);
+        document.documentElement.lang = p.lang;
+        document.title = t('appAppTitle') || t('appTitle');
+    }
+    const timers = Array.isArray(p.activeTimers) ? JSON.parse(JSON.stringify(p.activeTimers)) : [];
+    setActiveTimers(timers, { immediateCloud: true });
+    renderSidePanel();
+    refreshMainDisplay();
+    dispatchTimersToDOM();
+    if (undoStack.length) updateUndoToastText();
 }
 
 function applyLocalSnapshot(snapshot) {
