@@ -375,6 +375,32 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     line-height: normal;
     overflow: visible;
 }
+.account-group--no-header .account-content { margin-top: 0; }
+.account-group-header--controls-only {
+    justify-content: flex-end;
+    margin-bottom: 6px;
+}
+.account-header-toggle-row {
+    margin-bottom: 8px;
+    padding: 7px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg);
+}
+.account-header-toggle-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.66rem;
+    color: var(--text-sub);
+}
+.account-header-toggle-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.account-header-toggle-actions .btn-adjust {
+    margin-bottom: 0;
+}
 .timer-display-header-tabs {
     display: inline-flex;
     flex-wrap: wrap;
