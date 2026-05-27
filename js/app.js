@@ -3457,6 +3457,7 @@ function updateTimersDataTicker(skipRelayout = false) {
 
     if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
     else {
+        syncFinishedNotifyState();
         updateClearFinishedButtonHighlight();
         requestAnimationFrame(() => {
             if (!isTimerDisplayClean()) {
