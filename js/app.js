@@ -299,6 +299,46 @@ let onboardingCreatedTimerId = null;
 let onboardingResizeHandler = null;
 let onboardingPositionedStepId = null;
 const ONBOARDING_STRICT_WAITS = new Set(['timer-created', 'timer-deleted']);
+const finishedNotifyIds = new Set();
+
+function shouldNotifyOnFinish(timer) {
+    return timer?.notifyOnFinish !== false;
+}
+
+function canUseWebNotification() {
+    return typeof window !== 'undefined' && 'Notification' in window;
+}
+
+function requestNotificationPermissionIfNeeded() {
+    if (!canUseWebNotification()) return;
+    if (Notification.permission !== 'default') return;
+    Notification.requestPermission().catch(() => {});
+}
+
+function triggerFinishNotification(timer) {
+    if (!shouldNotifyOnFinish(timer) || !timer?.id) return;
+    const id = String(timer.id);
+    if (finishedNotifyIds.has(id)) return;
+    finishedNotifyIds.add(id);
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate([180, 120, 180]);
+    }
+    if (!canUseWebNotification() || Notification.permission !== 'granted') return;
+    const task = timer.taskName || t('taskStart');
+    try {
+        new Notification(t('timerDoneNoticeTitle'), {
+            body: tp('timerDoneNoticeBody', { task }),
+            tag: `timer-finish-${id}`
+        });
+    } catch (_) {}
+}
+
+function syncFinishedNotifyState() {
+    const activeIds = new Set(getActiveTimers().map(t => String(t.id)));
+    [...finishedNotifyIds].forEach(id => {
+        if (!activeIds.has(id)) finishedNotifyIds.delete(id);
+    });
+}
 
 function openOnboardingSection(sectionId) {
     if (!SECTION_IDS.includes(sectionId)) return;
