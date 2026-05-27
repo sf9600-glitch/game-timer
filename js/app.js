@@ -2591,6 +2591,13 @@ function renderSidePanel() {
         <div class="config-section" id="sec-acc" style="--section-color: ${config.colors.acc};">
             <div class="config-title" onclick="smartToggle('accContent')"><span>${t('accMgmt')}</span><input type="color" class="color-input" value="${config.colors.acc}" onclick="event.stopPropagation()" onchange="updateSectionColor('acc', this.value)"></div>
             <div id="accContent" class="collapsible-content ${uiState.openSection === 'accContent' ? 'active' : ''}"><div>
+                <div class="account-header-toggle-row">
+                    <span class="account-header-toggle-label">${t('accountHeaderDisplay')}</span>
+                    <div class="account-header-toggle-actions">
+                        <button type="button" class="btn-adjust${isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(true)">${t('accountHeaderOn')}</button>
+                        <button type="button" class="btn-adjust${!isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(false)">${t('accountHeaderOff')}</button>
+                    </div>
+                </div>
                 <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
                 <div id="emailList">${config.accounts.map((acc, i) => `
                     <div style="background-color:var(--bg); padding:8px; border-radius:8px; margin-bottom:4px; border:1px solid var(--border-color);">
