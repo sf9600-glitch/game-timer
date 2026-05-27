@@ -2567,7 +2567,7 @@ function refreshStartContentLabels() {
     if (clearBtn) clearBtn.textContent = t('clearFinished');
     const resetBtn = root.querySelector('button[onclick="resetTime()"]');
     if (resetBtn) resetBtn.textContent = t('resetTime');
-    const labelMap = { account: 'startLabelAccount', char: 'startLabelChar', task: 'startLabelTask', sub: 'startLabelSub' };
+    const labelMap = { account: 'startLabelAccount', char: 'startLabelChar', task: 'startLabelTask', sub: 'startLabelSub', notify: 'notifyOnFinishLabel' };
     root.querySelectorAll('[data-start-label]').forEach(el => {
         const key = labelMap[el.dataset.startLabel];
         if (key) el.textContent = t(key);
