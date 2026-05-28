@@ -1,0 +1,4 @@
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
+/bin/bash: /Users/yehvincent/Library/Mobile Documents/com~apple~CloudDocs/My AI programs/scripts/watch-deploy.sh: Operation not permitted
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
+/bin/bash: /Users/yehvincent/Library/Mobile Documents/com~apple~CloudDocs/My AI programs/scripts/watch-deploy.sh: Operation not permitted
