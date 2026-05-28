@@ -2350,6 +2350,9 @@ async function confirmNewPasswordFromUI() {
         try {
             await mergeCloudFromRemote();
             startCloudPoll();
+            if (Notification.permission === 'granted') {
+                await ensureWebPushSubscription().catch(e => console.warn('push after login', e));
+            }
         } catch (e) {
             console.error(e);
         }
