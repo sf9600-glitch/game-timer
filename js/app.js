@@ -2469,6 +2469,7 @@ async function initCloudSync() {
                     await mergeCloudFromRemote();
                     startCloudPoll();
                     if (event === 'SIGNED_IN') updateCloudSyncUI('cloudLoggedIn');
+                    await setupBackgroundPushAfterLogin();
                 } catch (e) {
                     console.error(e);
                     updateCloudSyncUI('cloudLoadFailed');
