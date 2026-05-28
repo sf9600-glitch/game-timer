@@ -1207,6 +1207,35 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     margin: 0 0 10px 0;
     letter-spacing: 0.02em;
 }
+.notify-setup-block {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.notify-setup-hint {
+    margin: 0 0 6px;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    color: var(--text-sub);
+}
+.notify-setup-hint--sub { font-size: 0.64rem; margin-bottom: 4px; }
+.notify-setup-hint--warn { color: var(--danger); margin-top: 6px; margin-bottom: 0; }
+.notify-setup-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    margin-top: 8px;
+}
+.notify-setup-status { font-weight: 600; }
+.notify-setup-status--granted { color: var(--success, #16a34a); }
+.notify-setup-status--denied { color: var(--danger); }
+.notify-setup-status--default { color: var(--text-sub); }
+.notify-setup-status--unsupported { color: var(--text-sub); }
+
 .sys-block-divider {
     height: 1px;
     background: var(--border-color);
