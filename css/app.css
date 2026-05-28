@@ -1437,14 +1437,16 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
 }
 .notify-enable-banner--dismissed { display: none !important; }
 .notify-enable-banner-head { position: relative; z-index: 1; }
-.notify-setup-panel {
+.notify-setup-panel,
+.cloud-sync-panel {
     margin-bottom: 10px;
     background: var(--bg);
     border-radius: 8px;
     border: 1px solid var(--border-color);
     overflow: hidden;
 }
-.notify-setup-panel-title {
+.notify-setup-panel-title,
+.cloud-sync-panel-title {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1457,26 +1459,45 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
-.notify-setup-panel-title-text {
+.notify-setup-panel-title-text,
+.cloud-sync-panel-title-text {
     flex: 1;
     min-width: 0;
     text-align: left;
 }
-.notify-setup-panel-meta {
+.notify-setup-panel-meta,
+.cloud-sync-panel-meta {
     flex-shrink: 0;
+    max-width: 42%;
     font-size: 0.64rem;
     font-weight: 700;
+    color: var(--text-sub);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
 }
-.notify-setup-panel-chevron {
+.notify-setup-panel-chevron,
+.cloud-sync-panel-chevron {
     flex-shrink: 0;
     font-size: 0.9rem;
     line-height: 1;
     color: var(--text-sub);
     transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.notify-setup-panel--open .notify-setup-panel-chevron { transform: rotate(90deg); }
-.notify-setup-panel-body.collapsible-content.active { margin-top: 0; }
-.notify-setup-panel-body > div { padding: 0 10px 10px; }
+.notify-setup-panel--open .notify-setup-panel-chevron,
+.cloud-sync-panel--open .cloud-sync-panel-chevron { transform: rotate(90deg); }
+.notify-setup-panel-body.collapsible-content.active,
+.cloud-sync-panel-body.collapsible-content.active { margin-top: 0; }
+.notify-setup-panel-body > div,
+.cloud-sync-panel-body > div { padding: 0 10px 10px; }
+.cloud-sync-panel .cloud-sync-box {
+    margin-bottom: 0;
+    padding: 8px 0 0;
+    border: none;
+    background: transparent;
+    border-radius: 0;
+}
 .notify-setup-panel .notify-permission-btn--compact {
     width: auto;
     max-width: 100%;
