@@ -650,6 +650,7 @@ function renderNotificationHelpHtml() {
     if (ios) extraHints.push(t('notifySearchNames'));
     if (standalone) extraHints.push(t('notifyReinstallHint'));
     extraHints.push(t('notifySafariOnly'), t('notifyLimitHint'));
+    if (isWebPushConfigured()) extraHints.push(t(getPushBackgroundStatusKey()));
     if (ios && !canUseWebNotification()) extraHints.unshift(t('notifyIosOld'));
     const panelOpen = uiState.notifySetupExpanded ? ' notify-setup-panel--open' : '';
     const panelActive = uiState.notifySetupExpanded ? ' active' : '';
