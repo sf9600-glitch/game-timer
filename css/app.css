@@ -1375,33 +1375,58 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
         -webkit-text-fill-color: #ffffff;
     }
 }
-.notify-enable-banner-dismiss {
+.notify-enable-banner-dismiss,
+.notify-desktop-prompt-dismiss {
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    min-width: 36px;
-    min-height: 36px;
-    margin: -4px -6px 0 0;
+    min-width: 38px;
+    min-height: 38px;
+    margin: 0;
     padding: 0;
-    border: none;
+    border: 1px solid #94a3b8;
     border-radius: 8px;
-    background: rgba(15, 23, 42, 0.08);
-    color: #334155;
-    font-size: 1.25rem;
+    background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+    color: #334155 !important;
+    -webkit-text-fill-color: #334155;
+    font-size: 1.2rem;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 3px 0 #94a3b8;
+    transform: translateY(-2px);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    position: relative;
+    z-index: 2;
 }
-.notify-enable-banner-dismiss:active {
-    background: rgba(15, 23, 42, 0.16);
+.notify-enable-banner-dismiss.btn-press-3d:not(:disabled):active,
+.notify-enable-banner-dismiss:active,
+.notify-desktop-prompt-dismiss.btn-press-3d:not(:disabled):active,
+.notify-desktop-prompt-dismiss:active {
+    transform: translateY(0);
+    box-shadow:
+        inset 0 2px 3px rgba(15, 23, 42, 0.18),
+        0 0 0 transparent;
+    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
 }
-[data-theme="dark"] .notify-enable-banner-dismiss {
-    background: rgba(255, 255, 255, 0.12);
-    color: #dbeafe;
+[data-theme="dark"] .notify-enable-banner-dismiss,
+[data-theme="dark"] .notify-desktop-prompt-dismiss {
+    border-color: #64748b;
+    background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+    color: #e2e8f0 !important;
+    -webkit-text-fill-color: #e2e8f0;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 3px 0 #0f172a;
 }
+.notify-enable-banner--dismissed { display: none !important; }
+.notify-enable-banner-head { position: relative; z-index: 1; }
 .notify-setup-block {
     margin-bottom: 10px;
     padding: 10px;
