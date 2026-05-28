@@ -1351,9 +1351,10 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     -webkit-tap-highlight-color: transparent;
 }
 .notify-permission-btn--block { width: 100%; }
-.notify-enable-banner-actions .notify-permission-btn {
-    font-size: 0.7rem;
-    padding: 7px 12px;
+.notify-enable-banner .notify-permission-btn {
+    font-size: 0.78rem;
+    padding: 10px 14px;
+    min-height: 40px;
 }
 .notify-permission-btn:active {
     transform: translateY(1px);

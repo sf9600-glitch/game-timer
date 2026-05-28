@@ -79,7 +79,7 @@ const LOCALE_INLINE_FALLBACK = {
         notifyReinstallHint: '若已加入主畫面仍異常：長按主畫面圖示刪除 → Safari 重新加入主畫面 → 從新圖示開啟 → 再按「允許通知」。',
         notifyIosOld: '此 iPhone 需 iOS 16.4 以上才支援網頁 App 通知；請到「設定→一般→軟體更新」檢查。',
         notifyBannerTitle: '請開啟到點通知',
-        notifyBannerBody: '按右側按鈕並在系統視窗選「允許」，之後才會出現在 iPhone「設定→通知」。',
+        notifyBannerBody: '按下方按鈕並在系統視窗選「允許」，之後才會出現在 iPhone「設定→通知」。',
         notifyTestBtn: '測試通知',
         notifyTestBody: '若看到這則通知，代表已設定成功。',
         openInteractiveGuide: '🎯 互動新手教學',
