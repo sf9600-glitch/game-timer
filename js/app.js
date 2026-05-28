@@ -485,6 +485,11 @@ async function ensureWebPushSubscription() {
     }
 }
 
+async function setupBackgroundPushAfterLogin() {
+    if (Notification.permission !== 'granted') return;
+    await ensureWebPushSubscription().catch(err => console.warn('setupBackgroundPushAfterLogin', err));
+}
+
 async function requestNotificationPermissionExplicit() {
     if (!canUseWebNotificationOnThisDevice()) {
         alert(isIOSDevice() && !isStandalonePwa() ? t('notifyNeedStandalone') : t('notifyIosOld'));
