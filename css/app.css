@@ -163,14 +163,17 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
 ::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover); }
 
 .config-section { margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--section-color); background-color: color-mix(in srgb, var(--section-color) 4%, var(--panel-bg)); transition: border-color 0.3s ease, border-top-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; }
-/* 開新計時器：整列標題可點擊折疊，中央膠囊樣式 */
+/* 開新計時器：改為與其他區塊相同標題樣式 */
 .config-title.config-title--start {
-    justify-content: center;
-    width: 100%;
+    justify-content: space-between;
+    width: auto;
     box-sizing: border-box;
-    padding: 4px 0 8px;
+    padding: 5px 0;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+}
+.config-title.config-title--start .config-title-start-text {
+    display: inline-block;
 }
 #sec-start-entry .config-title.config-title--start,
 #sec-start-entry.config-section {
@@ -187,9 +190,7 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
 #sec-start.config-section--collapsible #startContent {
     cursor: default;
 }
-.config-title--start-mobile {
-    cursor: pointer;
-}
+.config-title--start-mobile { cursor: pointer; }
 .config-title-start-pill,
 .start-capsule-btn {
     width: auto;
