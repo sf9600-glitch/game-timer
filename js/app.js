@@ -399,14 +399,107 @@ function afterNotificationPermissionChanged() {
     renderSidePanel();
 }
 
-function requestNotificationPermissionExplicit() {
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    const out = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+}
+
+function isWebPushConfigured() {
+    const k = String(WEB_PUSH_VAPID_PUBLIC_KEY || '').trim();
+    return k.length > 20 && !k.includes('YOUR_');
+}
+
+function canUseBackgroundPush() {
+    return isWebPushConfigured()
+        && isCloudSyncActive()
+        && Notification.permission === 'granted'
+        && 'serviceWorker' in navigator
+        && 'PushManager' in window;
+}
+
+function getPushBackgroundStatusKey() {
+    if (!isWebPushConfigured()) return 'pushBackgroundNeedVapid';
+    if (!isCloudSyncActive()) return 'pushBackgroundNeedLogin';
+    if (Notification.permission !== 'granted') return 'pushBackgroundNeedAllow';
+    return 'pushBackgroundOk';
+}
+
+async function savePushSubscription(subscription) {
+    const sb = getSupabase();
+    if (!sb || !currentUser || !subscription) return;
+    const json = subscription.toJSON();
+    const keys = json.keys || {};
+    await sb.from('push_subscriptions').upsert({
+        user_id: currentUser.id,
+        endpoint: json.endpoint,
+        p256dh: keys.p256dh,
+        auth_key: keys.auth
+    }, { onConflict: 'endpoint' });
+}
+
+async function syncPushScheduleToServer() {
+    if (!canUseBackgroundPush()) return;
+    const sb = getSupabase();
+    const uid = currentUser.id;
+    const now = Date.now();
+    const timers = getActiveTimers().filter(timer => {
+        if (!shouldNotifyOnFinish(timer)) return false;
+        const end = new Date(timer.finishDate || 0).getTime();
+        return end > now + 3000;
+    });
+    await sb.from('timer_push_schedule').delete().eq('user_id', uid).is('sent_at', null);
+    if (!timers.length) return;
+    const rows = timers.map(timer => ({
+        user_id: uid,
+        timer_id: String(timer.id),
+        fire_at: new Date(timer.finishDate).toISOString(),
+        title: t('timerDoneNoticeTitle'),
+        body: tp('timerDoneNoticeBody', { task: timer.taskName || t('taskStart') })
+    }));
+    const { error } = await sb.from('timer_push_schedule').upsert(rows, { onConflict: 'user_id,timer_id' });
+    if (error) console.warn('syncPushScheduleToServer', error);
+}
+
+async function ensureWebPushSubscription() {
+    if (!canUseWebNotificationOnThisDevice() || !isWebPushConfigured() || !isCloudSyncActive()) return false;
+    if (Notification.permission !== 'granted') return false;
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+            sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(WEB_PUSH_VAPID_PUBLIC_KEY.trim())
+            });
+        }
+        await savePushSubscription(sub);
+        await syncPushScheduleToServer();
+        return true;
+    } catch (err) {
+        console.warn('ensureWebPushSubscription', err);
+        return false;
+    }
+}
+
+async function requestNotificationPermissionExplicit() {
     if (!canUseWebNotificationOnThisDevice()) {
         alert(isIOSDevice() && !isStandalonePwa() ? t('notifyNeedStandalone') : t('notifyIosOld'));
         return;
     }
-    Notification.requestPermission()
-        .then(() => afterNotificationPermissionChanged())
-        .catch(() => afterNotificationPermissionChanged());
+    try {
+        const perm = await Notification.requestPermission();
+        afterNotificationPermissionChanged();
+        if (perm === 'granted') {
+            await ensureWebPushSubscription();
+            afterNotificationPermissionChanged();
+        }
+    } catch (_) {
+        afterNotificationPermissionChanged();
+    }
 }
 
 function sendTestNotification() {
