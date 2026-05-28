@@ -62,7 +62,7 @@ const LOCALE_INLINE_FALLBACK = {
         timerDoneNoticeBody: '{task} 已完成',
         notifySectionTitle: '到點通知（手機）',
         notifyInstallHint: '若「設定→通知」找不到本 App：請用 Safari 開啟網站 → 點底部分享 →「加入主畫面」→ 從主畫面圖示開啟（不要只用 Safari 分頁）。',
-        notifyInstallOk: '目前已從主畫面開啟；可到 iPhone「設定→通知→遊戲計時器」開關。',
+        notifyInstallOk: '目前已從主畫面開啟。請先按下方「允許通知」，之後才會出現在 iPhone「設定→通知」。',
         notifySafariOnly: '請用 Safari 加入主畫面（Chrome 等在 iPhone 上通常不會出現在通知設定）。',
         notifyLimitHint: '計時到 0 會震動並通知；App 關閉後 iOS 不一定會推播（完整背景推播需伺服器，目前尚未啟用）。',
         notifyPermissionLabel: '瀏覽器通知權限',
