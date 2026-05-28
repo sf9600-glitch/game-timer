@@ -30,6 +30,8 @@ if git diff --staged --quiet; then
   exit 0
 fi
 
+CHANGED_FILES="$(git diff --staged --name-only)"
+
 BRANCH="$(git branch --show-current 2>/dev/null || echo main)"
 MSG="deploy: $(date '+%Y-%m-%d %H:%M:%S')"
 git commit -m "$MSG"
@@ -37,3 +39,7 @@ git push origin "$BRANCH"
 
 echo "✓ 已推送到 GitHub，GitHub Pages 約 1–3 分鐘內會更新："
 echo "   https://sf9600-glitch.github.io/game-timer/"
+echo "📦 本次上傳檔案："
+while IFS= read -r f; do
+  [[ -n "$f" ]] && echo "   - $f"
+done <<< "$CHANGED_FILES"
