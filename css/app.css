@@ -1233,42 +1233,50 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     gap: 6px;
     flex-shrink: 0;
 }
-.notify-enable-banner-actions .btn-main,
-.notify-setup-primary-btn,
-.control-panel .notify-setup-primary-btn {
-    background-color: #1d4ed8 !important;
-    color: #ffffff !important;
-    border: 1px solid #1e40af !important;
-    text-shadow: none !important;
-    box-shadow: 0 2px 0 #1e3a8a !important;
-}
-.notify-enable-banner-actions .btn-main {
-    font-size: 0.68rem;
-    padding: 6px 10px;
-    white-space: nowrap;
+.notify-permission-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
     margin: 0;
-    width: auto;
-}
-.notify-enable-banner-actions .btn-main:not(:disabled) { transform: translateY(-2px); }
-.notify-enable-banner-actions .btn-main:not(:disabled):active {
-    transform: translateY(0);
-    box-shadow: 0 0 0 transparent !important;
-}
-[data-theme="dark"] .notify-enable-banner-actions .btn-main,
-[data-theme="dark"] .notify-setup-primary-btn,
-[data-theme="dark"] .control-panel .notify-setup-primary-btn {
-    background-color: #2563eb !important;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 2px solid #1e3a8a;
+    background: #1d4ed8;
     color: #ffffff !important;
-    border-color: #3b82f6 !important;
-    box-shadow: 0 2px 0 #1e3a8a !important;
+    -webkit-text-fill-color: #ffffff;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    text-shadow: none;
+    box-shadow: 0 2px 0 #1e3a8a;
+    -webkit-tap-highlight-color: transparent;
+}
+.notify-permission-btn--block { width: 100%; }
+.notify-enable-banner-actions .notify-permission-btn {
+    font-size: 0.7rem;
+    padding: 7px 12px;
+}
+.notify-permission-btn:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+[data-theme="dark"] .notify-permission-btn {
+    background: #2563eb;
+    border-color: #93c5fd;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+    box-shadow: 0 2px 0 #1e3a8a;
 }
 @media (prefers-color-scheme: dark) {
-    html:not([data-theme="light"]) .notify-enable-banner-actions .btn-main,
-    html:not([data-theme="light"]) .notify-setup-primary-btn,
-    html:not([data-theme="light"]) .control-panel .notify-setup-primary-btn {
-        background-color: #2563eb !important;
+    html:not([data-theme="light"]) .notify-permission-btn {
+        background: #2563eb;
+        border-color: #93c5fd;
         color: #ffffff !important;
-        border-color: #3b82f6 !important;
+        -webkit-text-fill-color: #ffffff;
     }
 }
 .notify-enable-banner-dismiss {
