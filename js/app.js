@@ -2974,10 +2974,7 @@ function syncStartSectionHeaderState() {
 
 function mountStartContent() {
     const sc = ensureStartContent();
-    const mobile = isMobileLayout();
-    const target = mobile
-        ? document.getElementById('startSheetBody')
-        : document.getElementById('sec-start');
+    const target = document.getElementById('sec-start') || document.getElementById('startSheetBody');
     if (!target) {
         document.getElementById('startContentHolder')?.appendChild(sc);
         return;
@@ -3043,11 +3040,6 @@ function getStartTitlePillHtml(interactive) {
 function getStartSectionPanelHtml() {
     const taskColor = (config.tasks[0] && config.tasks[0].color) || config.colors.task;
     const startTitle = getStartTitlePillHtml(!isMobileLayout());
-    if (isMobileLayout()) {
-        return `<div class="config-section sec-start-entry-mobile" id="sec-start-entry" style="--section-color: ${taskColor};" role="button" tabindex="0" aria-label="${t('taskStart')}" onclick="openStartSheet()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStartSheet();}">
-            ${startTitle.replace('config-title--start', 'config-title--start config-title--start-mobile')}
-        </div>`;
-    }
     return `<div class="config-section config-section--collapsible" id="sec-start" style="--section-color: ${taskColor};" onclick="handleSecStartSectionClick(event)">
             ${startTitle}
         </div>`;
@@ -3055,9 +3047,8 @@ function getStartSectionPanelHtml() {
 
 function toggleStartSection() {
     if (isMobileLayout()) {
-        closeSidePanel();
-        mountStartContent();
-        setStartSheetOpen(true);
+        setSidePanelOpen(true);
+        smartToggle('startContent');
         return;
     }
     smartToggle('startContent');
@@ -3089,9 +3080,10 @@ function openStartSheet() {
         toggleStartSection();
         return;
     }
-    closeSidePanel();
-    mountStartContent();
-    setStartSheetOpen(true);
+    setSidePanelOpen(true);
+    uiState.openSection = 'startContent';
+    renderSidePanel();
+    syncCollapsibleClasses();
 }
 
 function closeStartSheet() {
