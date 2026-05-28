@@ -2210,7 +2210,7 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         min-height: 40px;
         font-size: 16px;
     }
-    #sec-start { display: none; }
+    #sec-start { display: block; }
     .panel-close-bar {
         display: none;
         flex-shrink: 0;
