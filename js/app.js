@@ -2456,6 +2456,17 @@ function toggleRecoveryPanel() {
     if (body) body.classList.toggle('active', uiState.recoveryExpanded);
 }
 
+function toggleNotifySetupPanel() {
+    uiState.notifySetupExpanded = !uiState.notifySetupExpanded;
+    const panel = document.getElementById('notifySetupPanel');
+    const body = document.getElementById('notifySetupPanelBody');
+    if (panel) panel.classList.toggle('notify-setup-panel--open', uiState.notifySetupExpanded);
+    if (body) body.classList.toggle('active', uiState.notifySetupExpanded);
+    const title = panel?.querySelector('.notify-setup-panel-title');
+    if (title) title.setAttribute('aria-expanded', uiState.notifySetupExpanded ? 'true' : 'false');
+    if (uiState.notifySetupExpanded) initNotifyPermissionPressButtons();
+}
+
 function syncCollapsibleClasses() {
     SECTION_IDS.forEach(id => {
         const el = document.getElementById(id);
