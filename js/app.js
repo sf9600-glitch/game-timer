@@ -451,6 +451,23 @@ function initNotifyBannerDismissButtons() {
     });
 }
 
+function bindPress3dButton(btn) {
+    if (!btn || btn.dataset.press3dBound === '1') return;
+    btn.dataset.press3dBound = '1';
+    const press = () => btn.classList.add('is-pressed');
+    const release = () => btn.classList.remove('is-pressed');
+    btn.addEventListener('mousedown', press);
+    btn.addEventListener('mouseup', release);
+    btn.addEventListener('mouseleave', release);
+    btn.addEventListener('touchstart', press, { passive: true });
+    btn.addEventListener('touchend', release);
+    btn.addEventListener('touchcancel', release);
+}
+
+function initNotifyPermissionPressButtons() {
+    document.querySelectorAll('.notify-permission-btn.btn-press-3d').forEach(bindPress3dButton);
+}
+
 function shouldShowNotifyEnableBanner() {
     return shouldShowNotifyPermissionPrompt() && isMobileLayout();
 }
