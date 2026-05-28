@@ -1233,7 +1233,44 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     gap: 6px;
     flex-shrink: 0;
 }
-.notify-enable-banner-actions .btn-main { font-size: 0.68rem; padding: 6px 10px; white-space: nowrap; }
+.notify-enable-banner-actions .btn-main,
+.notify-setup-primary-btn,
+.control-panel .notify-setup-primary-btn {
+    background-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    border: 1px solid #1e40af !important;
+    text-shadow: none !important;
+    box-shadow: 0 2px 0 #1e3a8a !important;
+}
+.notify-enable-banner-actions .btn-main {
+    font-size: 0.68rem;
+    padding: 6px 10px;
+    white-space: nowrap;
+    margin: 0;
+    width: auto;
+}
+.notify-enable-banner-actions .btn-main:not(:disabled) { transform: translateY(-2px); }
+.notify-enable-banner-actions .btn-main:not(:disabled):active {
+    transform: translateY(0);
+    box-shadow: 0 0 0 transparent !important;
+}
+[data-theme="dark"] .notify-enable-banner-actions .btn-main,
+[data-theme="dark"] .notify-setup-primary-btn,
+[data-theme="dark"] .control-panel .notify-setup-primary-btn {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 2px 0 #1e3a8a !important;
+}
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .notify-enable-banner-actions .btn-main,
+    html:not([data-theme="light"]) .notify-setup-primary-btn,
+    html:not([data-theme="light"]) .control-panel .notify-setup-primary-btn {
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #3b82f6 !important;
+    }
+}
 .notify-enable-banner-dismiss {
     border: none;
     background: transparent;
