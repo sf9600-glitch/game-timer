@@ -2857,6 +2857,7 @@ function renderSidePanel() {
     if (!panel) return;
     const currentTheme = localStorage.getItem(THEME_KEY) || 'auto';
     panel.innerHTML = `
+        ${renderNotifyDesktopPromptHtml()}
         <div class="config-section" id="sec-acc" style="--section-color: ${config.colors.acc};">
             <div class="config-title" onclick="smartToggle('accContent')"><span>${t('accMgmt')}</span><input type="color" class="color-input" value="${config.colors.acc}" onclick="event.stopPropagation()" onchange="updateSectionColor('acc', this.value)"></div>
             <div id="accContent" class="collapsible-content ${uiState.openSection === 'accContent' ? 'active' : ''}"><div>
@@ -2990,6 +2991,7 @@ function renderSidePanel() {
     mountStartContent();
     syncCollapsibleClasses();
     syncStartSheetChrome();
+    syncNotifyPermissionUi();
     refreshMainDisplay(); 
 }
 
@@ -4314,7 +4316,10 @@ document.addEventListener('keydown', e => {
     closeTutorialModal();
     closeStartSheet();
 });
-window.addEventListener('resize', () => syncLayoutForViewport());
+window.addEventListener('resize', () => {
+    syncLayoutForViewport();
+    syncNotifyPermissionUi();
+});
 (async () => {
     await initI18n();
     applyLangFromStorage();
