@@ -558,8 +558,8 @@ function renderNotificationHelpHtml() {
                 <span>${t('notifyPermissionLabel')}</span>
                 <span class="notify-setup-status notify-setup-status--${statusClass}">${t(statusKey)}</span>
             </div>
-            ${canAsk ? `<button type="button" class="notify-permission-btn notify-permission-btn--block" onclick="requestNotificationPermissionExplicit()">${t('notifyPermissionBtn')}</button>` : ''}
-            ${granted ? `<button type="button" class="notify-permission-btn notify-permission-btn--block" onclick="sendTestNotification()">${t('notifyTestBtn')}</button>` : ''}
+            ${canAsk ? `<button type="button" class="notify-permission-btn notify-permission-btn--block btn-press-3d" onclick="requestNotificationPermissionExplicit()">${t('notifyPermissionBtn')}</button>` : ''}
+            ${granted ? `<button type="button" class="notify-permission-btn notify-permission-btn--block btn-press-3d" onclick="sendTestNotification()">${t('notifyTestBtn')}</button>` : ''}
             ${denied ? `<p class="notify-setup-hint notify-setup-hint--warn">${t('notifyDeniedHint')}</p>` : ''}
         </div>
         <div class="sys-block-divider"></div>`;
