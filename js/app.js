@@ -4738,16 +4738,17 @@ function initMobileSwipePanelToggle() {
             const panel = document.getElementById('sidePanel');
             panelWidth = panel?.getBoundingClientRect().width || window.innerWidth * 0.85;
         }
-        const completeThreshold = Math.max(window.innerWidth / 3, panelWidth / 3);
+        const openThreshold = Math.max(window.innerWidth / 3, panelWidth / 3);
+        const closeThreshold = Math.max(window.innerWidth * 0.2, panelWidth * 0.2);
         clearDragVisual();
         if (lockedByVerticalScroll || Math.abs(dy) > verticalLockThreshold) {
             setSidePanelOpen(panelWasOpenAtStart);
             return;
         }
         if (!panelWasOpenAtStart) {
-            setSidePanelOpen(dx > completeThreshold);
+            setSidePanelOpen(dx > openThreshold);
         } else {
-            setSidePanelOpen(!(dx < -completeThreshold));
+            setSidePanelOpen(!(dx < -closeThreshold));
         }
     }, { passive: true });
 }
