@@ -96,6 +96,14 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
     width: 100%;
 }
+.main-toolbar-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+.main-toolbar-actions-mobile { display: none; }
 .main-body {
     flex: 1;
     min-width: 0;
@@ -2140,12 +2148,13 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         padding: 4px 7px;
         font-size: 0.62rem;
     }
-    .main-header-actions {
+    .main-toolbar-actions-mobile {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        flex-shrink: 0;
-        padding-bottom: 2px;
+        justify-content: center;
+        width: 100%;
+        margin-top: 2px;
     }
     .main-start-btn,
     .main-settings-btn {
@@ -2178,7 +2187,7 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         box-shadow: 0 1px 6px rgba(15, 23, 42, 0.12);
     }
     body.side-panel-open .main-header-actions,
-    body.start-sheet-open .main-header-actions {
+    body.start-sheet-open .main-toolbar-actions-mobile {
         visibility: hidden;
         pointer-events: none;
     }
