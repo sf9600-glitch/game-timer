@@ -1207,6 +1207,49 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     margin: 0 0 10px 0;
     letter-spacing: 0.02em;
 }
+.notify-enable-banner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #93c5fd;
+    background: #eff6ff;
+    color: #1e3a8a;
+}
+[data-theme="dark"] .notify-enable-banner {
+    border-color: #1d4ed8;
+    background: #172554;
+    color: #dbeafe;
+}
+.notify-enable-banner-text { flex: 1; min-width: 0; }
+.notify-enable-banner-text strong { display: block; font-size: 0.82rem; margin-bottom: 4px; }
+.notify-enable-banner-text p { margin: 0; font-size: 0.68rem; line-height: 1.4; }
+.notify-enable-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.notify-enable-banner-actions .btn-main { font-size: 0.68rem; padding: 6px 10px; white-space: nowrap; }
+.notify-enable-banner-dismiss {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+}
+.notify-setup-primary-btn {
+    width: 100%;
+    margin-top: 8px;
+    font-size: 0.78rem !important;
+    font-weight: 700;
+}
+
 .notify-setup-block {
     margin-bottom: 10px;
     padding: 10px;

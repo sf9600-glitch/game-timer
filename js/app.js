@@ -483,7 +483,7 @@ function triggerFinishNotification(timer) {
     if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
         navigator.vibrate([180, 120, 180]);
     }
-    if (!canUseWebNotification() || Notification.permission !== 'granted') return;
+    if (!canUseWebNotificationOnThisDevice() || Notification.permission !== 'granted') return;
     const task = timer.taskName || t('taskStart');
     try {
         new Notification(t('timerDoneNoticeTitle'), {
