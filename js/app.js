@@ -4200,5 +4200,6 @@ window.addEventListener('resize', () => syncLayoutForViewport());
     initMobilePanelState();
     maybeStartInteractiveTutorial();
     syncFinishedNotifyState();
+    registerAppServiceWorker();
     runGlobalClockTick();
 })();
