@@ -438,7 +438,7 @@ async function savePushSubscription(subscription) {
         endpoint: json.endpoint,
         p256dh: keys.p256dh,
         auth_key: keys.auth
-    }, { onConflict: 'endpoint' });
+    }, { onConflict: 'user_id,endpoint' });
 }
 
 async function syncPushScheduleToServer() {
