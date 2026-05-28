@@ -2493,6 +2493,16 @@ function toggleNotifySetupPanel() {
     if (uiState.notifySetupExpanded) initNotifyPermissionPressButtons();
 }
 
+function toggleCloudSyncPanel() {
+    uiState.cloudSyncExpanded = !uiState.cloudSyncExpanded;
+    const panel = document.getElementById('cloudSyncPanel');
+    const body = document.getElementById('cloudSyncPanelBody');
+    if (panel) panel.classList.toggle('cloud-sync-panel--open', uiState.cloudSyncExpanded);
+    if (body) body.classList.toggle('active', uiState.cloudSyncExpanded);
+    const title = panel?.querySelector('.cloud-sync-panel-title');
+    if (title) title.setAttribute('aria-expanded', uiState.cloudSyncExpanded ? 'true' : 'false');
+}
+
 function syncCollapsibleClasses() {
     SECTION_IDS.forEach(id => {
         const el = document.getElementById(id);
