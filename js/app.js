@@ -1576,10 +1576,19 @@ function setAccountHeaderVisible(show) {
 }
 
 function renderTimerDisplayTabsHtml() {
-    return `<div class="timer-display-header-tabs" role="group" aria-label="${t('timerDisplayLabel')}">
-        <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('clean')">${t('timerDisplayClean')}</button>
-        <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayColorful() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('colorful')">${t('timerDisplayColorful')}</button>
-        <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayList() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('list')">${t('timerDisplayList')}</button>
+    const mobileActions = isMobileLayout()
+        ? `<div class="main-toolbar-actions-mobile">
+            <button type="button" class="main-start-btn" onclick="openStartSheet()"></button>
+            <button type="button" class="main-settings-btn" onclick="toggleSidePanel()"></button>
+           </div>`
+        : '';
+    return `<div class="main-toolbar-stack">
+        <div class="timer-display-header-tabs" role="group" aria-label="${t('timerDisplayLabel')}">
+            <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('clean')">${t('timerDisplayClean')}</button>
+            <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayColorful() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('colorful')">${t('timerDisplayColorful')}</button>
+            <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayList() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('list')">${t('timerDisplayList')}</button>
+        </div>
+        ${mobileActions}
     </div>`;
 }
 
@@ -3761,12 +3770,7 @@ function refreshMainDisplay() {
         const origIdx = config.accounts.findIndex(a => a.email === acc.email);
         const div = document.createElement('div'); div.className = `account-group${showAccountHeader ? '' : ' account-group--no-header'}`; 
         div.style.setProperty('--acc-theme', acc.color || defaultAccColors[(origIdx >= 0 ? origIdx : i) % 6]); 
-        const headerActions = (mobile && i === 0)
-            ? `<div class="main-header-actions">
-                <button type="button" class="main-start-btn" onclick="openStartSheet()"></button>
-                <button type="button" class="main-settings-btn" onclick="toggleSidePanel()"></button>
-               </div>`
-            : '';
+        const headerActions = '';
         const headerHtml = showAccountHeader
             ? `<div class="account-group-header">
                 <div class="account-tab-item">${acc.email}</div>
