@@ -2970,9 +2970,6 @@ function syncStartSectionHeaderState() {
     document.querySelectorAll('#sec-start-entry .config-title--start').forEach(title => {
         title.classList.toggle('is-expanded', expanded);
     });
-    document.querySelectorAll('.config-title-start-pill, .start-capsule-btn').forEach(pill => {
-        pill.classList.toggle('is-pressed', expanded && !isMobileLayout());
-    });
 }
 
 function mountStartContent() {
@@ -3010,7 +3007,7 @@ function refreshStartContentControls() {
 }
 
 function refreshStartContentLabels() {
-    document.querySelectorAll('.start-capsule-btn-label').forEach(el => { el.textContent = t('taskStart'); });
+    document.querySelectorAll('.config-title--start .config-title-start-text').forEach(el => { el.textContent = t('taskStart'); });
     const root = document.getElementById('startContent');
     if (!root) return;
     const startBtn = document.getElementById('btnStartTask');
@@ -3040,7 +3037,7 @@ function getStartTitlePillHtml(interactive) {
     const a11y = interactive
         ? ` role="button" tabindex="0" aria-expanded="${expanded}" onkeydown="handleSecStartTitleKey(event)"`
         : ' aria-hidden="true"';
-    return `<div class="config-title config-title--start${expanded ? ' is-expanded' : ''}"${a11y}><span class="config-title-start-pill${expanded ? ' is-pressed' : ''}"><span class="start-capsule-btn-label">${t('taskStart')}</span></span></div>`;
+    return `<div class="config-title config-title--start${expanded ? ' is-expanded' : ''}"${a11y}><span class="config-title-start-text">${t('taskStart')}</span></div>`;
 }
 
 function getStartSectionPanelHtml() {
@@ -3048,7 +3045,7 @@ function getStartSectionPanelHtml() {
     const startTitle = getStartTitlePillHtml(!isMobileLayout());
     if (isMobileLayout()) {
         return `<div class="config-section sec-start-entry-mobile" id="sec-start-entry" style="--section-color: ${taskColor};" role="button" tabindex="0" aria-label="${t('taskStart')}" onclick="openStartSheet()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStartSheet();}">
-            <div class="config-title config-title--start config-title--start-mobile">${startTitle}</div>
+            ${startTitle.replace('config-title--start', 'config-title--start config-title--start-mobile')}
         </div>`;
     }
     return `<div class="config-section config-section--collapsible" id="sec-start" style="--section-color: ${taskColor};" onclick="handleSecStartSectionClick(event)">
