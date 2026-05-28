@@ -1311,7 +1311,6 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     color: #dbeafe !important;
     -webkit-text-fill-color: #dbeafe !important;
 }
-[data-theme="dark"] .notify-desktop-prompt-dismiss { color: #93c5fd; }
 @media (min-width: 769px) {
     .main-column > #notifyEnableBanner { display: none !important; }
 }
