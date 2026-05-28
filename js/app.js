@@ -1237,7 +1237,7 @@ const SUPABASE_URL = 'https://gnfukohkisiknbbnxjce.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_06A2mHaxzTXHx6DhQLI2XQ_zSoaveJv';
 
 /** 背景推播 VAPID 公鑰（npx web-push generate-vapid-keys），見 docs/背景推播設定.md */
-const WEB_PUSH_VAPID_PUBLIC_KEY = '';
+const WEB_PUSH_VAPID_PUBLIC_KEY = 'BEK0-Llemf0WqM_wxZ9qFFPX5bxhDUPyCfpZJlJcw9sMaSsuhp6okQU8RHbWqC4FdGPhKOFD6FfeLhZmTPNISTE';
 
 const defaultAccColors = ['#4a90e2', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
 let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null };
