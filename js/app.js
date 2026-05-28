@@ -489,7 +489,7 @@ function renderNotifyDesktopPromptHtml() {
             <button type="button" class="notify-desktop-prompt-dismiss btn-press-3d" data-notify-dismiss aria-label="關閉">&times;</button>
         </div>
         <p id="notifyDesktopPromptBody">按下方按鈕並在系統視窗選「允許」。</p>
-        <button type="button" class="notify-permission-btn notify-permission-btn--block" id="notifyDesktopPromptBtn" onclick="requestNotificationPermissionExplicit()">允許通知</button>
+        <button type="button" class="notify-permission-btn notify-permission-btn--block btn-press-3d" id="notifyDesktopPromptBtn" onclick="requestNotificationPermissionExplicit()">允許通知</button>
     </div>`;
 }
 
