@@ -35,14 +35,12 @@
     </div>
     <div class="main-column">
         <div class="notify-enable-banner" id="notifyEnableBanner" hidden>
-            <div class="notify-enable-banner-text">
+            <div class="notify-enable-banner-head">
                 <strong id="notifyEnableBannerTitle">請開啟到點通知</strong>
-                <p id="notifyEnableBannerBody">按右側按鈕並在系統視窗選「允許」。</p>
+                <button type="button" class="notify-enable-banner-dismiss" onclick="dismissNotifyEnableBanner()" aria-label="關閉">&times;</button>
             </div>
-            <div class="notify-enable-banner-actions">
-                <button type="button" class="notify-permission-btn" id="notifyEnableBannerBtn" onclick="requestNotificationPermissionExplicit()">允許通知</button>
-                <button type="button" class="notify-enable-banner-dismiss" onclick="dismissNotifyEnableBanner()" aria-label="">&times;</button>
-            </div>
+            <p id="notifyEnableBannerBody">按下方按鈕並在系統視窗選「允許」。</p>
+            <button type="button" class="notify-permission-btn notify-permission-btn--block" id="notifyEnableBannerBtn" onclick="requestNotificationPermissionExplicit()">允許通知</button>
         </div>
         <div class="main-toolbar" id="mainTimerDisplayBar"></div>
         <div class="main-body">
