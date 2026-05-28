@@ -2253,6 +2253,9 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         flex-direction: column;
         overflow: hidden;
     }
+    .control-panel.is-dragging {
+        transition: none !important;
+    }
     .control-panel-inner {
         flex: 1;
         overflow-y: auto;
