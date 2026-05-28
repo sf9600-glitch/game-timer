@@ -413,25 +413,67 @@ function dismissNotifyEnableBanner() {
     syncNotifyEnableBanner();
 }
 
-function shouldShowNotifyEnableBanner() {
+function shouldShowNotifyPermissionPrompt() {
     if (!canUseWebNotificationOnThisDevice()) return false;
     if (Notification.permission !== 'default') return false;
     try { if (sessionStorage.getItem(NOTIFY_BANNER_DISMISS_KEY) === '1') return false; } catch (_) {}
     return true;
 }
 
+function shouldShowNotifyEnableBanner() {
+    return shouldShowNotifyPermissionPrompt() && isMobileLayout();
+}
+
+function shouldShowNotifyDesktopPrompt() {
+    return shouldShowNotifyPermissionPrompt() && !isMobileLayout();
+}
+
+function fillNotifyPermissionPromptTexts(titleEl, bodyEl, btnEl) {
+    if (titleEl) titleEl.textContent = t('notifyBannerTitle');
+    if (bodyEl) bodyEl.textContent = t('notifyBannerBody');
+    if (btnEl) btnEl.textContent = t('notifyPermissionBtn');
+}
+
+function renderNotifyDesktopPromptHtml() {
+    return `<div class="notify-desktop-prompt" id="notifyDesktopPrompt" hidden>
+        <div class="notify-desktop-prompt-head">
+            <strong id="notifyDesktopPromptTitle">請開啟到點通知</strong>
+            <button type="button" class="notify-desktop-prompt-dismiss" onclick="dismissNotifyEnableBanner()" aria-label="">&times;</button>
+        </div>
+        <p id="notifyDesktopPromptBody">按下方按鈕並在系統視窗選「允許」。</p>
+        <button type="button" class="notify-permission-btn notify-permission-btn--block" id="notifyDesktopPromptBtn" onclick="requestNotificationPermissionExplicit()">允許通知</button>
+    </div>`;
+}
+
+function syncNotifyPermissionUi() {
+    const banner = document.getElementById('notifyEnableBanner');
+    if (banner) {
+        const showBanner = shouldShowNotifyEnableBanner();
+        banner.hidden = !showBanner;
+        if (showBanner) {
+            fillNotifyPermissionPromptTexts(
+                document.getElementById('notifyEnableBannerTitle'),
+                document.getElementById('notifyEnableBannerBody'),
+                document.getElementById('notifyEnableBannerBtn')
+            );
+        }
+    }
+    const desktop = document.getElementById('notifyDesktopPrompt');
+    if (desktop) {
+        const showDesktop = shouldShowNotifyDesktopPrompt();
+        desktop.hidden = !showDesktop;
+        if (showDesktop) {
+            fillNotifyPermissionPromptTexts(
+                document.getElementById('notifyDesktopPromptTitle'),
+                document.getElementById('notifyDesktopPromptBody'),
+                document.getElementById('notifyDesktopPromptBtn')
+            );
+        }
+    }
+}
+
 function syncNotifyEnableBanner() {
-    const el = document.getElementById('notifyEnableBanner');
-    if (!el) return;
-    const show = shouldShowNotifyEnableBanner();
-    el.hidden = !show;
-    if (!show) return;
-    const title = document.getElementById('notifyEnableBannerTitle');
-    const body = document.getElementById('notifyEnableBannerBody');
-    const btn = document.getElementById('notifyEnableBannerBtn');
-    if (title) title.textContent = t('notifyBannerTitle');
-    if (body) body.textContent = t('notifyBannerBody');
-    if (btn) btn.textContent = t('notifyPermissionBtn');
+    syncNotifyPermissionUi();
 }
 
 async function registerAppServiceWorker() {
