@@ -4654,6 +4654,47 @@ function initMobilePullToRefresh() {
     }, { passive: true });
 }
 
+function initMobileSwipePanelToggle() {
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+    const threshold = 70;
+    const edgeZone = 36;
+
+    const canTrack = () => {
+        if (!isMobileLayout()) return false;
+        if (document.body.classList.contains('start-sheet-open')) return false;
+        if (onboardingActive) return false;
+        return true;
+    };
+
+    window.addEventListener('touchstart', (e) => {
+        if (!canTrack()) return;
+        const t = e.touches[0];
+        startX = t?.clientX || 0;
+        startY = t?.clientY || 0;
+        tracking = true;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+        if (!tracking || !canTrack()) return;
+        const t = e.changedTouches[0];
+        const endX = t?.clientX || 0;
+        const endY = t?.clientY || 0;
+        const dx = endX - startX;
+        const dy = endY - startY;
+        tracking = false;
+
+        if (Math.abs(dy) > 42 || Math.abs(dx) < threshold) return;
+        const panelOpen = document.body.classList.contains('side-panel-open');
+        if (!panelOpen && dx > threshold && startX <= edgeZone) {
+            setSidePanelOpen(true);
+        } else if (panelOpen && dx < -threshold) {
+            setSidePanelOpen(false);
+        }
+    }, { passive: true });
+}
+
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (onboardingActive) {
@@ -4683,6 +4724,7 @@ window.addEventListener('resize', () => {
     initNotifyBannerDismissButtons();
     initNotifyPermissionPressButtons();
     initMobilePullToRefresh();
+    initMobileSwipePanelToggle();
     syncNotifyEnableBanner();
     runGlobalClockTick();
 })();
