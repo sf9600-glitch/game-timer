@@ -4654,12 +4654,15 @@ function initMobilePullToRefresh() {
 function initMobileSwipePanelToggle() {
     let startX = 0;
     let startY = 0;
+    let startTs = 0;
     let lastDx = 0;
     let panelWidth = 0;
     let panelWasOpenAtStart = false;
     let lockedByVerticalScroll = false;
     let tracking = false;
     const verticalLockThreshold = 42;
+    const quickSwipeMaxMs = 220;
+    const quickSwipeMinDistance = 36;
 
     const canTrack = () => {
         if (!isMobileLayout()) return false;
@@ -4701,6 +4704,7 @@ function initMobileSwipePanelToggle() {
         const t = e.touches[0];
         startX = t?.clientX || 0;
         startY = t?.clientY || 0;
+        startTs = Date.now();
         lastDx = 0;
         panelWasOpenAtStart = document.body.classList.contains('side-panel-open');
         const panel = document.getElementById('sidePanel');
@@ -4731,8 +4735,11 @@ function initMobileSwipePanelToggle() {
         const t = e.changedTouches[0];
         const endX = t?.clientX || 0;
         const endY = t?.clientY || 0;
-        const dx = lastDx || (endX - startX);
+        const rawDx = endX - startX;
+        const dx = rawDx || lastDx;
         const dy = endY - startY;
+        const elapsedMs = Date.now() - startTs;
+        const isQuickSwipe = elapsedMs <= quickSwipeMaxMs;
         tracking = false;
         if (!panelWidth) {
             const panel = document.getElementById('sidePanel');
@@ -4746,9 +4753,9 @@ function initMobileSwipePanelToggle() {
             return;
         }
         if (!panelWasOpenAtStart) {
-            setSidePanelOpen(dx > openThreshold);
+            setSidePanelOpen(dx > openThreshold || (isQuickSwipe && dx > quickSwipeMinDistance));
         } else {
-            setSidePanelOpen(!(dx < -closeThreshold));
+            setSidePanelOpen(!(dx < -closeThreshold || (isQuickSwipe && dx < -quickSwipeMinDistance)));
         }
     }, { passive: true });
 }
