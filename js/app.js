@@ -2257,54 +2257,52 @@ function renderCloudSyncHtml() {
     const status = t(cloudSyncStatusKey);
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
     if (!isSupabaseConfigured()) {
-        return `<div class="cloud-sync-box cloud-sync-unconfigured">
-            <div class="cloud-sync-title">${t('cloudTitle')}</div>
-            <p class="cloud-sync-hint">${t('cloudHintUnconfigured')}</p>
-            <div class="cloud-status-line" id="cloudSyncStatus">${t('cloudBackendNotConfigured')}</div>
-        </div>`;
+        return wrapCloudSyncPanel(
+            `<p class="cloud-sync-hint">${t('cloudHintUnconfigured')}</p>
+            <div class="cloud-status-line" id="cloudSyncStatus">${t('cloudBackendNotConfigured')}</div>`,
+            'cloud-sync-box cloud-sync-unconfigured'
+        );
     }
     const loggedIn = !!currentUser;
     const email = loggedIn ? (currentUser.email || t('cloudLoggedInShort')) : '';
     if (loggedIn) {
-        return `<div class="cloud-sync-box">
-            <div class="cloud-sync-title">${t('cloudTitle')}</div>
-            <p class="cloud-sync-hint">${t('cloudHintLoggedIn')}</p>
+        return wrapCloudSyncPanel(
+            `<p class="cloud-sync-hint">${t('cloudHintLoggedIn')}</p>
             <div class="cloud-user-line" title="${esc(email)}">${esc(email)}</div>
             <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
             <div class="cloud-auth-row" style="margin-top:8px;">
                 <button type="button" class="btn-adjust" onclick="syncNowCloud()">${t('cloudSyncNow')}</button>
                 <button type="button" class="btn-adjust" onclick="signOutCloud()" style="color:var(--danger);">${t('cloudSignOut')}</button>
-            </div>
-        </div>`;
+            </div>`
+        );
     }
     if (cloudAuthView === 'newPassword') {
-        return `<div class="cloud-sync-box">
-            <div class="cloud-sync-title">${t('cloudResetTitle')}</div>
-            <p class="cloud-sync-hint">${t('cloudHintNewPassword')}</p>
+        return wrapCloudSyncPanel(
+            `<p class="cloud-sync-hint">${t('cloudHintNewPassword')}</p>
             <input type="password" id="cloudNewPassword" placeholder="${t('cloudNewPasswordPh')}" autocomplete="new-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
             <input type="password" id="cloudNewPassword2" placeholder="${t('cloudNewPassword2Ph')}" autocomplete="new-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
             <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
             <div class="cloud-auth-row">
                 <button type="button" class="btn-adjust" onclick="confirmNewPasswordFromUI()">${t('cloudSavePassword')}</button>
                 <button type="button" class="btn-adjust" onclick="cancelCloudForgotPassword()">${t('cloudCancel')}</button>
-            </div>
-        </div>`;
+            </div>`,
+            'cloud-sync-box'
+        );
     }
     if (cloudAuthView === 'forgot') {
-        return `<div class="cloud-sync-box">
-            <div class="cloud-sync-title">${t('cloudForgotTitle')}</div>
-            <p class="cloud-sync-hint">${t('cloudHintForgot')}</p>
+        return wrapCloudSyncPanel(
+            `<p class="cloud-sync-hint">${t('cloudHintForgot')}</p>
             <input type="email" id="cloudEmail" placeholder="Email" autocomplete="username" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
             <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
             <div class="cloud-auth-row">
                 <button type="button" class="btn-adjust" onclick="sendPasswordResetFromUI()">${t('cloudSendReset')}</button>
                 <button type="button" class="btn-adjust" onclick="cancelCloudForgotPassword()">${t('cloudBackLogin')}</button>
-            </div>
-        </div>`;
+            </div>`,
+            'cloud-sync-box'
+        );
     }
-    return `<div class="cloud-sync-box cloud-sync-unconfigured">
-        <div class="cloud-sync-title">${t('cloudTitle')}</div>
-        <p class="cloud-sync-hint">${t('cloudHintLogin')}</p>
+    return wrapCloudSyncPanel(
+        `<p class="cloud-sync-hint">${t('cloudHintLogin')}</p>
         <input type="email" id="cloudEmail" placeholder="Email" autocomplete="username" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
         <input type="password" id="cloudPassword" placeholder="${t('cloudPasswordPh')}" autocomplete="current-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
         <button type="button" class="cloud-forgot-link" onclick="showCloudForgotPassword()">${t('cloudForgotLink')}</button>
@@ -2312,8 +2310,9 @@ function renderCloudSyncHtml() {
         <div class="cloud-auth-row">
             <button type="button" class="btn-adjust" onclick="signInFromUI()">${t('cloudSignIn')}</button>
             <button type="button" class="btn-adjust" onclick="signUpFromUI()">${t('cloudSignUp')}</button>
-        </div>
-    </div>`;
+        </div>`,
+        'cloud-sync-box cloud-sync-unconfigured'
+    );
 }
 
 async function initCloudSync() {
