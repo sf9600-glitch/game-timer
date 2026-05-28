@@ -4550,6 +4550,66 @@ window.addEventListener('pageshow', (e) => {
     if (!shouldPullCloudOnPageShow(e)) return;
     mergeCloudFromRemote().catch(err => console.error('mergeCloudFromRemote on pageshow', err));
 });
+
+function initMobilePullToRefresh() {
+    let startY = 0;
+    let tracking = false;
+    let pulling = false;
+    let refreshing = false;
+    const threshold = 90;
+
+    const canStart = () => {
+        if (!isMobileLayout()) return false;
+        if (refreshing) return false;
+        if (document.body.classList.contains('side-panel-open') || document.body.classList.contains('start-sheet-open')) return false;
+        const top = window.scrollY || document.documentElement.scrollTop || 0;
+        return top <= 0;
+    };
+
+    const runRefresh = async () => {
+        if (refreshing) return;
+        refreshing = true;
+        try {
+            if (isCloudSyncActive()) {
+                await mergeCloudFromRemote();
+            } else {
+                refreshMainDisplay();
+            }
+            renderSidePanel();
+            syncNotifyPermissionUi();
+        } catch (err) {
+            console.error('pullToRefresh', err);
+        } finally {
+            refreshing = false;
+        }
+    };
+
+    window.addEventListener('touchstart', (e) => {
+        if (!canStart()) return;
+        startY = e.touches[0]?.clientY || 0;
+        tracking = true;
+        pulling = false;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!tracking) return;
+        const currentY = e.touches[0]?.clientY || 0;
+        const delta = currentY - startY;
+        if (delta <= 0) {
+            tracking = false;
+            return;
+        }
+        pulling = delta > threshold;
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+        if (!tracking) return;
+        if (pulling) runRefresh();
+        tracking = false;
+        pulling = false;
+    }, { passive: true });
+}
+
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (onboardingActive) {
@@ -4578,6 +4638,7 @@ window.addEventListener('resize', () => {
     registerAppServiceWorker();
     initNotifyBannerDismissButtons();
     initNotifyPermissionPressButtons();
+    initMobilePullToRefresh();
     syncNotifyEnableBanner();
     runGlobalClockTick();
 })();
