@@ -4383,6 +4383,7 @@ window.addEventListener('resize', () => {
     syncFinishedNotifyState();
     registerAppServiceWorker();
     initNotifyBannerDismissButtons();
+    initNotifyPermissionPressButtons();
     syncNotifyEnableBanner();
     runGlobalClockTick();
 })();
