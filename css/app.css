@@ -2186,7 +2186,7 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         color: var(--text-main);
         box-shadow: 0 1px 6px rgba(15, 23, 42, 0.12);
     }
-    body.side-panel-open .main-header-actions,
+    body.side-panel-open .main-toolbar-actions-mobile,
     body.start-sheet-open .main-toolbar-actions-mobile {
         visibility: hidden;
         pointer-events: none;
