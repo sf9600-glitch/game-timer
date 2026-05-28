@@ -1209,52 +1209,64 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
 }
 .notify-enable-banner {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    box-sizing: border-box;
+    max-width: 100%;
     margin-bottom: 10px;
     padding: 10px 12px;
     border-radius: 10px;
     border: 1px solid #93c5fd;
     background: #eff6ff;
     color: #1e3a8a;
+    overflow: hidden;
 }
 [data-theme="dark"] .notify-enable-banner {
     border-color: #1d4ed8;
     background: #172554;
     color: #dbeafe;
 }
-.notify-enable-banner-text { flex: 1; min-width: min(100%, 520px); }
-.notify-enable-banner-text strong,
-.notify-enable-banner-text p,
-#notifyEnableBannerTitle,
-#notifyEnableBannerBody {
+.notify-enable-banner-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+}
+#notifyEnableBannerTitle {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.35;
     color: #0f172a !important;
     -webkit-text-fill-color: #0f172a !important;
 }
-.notify-enable-banner-text strong,
-#notifyEnableBannerTitle { display: block; font-size: 0.82rem; margin-bottom: 4px; font-weight: 800; }
-.notify-enable-banner-text p,
-#notifyEnableBannerBody { margin: 0; font-size: 0.72rem; line-height: 1.45; font-weight: 600; }
-[data-theme="dark"] .notify-enable-banner-text strong,
-[data-theme="dark"] .notify-enable-banner-text p,
+#notifyEnableBannerBody {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    font-weight: 600;
+    color: #1e3a8a !important;
+    -webkit-text-fill-color: #1e3a8a !important;
+}
 [data-theme="dark"] #notifyEnableBannerTitle,
 [data-theme="dark"] #notifyEnableBannerBody {
     color: #dbeafe !important;
     -webkit-text-fill-color: #dbeafe !important;
 }
 @media (prefers-color-scheme: dark) {
-    html:not([data-theme="light"]) .notify-enable-banner-text strong,
-    html:not([data-theme="light"]) .notify-enable-banner-text p,
-    html:not([data-theme="light"]) #notifyEnableBannerTitle,
-    html:not([data-theme="light"]) #notifyEnableBannerBody {
-        color: #dbeafe !important;
-        -webkit-text-fill-color: #dbeafe !important;
-    }
     html:not([data-theme="light"]) .notify-enable-banner {
         background: #172554;
         border-color: #3b82f6;
         color: #dbeafe;
+    }
+    html:not([data-theme="light"]) #notifyEnableBannerTitle,
+    html:not([data-theme="light"]) #notifyEnableBannerBody {
+        color: #dbeafe !important;
+        -webkit-text-fill-color: #dbeafe !important;
     }
 }
 .notify-desktop-prompt {
@@ -1315,23 +1327,6 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
 }
 @media (max-width: 768px) {
     .notify-desktop-prompt { display: none !important; }
-}
-@media (min-width: 769px) {
-    .notify-enable-banner {
-        flex-wrap: wrap;
-        align-items: stretch;
-    }
-    .notify-enable-banner-actions {
-        width: 100%;
-        justify-content: flex-end;
-        margin-top: 4px;
-    }
-}
-.notify-enable-banner-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
 }
 .notify-permission-btn {
     display: inline-flex;
