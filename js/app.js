@@ -1130,7 +1130,7 @@ const SUPABASE_URL = 'https://gnfukohkisiknbbnxjce.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_06A2mHaxzTXHx6DhQLI2XQ_zSoaveJv';
 
 const defaultAccColors = ['#4a90e2', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
-let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, selectedRecoverySnapshotId: null };
+let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null };
 const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
 let dragSourceTaskIdx = null;
 let dragSourceSub = { taskIdx: null, subIdx: null };
