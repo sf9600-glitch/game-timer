@@ -4663,6 +4663,8 @@ function initMobileSwipePanelToggle() {
     const verticalLockThreshold = 42;
     const quickSwipeMaxMs = 220;
     const quickSwipeMinDistance = 36;
+    const quickCloseMinDistance = 20;
+    const quickCloseMinSpeed = 0.24;
 
     const canTrack = () => {
         if (!isMobileLayout()) return false;
@@ -4740,6 +4742,7 @@ function initMobileSwipePanelToggle() {
         const dy = endY - startY;
         const elapsedMs = Date.now() - startTs;
         const isQuickSwipe = elapsedMs <= quickSwipeMaxMs;
+        const speedAbs = elapsedMs > 0 ? Math.abs(dx) / elapsedMs : 0;
         tracking = false;
         if (!panelWidth) {
             const panel = document.getElementById('sidePanel');
@@ -4755,7 +4758,8 @@ function initMobileSwipePanelToggle() {
         if (!panelWasOpenAtStart) {
             setSidePanelOpen(dx > openThreshold || (isQuickSwipe && dx > quickSwipeMinDistance));
         } else {
-            setSidePanelOpen(!(dx < -closeThreshold || (isQuickSwipe && dx < -quickSwipeMinDistance)));
+            const quickCloseHit = isQuickSwipe && dx < -quickCloseMinDistance && speedAbs >= quickCloseMinSpeed;
+            setSidePanelOpen(!(dx < -closeThreshold || (isQuickSwipe && dx < -quickSwipeMinDistance) || quickCloseHit));
         }
     }, { passive: true });
 }
