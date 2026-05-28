@@ -415,10 +415,7 @@ function isWebPushConfigured() {
 
 function canUseBackgroundPush() {
     return isWebPushConfigured()
-        && isCloudSyncActive()
-        && Notification.permission === 'granted'
-        && 'serviceWorker' in navigator
-        && 'PushManager' in window;
+        && isCloudSyncActive();
 }
 
 function getPushBackgroundStatusKey() {
@@ -467,6 +464,7 @@ async function syncPushScheduleToServer() {
 async function ensureWebPushSubscription() {
     if (!canUseWebNotificationOnThisDevice() || !isWebPushConfigured() || !isCloudSyncActive()) return false;
     if (Notification.permission !== 'granted') return false;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
     try {
         const reg = await navigator.serviceWorker.ready;
         let sub = await reg.pushManager.getSubscription();
@@ -486,6 +484,7 @@ async function ensureWebPushSubscription() {
 }
 
 async function setupBackgroundPushAfterLogin() {
+    await syncPushScheduleToServer().catch(err => console.warn('schedule after login', err));
     if (Notification.permission !== 'granted') return;
     await ensureWebPushSubscription().catch(err => console.warn('setupBackgroundPushAfterLogin', err));
 }
