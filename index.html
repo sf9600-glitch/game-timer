@@ -34,6 +34,16 @@
         <div class="control-panel-inner" id="sidePanelContent"></div>
     </div>
     <div class="main-column">
+        <div class="notify-enable-banner" id="notifyEnableBanner" hidden>
+            <div class="notify-enable-banner-text">
+                <strong id="notifyEnableBannerTitle"></strong>
+                <p id="notifyEnableBannerBody"></p>
+            </div>
+            <div class="notify-enable-banner-actions">
+                <button type="button" class="btn-main btn-compact-main" id="notifyEnableBannerBtn" onclick="requestNotificationPermissionExplicit()"></button>
+                <button type="button" class="notify-enable-banner-dismiss" onclick="dismissNotifyEnableBanner()" aria-label="">&times;</button>
+            </div>
+        </div>
         <div class="main-toolbar" id="mainTimerDisplayBar"></div>
         <div class="main-body">
             <div id="mainDisplay"></div>

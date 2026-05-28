@@ -1,15 +1,16 @@
 {
+  "id": "/game-timer/",
   "name": "遊戲計時器",
-  "short_name": "計時器",
+  "short_name": "遊戲計時器",
   "description": "遊戲任務倒數計時",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/game-timer/",
+  "scope": "/game-timer/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#3b82f6",
   "lang": "zh-TW",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/game-timer/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/game-timer/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
