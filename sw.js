@@ -16,7 +16,18 @@ self.addEventListener('push', (event) => {
         if (data.body) body = data.body;
         if (data.tag) tag = data.tag;
     } catch (_) {}
+    const options = { body, tag, renotify: true, data: { tag } };
     event.waitUntil(
-        self.registration.showNotification(title, { body, tag, renotify: true })
+        self.registration.showNotification(title, options)
+    );
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+            if (list.length) return list[0].focus();
+            return self.clients.openWindow('./');
+        })
     );
 });

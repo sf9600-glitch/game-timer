@@ -2298,6 +2298,7 @@ async function signUpFromUI() {
         currentUser = data.user;
         await mergeCloudFromRemote();
         startCloudPoll();
+        await setupBackgroundPushAfterLogin();
         renderSidePanel();
         return;
     }
