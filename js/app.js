@@ -469,7 +469,7 @@ function renderNotifyDesktopPromptHtml() {
     return `<div class="notify-desktop-prompt" id="notifyDesktopPrompt" hidden>
         <div class="notify-desktop-prompt-head">
             <strong id="notifyDesktopPromptTitle">請開啟到點通知</strong>
-            <button type="button" class="notify-desktop-prompt-dismiss" onclick="dismissNotifyEnableBanner()" aria-label="">&times;</button>
+            <button type="button" class="notify-desktop-prompt-dismiss btn-press-3d" data-notify-dismiss aria-label="關閉">&times;</button>
         </div>
         <p id="notifyDesktopPromptBody">按下方按鈕並在系統視窗選「允許」。</p>
         <button type="button" class="notify-permission-btn notify-permission-btn--block" id="notifyDesktopPromptBtn" onclick="requestNotificationPermissionExplicit()">允許通知</button>
