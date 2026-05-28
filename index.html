@@ -37,7 +37,7 @@
         <div class="notify-enable-banner" id="notifyEnableBanner" hidden>
             <div class="notify-enable-banner-head">
                 <strong id="notifyEnableBannerTitle">請開啟到點通知</strong>
-                <button type="button" class="notify-enable-banner-dismiss" onclick="dismissNotifyEnableBanner()" aria-label="關閉">&times;</button>
+                <button type="button" class="notify-enable-banner-dismiss btn-press-3d" id="notifyEnableBannerDismiss" data-notify-dismiss aria-label="關閉">&times;</button>
             </div>
             <p id="notifyEnableBannerBody">按下方按鈕並在系統視窗選「允許」。</p>
             <button type="button" class="notify-permission-btn notify-permission-btn--block" id="notifyEnableBannerBtn" onclick="requestNotificationPermissionExplicit()">允許通知</button>
