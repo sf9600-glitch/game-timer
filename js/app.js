@@ -504,6 +504,7 @@ function syncNotifyPermissionUi() {
                 document.getElementById('notifyEnableBannerBody'),
                 document.getElementById('notifyEnableBannerBtn')
             );
+            initNotifyPermissionPressButtons();
         }
     }
     const desktop = document.getElementById('notifyDesktopPrompt');
