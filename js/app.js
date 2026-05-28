@@ -2861,8 +2861,13 @@ function setSidePanelOpen(open) {
     const overlay = document.getElementById('panelOverlay');
     if (!panel) return;
     if (open && isMobileLayout()) closeStartSheet();
+    panel.style.removeProperty('transform');
+    panel.classList.remove('is-dragging');
     panel.classList.toggle('panel-open', !!open);
-    if (overlay) overlay.classList.toggle('show', !!open);
+    if (overlay) {
+        overlay.style.removeProperty('opacity');
+        overlay.classList.toggle('show', !!open);
+    }
     document.body.classList.toggle('side-panel-open', !!open);
     syncPanelMobileControls();
 }
@@ -4649,8 +4654,12 @@ function initMobilePullToRefresh() {
 function initMobileSwipePanelToggle() {
     let startX = 0;
     let startY = 0;
+    let lastDx = 0;
+    let panelWidth = 0;
+    let panelWasOpenAtStart = false;
+    let lockedByVerticalScroll = false;
     let tracking = false;
-    const threshold = 50;
+    const verticalLockThreshold = 42;
 
     const canTrack = () => {
         if (!isMobileLayout()) return false;
@@ -4658,12 +4667,45 @@ function initMobileSwipePanelToggle() {
         if (onboardingActive) return false;
         return true;
     };
+    const getPanelElements = () => ({
+        panel: document.getElementById('sidePanel'),
+        overlay: document.getElementById('panelOverlay')
+    });
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    const setDragVisual = (dxRaw) => {
+        const { panel, overlay } = getPanelElements();
+        if (!panel) return;
+        if (!panelWidth) panelWidth = panel.getBoundingClientRect().width || window.innerWidth * 0.85;
+        const base = panelWasOpenAtStart ? 0 : -panelWidth;
+        const translate = clamp(base + dxRaw, -panelWidth, 0);
+        panel.classList.add('is-dragging');
+        panel.style.transform = `translateX(${translate}px)`;
+        if (!overlay) return;
+        const progress = clamp((translate + panelWidth) / panelWidth, 0, 1);
+        overlay.classList.add('show');
+        overlay.style.opacity = (0.45 * progress).toFixed(3);
+    };
+    const clearDragVisual = () => {
+        const { panel, overlay } = getPanelElements();
+        if (panel) {
+            panel.classList.remove('is-dragging');
+            panel.style.removeProperty('transform');
+        }
+        if (overlay) {
+            overlay.style.removeProperty('opacity');
+        }
+    };
 
     window.addEventListener('touchstart', (e) => {
         if (!canTrack()) return;
         const t = e.touches[0];
         startX = t?.clientX || 0;
         startY = t?.clientY || 0;
+        lastDx = 0;
+        panelWasOpenAtStart = document.body.classList.contains('side-panel-open');
+        const panel = document.getElementById('sidePanel');
+        panelWidth = panel?.getBoundingClientRect().width || 0;
+        lockedByVerticalScroll = false;
         tracking = true;
     }, { passive: true });
 
@@ -4674,15 +4716,14 @@ function initMobileSwipePanelToggle() {
         const nowY = t?.clientY || 0;
         const dx = nowX - startX;
         const dy = nowY - startY;
-        const panelOpen = document.body.classList.contains('side-panel-open');
-        if (Math.abs(dy) > 42) return;
-        if (panelOpen && dx < -threshold) {
-            setSidePanelOpen(false);
-            tracking = false;
-        } else if (!panelOpen && dx > threshold) {
-            setSidePanelOpen(true);
-            tracking = false;
+        if (Math.abs(dy) > verticalLockThreshold && Math.abs(dy) > Math.abs(dx)) {
+            lockedByVerticalScroll = true;
+            clearDragVisual();
+            return;
         }
+        if (lockedByVerticalScroll) return;
+        lastDx = dx;
+        setDragVisual(dx);
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
@@ -4690,16 +4731,23 @@ function initMobileSwipePanelToggle() {
         const t = e.changedTouches[0];
         const endX = t?.clientX || 0;
         const endY = t?.clientY || 0;
-        const dx = endX - startX;
+        const dx = lastDx || (endX - startX);
         const dy = endY - startY;
         tracking = false;
-
-        if (Math.abs(dy) > 42 || Math.abs(dx) < threshold) return;
-        const panelOpen = document.body.classList.contains('side-panel-open');
-        if (!panelOpen && dx > threshold) {
-            setSidePanelOpen(true);
-        } else if (panelOpen && dx < -threshold) {
-            setSidePanelOpen(false);
+        if (!panelWidth) {
+            const panel = document.getElementById('sidePanel');
+            panelWidth = panel?.getBoundingClientRect().width || window.innerWidth * 0.85;
+        }
+        const completeThreshold = Math.max(window.innerWidth / 3, panelWidth / 3);
+        clearDragVisual();
+        if (lockedByVerticalScroll || Math.abs(dy) > verticalLockThreshold) {
+            setSidePanelOpen(panelWasOpenAtStart);
+            return;
+        }
+        if (!panelWasOpenAtStart) {
+            setSidePanelOpen(dx > completeThreshold);
+        } else {
+            setSidePanelOpen(!(dx < -completeThreshold));
         }
     }, { passive: true });
 }
