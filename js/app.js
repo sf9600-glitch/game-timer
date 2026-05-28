@@ -1961,6 +1961,33 @@ function updateCloudSyncUI(key) {
     if (key !== undefined) cloudSyncStatusKey = key;
     const el = document.getElementById('cloudSyncStatus');
     if (el) el.textContent = t(cloudSyncStatusKey);
+    const meta = document.getElementById('cloudSyncPanelMeta');
+    if (meta) meta.textContent = getCloudSyncPanelMetaText();
+}
+
+function getCloudSyncPanelMetaText() {
+    if (!isSupabaseConfigured()) return t('cloudBackendNotConfigured');
+    if (currentUser) return t(cloudSyncStatusKey);
+    if (cloudAuthView === 'newPassword') return t('cloudResetTitle');
+    if (cloudAuthView === 'forgot') return t('cloudForgotTitle');
+    return t('cloudSignIn');
+}
+
+function wrapCloudSyncPanel(innerHtml, boxClass = 'cloud-sync-box') {
+    const panelOpen = uiState.cloudSyncExpanded ? ' cloud-sync-panel--open' : '';
+    const panelActive = uiState.cloudSyncExpanded ? ' active' : '';
+    const meta = getCloudSyncPanelMetaText();
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    return `<div class="cloud-sync-panel${panelOpen}" id="cloudSyncPanel">
+        <div class="cloud-sync-panel-title" role="button" tabindex="0" onclick="toggleCloudSyncPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCloudSyncPanel();}" aria-expanded="${uiState.cloudSyncExpanded}">
+            <span class="cloud-sync-panel-title-text">${t('cloudTitle')}</span>
+            <span class="cloud-sync-panel-meta" id="cloudSyncPanelMeta">${esc(meta)}</span>
+            <span class="cloud-sync-panel-chevron" aria-hidden="true">›</span>
+        </div>
+        <div id="cloudSyncPanelBody" class="cloud-sync-panel-body collapsible-content${panelActive}"><div>
+            <div class="${boxClass}">${innerHtml}</div>
+        </div></div>
+    </div>`;
 }
 
 function applyCloudPayload(data) {
