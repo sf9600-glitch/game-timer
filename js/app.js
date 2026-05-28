@@ -3040,6 +3040,7 @@ function renderSidePanel() {
     syncCollapsibleClasses();
     syncStartSheetChrome();
     initNotifyBannerDismissButtons();
+    initNotifyPermissionPressButtons();
     syncNotifyPermissionUi();
     refreshMainDisplay(); 
 }
