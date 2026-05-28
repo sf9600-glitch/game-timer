@@ -323,6 +323,7 @@ let onboardingCreatedTimerId = null;
 let onboardingResizeHandler = null;
 let onboardingPositionedStepId = null;
 const ONBOARDING_STRICT_WAITS = new Set(['timer-created', 'timer-deleted']);
+const NOTIFY_BANNER_DISMISS_KEY = 'GameTimer_NotifyBanner_Dismissed';
 const finishedNotifyIds = new Set();
 
 function shouldNotifyOnFinish(timer) {
