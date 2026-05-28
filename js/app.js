@@ -352,10 +352,10 @@ function canUseWebNotification() {
     return typeof window !== 'undefined' && 'Notification' in window;
 }
 
-function requestNotificationPermissionIfNeeded() {
-    if (!canUseWebNotification()) return;
-    if (Notification.permission !== 'default') return;
-    Notification.requestPermission().catch(() => {});
+function isIOSDevice() {
+    if (typeof navigator === 'undefined') return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent)
+        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
 function isStandalonePwa() {
@@ -364,18 +364,72 @@ function isStandalonePwa() {
     return window.navigator?.standalone === true;
 }
 
+function canUseWebNotificationOnThisDevice() {
+    if (!canUseWebNotification()) return false;
+    if (!isIOSDevice()) return true;
+    return isStandalonePwa();
+}
+
+function requestNotificationPermissionIfNeeded() {
+    if (!canUseWebNotificationOnThisDevice()) return;
+    if (Notification.permission !== 'default') return;
+    Notification.requestPermission().catch(() => {});
+}
+
 function getNotificationPermissionStatusKey() {
     if (!canUseWebNotification()) return 'notifyStatusUnsupported';
+    if (isIOSDevice() && !isStandalonePwa()) return 'notifyStatusNeedHome';
     if (Notification.permission === 'granted') return 'notifyStatusGranted';
     if (Notification.permission === 'denied') return 'notifyStatusDenied';
     return 'notifyStatusDefault';
 }
 
+function afterNotificationPermissionChanged() {
+    syncNotifyEnableBanner();
+    renderSidePanel();
+}
+
 function requestNotificationPermissionExplicit() {
-    if (!canUseWebNotification()) return;
+    if (!canUseWebNotificationOnThisDevice()) {
+        alert(isIOSDevice() && !isStandalonePwa() ? t('notifyNeedStandalone') : t('notifyIosOld'));
+        return;
+    }
     Notification.requestPermission()
-        .then(() => renderSidePanel())
-        .catch(() => renderSidePanel());
+        .then(() => afterNotificationPermissionChanged())
+        .catch(() => afterNotificationPermissionChanged());
+}
+
+function sendTestNotification() {
+    if (!canUseWebNotificationOnThisDevice() || Notification.permission !== 'granted') return;
+    try {
+        new Notification(t('timerDoneNoticeTitle'), { body: t('notifyTestBody'), tag: 'timer-test' });
+    } catch (_) {}
+}
+
+function dismissNotifyEnableBanner() {
+    try { sessionStorage.setItem(NOTIFY_BANNER_DISMISS_KEY, '1'); } catch (_) {}
+    syncNotifyEnableBanner();
+}
+
+function shouldShowNotifyEnableBanner() {
+    if (!canUseWebNotificationOnThisDevice()) return false;
+    if (Notification.permission !== 'default') return false;
+    try { if (sessionStorage.getItem(NOTIFY_BANNER_DISMISS_KEY) === '1') return false; } catch (_) {}
+    return true;
+}
+
+function syncNotifyEnableBanner() {
+    const el = document.getElementById('notifyEnableBanner');
+    if (!el) return;
+    const show = shouldShowNotifyEnableBanner();
+    el.hidden = !show;
+    if (!show) return;
+    const title = document.getElementById('notifyEnableBannerTitle');
+    const body = document.getElementById('notifyEnableBannerBody');
+    const btn = document.getElementById('notifyEnableBannerBtn');
+    if (title) title.textContent = t('notifyBannerTitle');
+    if (body) body.textContent = t('notifyBannerBody');
+    if (btn) btn.textContent = t('notifyPermissionBtn');
 }
 
 async function registerAppServiceWorker() {
