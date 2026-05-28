@@ -443,21 +443,31 @@ async function registerAppServiceWorker() {
 
 function renderNotificationHelpHtml() {
     const standalone = isStandalonePwa();
-    const installHint = standalone ? t('notifyInstallOk') : t('notifyInstallHint');
+    const ios = isIOSDevice();
+    const canAsk = canUseWebNotificationOnThisDevice() && Notification.permission === 'default';
+    const denied = canUseWebNotificationOnThisDevice() && Notification.permission === 'denied';
+    const granted = canUseWebNotificationOnThisDevice() && Notification.permission === 'granted';
     const statusKey = getNotificationPermissionStatusKey();
-    const canAsk = canUseWebNotification() && Notification.permission === 'default';
-    const denied = canUseWebNotification() && Notification.permission === 'denied';
+    const statusClass = statusKey.replace('notifyStatus', '').toLowerCase();
+    let installHint = standalone ? t('notifyInstallOk') : t('notifyInstallHint');
+    if (ios && !standalone) installHint = t('notifyNeedStandalone');
+    const extraHints = [];
+    if (ios && standalone && Notification.permission === 'default') extraHints.push(t('notifyMustAllowFirst'));
+    if (ios) extraHints.push(t('notifySearchNames'));
+    if (standalone) extraHints.push(t('notifyReinstallHint'));
+    extraHints.push(t('notifySafariOnly'), t('notifyLimitHint'));
+    if (ios && !canUseWebNotification()) extraHints.unshift(t('notifyIosOld'));
     return `
         <div class="notify-setup-block">
             <div class="sys-block-title" style="margin-bottom:6px;">${t('notifySectionTitle')}</div>
             <p class="notify-setup-hint">${installHint}</p>
-            <p class="notify-setup-hint notify-setup-hint--sub">${t('notifySafariOnly')}</p>
-            <p class="notify-setup-hint notify-setup-hint--sub">${t('notifyLimitHint')}</p>
+            ${extraHints.map(h => `<p class="notify-setup-hint notify-setup-hint--sub">${h}</p>`).join('')}
             <div class="notify-setup-row">
                 <span>${t('notifyPermissionLabel')}</span>
-                <span class="notify-setup-status notify-setup-status--${statusKey.replace('notifyStatus', '').toLowerCase()}">${t(statusKey)}</span>
+                <span class="notify-setup-status notify-setup-status--${statusClass}">${t(statusKey)}</span>
             </div>
-            ${canAsk ? `<button type="button" class="btn-adjust" style="width:100%; margin-top:6px; font-size:0.72rem;" onclick="requestNotificationPermissionExplicit()">${t('notifyPermissionBtn')}</button>` : ''}
+            ${canAsk ? `<button type="button" class="btn-adjust notify-setup-primary-btn" onclick="requestNotificationPermissionExplicit()">${t('notifyPermissionBtn')}</button>` : ''}
+            ${granted ? `<button type="button" class="btn-adjust notify-setup-primary-btn" onclick="sendTestNotification()">${t('notifyTestBtn')}</button>` : ''}
             ${denied ? `<p class="notify-setup-hint notify-setup-hint--warn">${t('notifyDeniedHint')}</p>` : ''}
         </div>
         <div class="sys-block-divider"></div>`;
