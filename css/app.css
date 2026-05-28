@@ -2431,6 +2431,9 @@ html.timer-display-list .timer-list-row .timer-list-hint {
     border-radius: 8px;
     border: 1px solid var(--border-color);
 }
+.cloud-sync-panel .cloud-sync-unconfigured {
+    border: none;
+}
 .cloud-sync-title { font-size: 0.78rem; font-weight: bold; margin-bottom: 6px; }
 .cloud-sync-hint { font-size: 0.68rem; color: var(--text-sub); line-height: 1.45; margin: 0; }
 .cloud-user-line { font-size: 0.72rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
