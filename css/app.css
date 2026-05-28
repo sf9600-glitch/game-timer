@@ -1224,7 +1224,7 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     background: #172554;
     color: #dbeafe;
 }
-.notify-enable-banner-text { flex: 1; min-width: 0; min-width: min(100%, 520px); }
+.notify-enable-banner-text { flex: 1; min-width: min(100%, 520px); }
 .notify-enable-banner-text strong,
 .notify-enable-banner-text p,
 #notifyEnableBannerTitle,
