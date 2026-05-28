@@ -4651,7 +4651,6 @@ function initMobileSwipePanelToggle() {
     let startY = 0;
     let tracking = false;
     const threshold = 50;
-    const edgeZone = 36;
 
     const canTrack = () => {
         if (!isMobileLayout()) return false;
@@ -4680,7 +4679,7 @@ function initMobileSwipePanelToggle() {
         if (panelOpen && dx < -threshold) {
             setSidePanelOpen(false);
             tracking = false;
-        } else if (!panelOpen && dx > threshold && startX <= edgeZone) {
+        } else if (!panelOpen && dx > threshold) {
             setSidePanelOpen(true);
             tracking = false;
         }
@@ -4697,7 +4696,7 @@ function initMobileSwipePanelToggle() {
 
         if (Math.abs(dy) > 42 || Math.abs(dx) < threshold) return;
         const panelOpen = document.body.classList.contains('side-panel-open');
-        if (!panelOpen && dx > threshold && startX <= edgeZone) {
+        if (!panelOpen && dx > threshold) {
             setSidePanelOpen(true);
         } else if (panelOpen && dx < -threshold) {
             setSidePanelOpen(false);
