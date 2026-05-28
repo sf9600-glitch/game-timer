@@ -2377,6 +2377,14 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         padding: 5px 7px;
         font-size: 16px;
     }
+    .control-panel .flash-warning-row .flash-threshold-input {
+        min-height: 28px;
+        height: 28px;
+        padding: 2px 3px;
+        line-height: 1.15;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
     .main-column { width: 100%; min-width: 0; }
     #mainDisplay { width: 100%; min-width: 0; }
     .finished-global-by-char > .finished-global-row.finished-grid,
