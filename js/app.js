@@ -315,6 +315,57 @@ function requestNotificationPermissionIfNeeded() {
     Notification.requestPermission().catch(() => {});
 }
 
+function isStandalonePwa() {
+    if (typeof window === 'undefined') return false;
+    if (window.matchMedia?.('(display-mode: standalone)')?.matches) return true;
+    return window.navigator?.standalone === true;
+}
+
+function getNotificationPermissionStatusKey() {
+    if (!canUseWebNotification()) return 'notifyStatusUnsupported';
+    if (Notification.permission === 'granted') return 'notifyStatusGranted';
+    if (Notification.permission === 'denied') return 'notifyStatusDenied';
+    return 'notifyStatusDefault';
+}
+
+function requestNotificationPermissionExplicit() {
+    if (!canUseWebNotification()) return;
+    Notification.requestPermission()
+        .then(() => renderSidePanel())
+        .catch(() => renderSidePanel());
+}
+
+async function registerAppServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+    try {
+        await navigator.serviceWorker.register('sw.js', { scope: './' });
+    } catch (err) {
+        console.warn('serviceWorker register', err);
+    }
+}
+
+function renderNotificationHelpHtml() {
+    const standalone = isStandalonePwa();
+    const installHint = standalone ? t('notifyInstallOk') : t('notifyInstallHint');
+    const statusKey = getNotificationPermissionStatusKey();
+    const canAsk = canUseWebNotification() && Notification.permission === 'default';
+    const denied = canUseWebNotification() && Notification.permission === 'denied';
+    return `
+        <div class="notify-setup-block">
+            <div class="sys-block-title" style="margin-bottom:6px;">${t('notifySectionTitle')}</div>
+            <p class="notify-setup-hint">${installHint}</p>
+            <p class="notify-setup-hint notify-setup-hint--sub">${t('notifySafariOnly')}</p>
+            <p class="notify-setup-hint notify-setup-hint--sub">${t('notifyLimitHint')}</p>
+            <div class="notify-setup-row">
+                <span>${t('notifyPermissionLabel')}</span>
+                <span class="notify-setup-status notify-setup-status--${statusKey.replace('notifyStatus', '').toLowerCase()}">${t(statusKey)}</span>
+            </div>
+            ${canAsk ? `<button type="button" class="btn-adjust" style="width:100%; margin-top:6px; font-size:0.72rem;" onclick="requestNotificationPermissionExplicit()">${t('notifyPermissionBtn')}</button>` : ''}
+            ${denied ? `<p class="notify-setup-hint notify-setup-hint--warn">${t('notifyDeniedHint')}</p>` : ''}
+        </div>
+        <div class="sys-block-divider"></div>`;
+}
+
 function triggerFinishNotification(timer) {
     if (!shouldNotifyOnFinish(timer) || !timer?.id) return;
     const id = String(timer.id);
