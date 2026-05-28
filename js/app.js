@@ -468,12 +468,16 @@ async function ensureWebPushSubscription() {
     try {
         const reg = await navigator.serviceWorker.ready;
         let sub = await reg.pushManager.getSubscription();
-        if (!sub) {
-            sub = await reg.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(WEB_PUSH_VAPID_PUBLIC_KEY.trim())
-            });
+        // iOS/Safari occasionally keeps a stale subscription after key/environment changes.
+        // Recreate it to ensure server-side endpoint and keys are valid.
+        if (sub) {
+            try { await sub.unsubscribe(); } catch (_) {}
+            sub = null;
         }
+        sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(WEB_PUSH_VAPID_PUBLIC_KEY.trim())
+        });
         await savePushSubscription(sub);
         await syncPushScheduleToServer();
         return true;
