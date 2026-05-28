@@ -408,16 +408,47 @@ function sendTestNotification() {
     } catch (_) {}
 }
 
-function dismissNotifyEnableBanner() {
+function isNotifyBannerDismissed() {
+    try {
+        if (sessionStorage.getItem(NOTIFY_BANNER_DISMISS_KEY) === '1') return true;
+        if (localStorage.getItem(NOTIFY_BANNER_DISMISS_KEY) === '1') return true;
+    } catch (_) {}
+    return false;
+}
+
+function dismissNotifyEnableBanner(ev) {
+    if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+    }
     try { sessionStorage.setItem(NOTIFY_BANNER_DISMISS_KEY, '1'); } catch (_) {}
-    syncNotifyEnableBanner();
+    try { localStorage.setItem(NOTIFY_BANNER_DISMISS_KEY, '1'); } catch (_) {}
+    ['notifyEnableBanner', 'notifyDesktopPrompt'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.hidden = true;
+        el.setAttribute('aria-hidden', 'true');
+        el.classList.add('notify-enable-banner--dismissed');
+    });
 }
 
 function shouldShowNotifyPermissionPrompt() {
     if (!canUseWebNotificationOnThisDevice()) return false;
     if (Notification.permission !== 'default') return false;
-    try { if (sessionStorage.getItem(NOTIFY_BANNER_DISMISS_KEY) === '1') return false; } catch (_) {}
+    if (isNotifyBannerDismissed()) return false;
     return true;
+}
+
+function initNotifyBannerDismissButtons() {
+    document.querySelectorAll('[data-notify-dismiss]').forEach(btn => {
+        if (btn.dataset.notifyDismissBound === '1') return;
+        btn.dataset.notifyDismissBound = '1';
+        btn.addEventListener('click', dismissNotifyEnableBanner);
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            dismissNotifyEnableBanner(e);
+        }, { passive: false });
+    });
 }
 
 function shouldShowNotifyEnableBanner() {
