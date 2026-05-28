@@ -49,6 +49,45 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
 }
 
 .main-column { flex-grow: 1; min-width: 0; max-width: 100%; display: flex; flex-direction: column; overflow-x: hidden; }
+.pull-refresh-indicator {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    align-self: center;
+    margin: 0 0 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--primary) 12%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border-color));
+    color: var(--text-sub);
+    font-size: 0.68rem;
+    font-weight: 700;
+    transform: translateY(-6px);
+    opacity: 0;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+    pointer-events: none;
+}
+.pull-refresh-indicator.show {
+    display: inline-flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+.pull-refresh-spinner {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in srgb, var(--primary) 18%, transparent);
+    border-top-color: var(--primary);
+    box-sizing: border-box;
+}
+.pull-refresh-indicator.refreshing .pull-refresh-spinner {
+    animation: pull-refresh-spin 0.75s linear infinite;
+}
+@keyframes pull-refresh-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 .main-toolbar {
     display: flex;
     justify-content: center;
