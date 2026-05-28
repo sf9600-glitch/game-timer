@@ -4553,10 +4553,13 @@ window.addEventListener('pageshow', (e) => {
 
 function initMobilePullToRefresh() {
     let startY = 0;
+    let startTs = 0;
     let tracking = false;
     let pulling = false;
     let refreshing = false;
     const threshold = 90;
+    const minShowDistance = 18;
+    const minShowHoldMs = 140;
     const indicator = document.getElementById('pullRefreshIndicator');
     const indicatorText = document.getElementById('pullRefreshText');
 
@@ -4617,9 +4620,10 @@ function initMobilePullToRefresh() {
     window.addEventListener('touchstart', (e) => {
         if (!canStart()) return;
         startY = e.touches[0]?.clientY || 0;
+        startTs = Date.now();
         tracking = true;
         pulling = false;
-        setIndicator('pull');
+        setIndicator('hide');
     }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
@@ -4631,7 +4635,12 @@ function initMobilePullToRefresh() {
             setIndicator('hide');
             return;
         }
+        const elapsed = Date.now() - startTs;
         pulling = delta > threshold;
+        if (delta < minShowDistance || elapsed < minShowHoldMs) {
+            setIndicator('hide');
+            return;
+        }
         setIndicator(pulling ? 'ready' : 'pull');
     }, { passive: true });
 
