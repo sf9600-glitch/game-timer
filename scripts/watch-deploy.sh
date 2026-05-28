@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 背景監聽：index.html / css/app.css / js/app.js 一存檔就自動 deploy
+# 背景監聽：專案檔案一存檔就自動 deploy
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -10,11 +10,17 @@ if ! command -v fswatch >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "👀 監聽中：儲存 index.html / css/app.css / js/app.js 會自動部署"
+echo "👀 監聽中：儲存專案檔案會自動部署"
 echo "   按 Ctrl+C 停止"
 echo ""
 
-fswatch -o "$ROOT/index.html" "$ROOT/css/app.css" "$ROOT/js/app.js" | while read -r _; do
+fswatch -o \
+  --exclude '(^|/)\.git/' \
+  --exclude '(^|/)\.cursor/' \
+  --exclude '(^|/)node_modules/' \
+  --exclude '(^|/)agent-transcripts/' \
+  --exclude '(^|/)terminals/' \
+  "$ROOT" | while read -r _; do
   if "$ROOT/scripts/deploy.sh"; then
     echo ""
   fi
