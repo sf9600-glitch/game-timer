@@ -1300,16 +1300,6 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     line-height: 1.45;
     font-weight: 600;
 }
-.notify-desktop-prompt-dismiss {
-    border: none;
-    background: transparent;
-    color: #334155;
-    font-size: 1.1rem;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0 4px;
-    flex-shrink: 0;
-}
 [data-theme="dark"] .notify-desktop-prompt {
     background: #172554;
     border-color: #3b82f6;
