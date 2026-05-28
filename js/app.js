@@ -187,6 +187,7 @@ const LOCALE_INLINE_FALLBACK = {
         notifyStatusGranted: '已允许',
         notifyStatusDenied: '已拒绝',
         notifyStatusDefault: '尚未询问',
+        notifyStatusNeedHome: '请从主屏幕打开',
         notifyStatusUnsupported: '不支持',
         notifyDeniedHint: '若先前按了「不允许」，请到 iPhone「设置→通知→游戏计时器」改为允许。',
         notifyMustAllowFirst: '重要：iPhone 要先在 App 内按下方「允许通知」，系统跳出询问并选「允许」后，「设置→通知」清单才会出现本 App。',
