@@ -4286,5 +4286,6 @@ window.addEventListener('resize', () => syncLayoutForViewport());
     maybeStartInteractiveTutorial();
     syncFinishedNotifyState();
     registerAppServiceWorker();
+    syncNotifyEnableBanner();
     runGlobalClockTick();
 })();
