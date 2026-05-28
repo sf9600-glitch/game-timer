@@ -2276,6 +2276,7 @@ async function signInFromUI() {
     currentUser = session?.user ?? null;
     await mergeCloudFromRemote();
     startCloudPoll();
+    await setupBackgroundPushAfterLogin();
     renderSidePanel();
 }
 
