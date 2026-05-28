@@ -4658,7 +4658,7 @@ function initMobileSwipePanelToggle() {
     let startX = 0;
     let startY = 0;
     let tracking = false;
-    const threshold = 70;
+    const threshold = 50;
     const edgeZone = 36;
 
     const canTrack = () => {
@@ -4674,6 +4674,24 @@ function initMobileSwipePanelToggle() {
         startX = t?.clientX || 0;
         startY = t?.clientY || 0;
         tracking = true;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!tracking || !canTrack()) return;
+        const t = e.touches[0];
+        const nowX = t?.clientX || 0;
+        const nowY = t?.clientY || 0;
+        const dx = nowX - startX;
+        const dy = nowY - startY;
+        const panelOpen = document.body.classList.contains('side-panel-open');
+        if (Math.abs(dy) > 42) return;
+        if (panelOpen && dx < -threshold) {
+            setSidePanelOpen(false);
+            tracking = false;
+        } else if (!panelOpen && dx > threshold && startX <= edgeZone) {
+            setSidePanelOpen(true);
+            tracking = false;
+        }
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
