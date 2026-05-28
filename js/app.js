@@ -4660,7 +4660,8 @@ function initMobileSwipePanelToggle() {
     let panelWasOpenAtStart = false;
     let lockedByVerticalScroll = false;
     let tracking = false;
-    const verticalLockThreshold = 42;
+    const verticalLockThreshold = 72;
+    const verticalDominanceRatio = 1.35;
     const quickSwipeMaxMs = 220;
     const quickSwipeMinDistance = 36;
     const quickCloseMinDistance = 20;
@@ -4722,7 +4723,7 @@ function initMobileSwipePanelToggle() {
         const nowY = t?.clientY || 0;
         const dx = nowX - startX;
         const dy = nowY - startY;
-        if (Math.abs(dy) > verticalLockThreshold && Math.abs(dy) > Math.abs(dx)) {
+        if (Math.abs(dy) > verticalLockThreshold && Math.abs(dy) > Math.abs(dx) * verticalDominanceRatio) {
             lockedByVerticalScroll = true;
             clearDragVisual();
             return;
@@ -4751,7 +4752,7 @@ function initMobileSwipePanelToggle() {
         const openThreshold = Math.max(window.innerWidth / 3, panelWidth / 3);
         const closeThreshold = Math.max(window.innerWidth * 0.2, panelWidth * 0.2);
         clearDragVisual();
-        if (lockedByVerticalScroll || Math.abs(dy) > verticalLockThreshold) {
+        if (lockedByVerticalScroll || (Math.abs(dy) > verticalLockThreshold && Math.abs(dy) > Math.abs(dx) * verticalDominanceRatio)) {
             setSidePanelOpen(panelWasOpenAtStart);
             return;
         }
