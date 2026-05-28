@@ -4557,6 +4557,32 @@ function initMobilePullToRefresh() {
     let pulling = false;
     let refreshing = false;
     const threshold = 90;
+    const indicator = document.getElementById('pullRefreshIndicator');
+    const indicatorText = document.getElementById('pullRefreshText');
+
+    const setIndicator = (mode) => {
+        if (!indicator || !indicatorText) return;
+        if (mode === 'hide') {
+            indicator.classList.remove('show', 'refreshing');
+            indicator.setAttribute('aria-hidden', 'true');
+            return;
+        }
+        indicator.classList.add('show');
+        indicator.setAttribute('aria-hidden', 'false');
+        if (mode === 'pull') {
+            indicator.classList.remove('refreshing');
+            indicatorText.textContent = '下拉更新';
+        } else if (mode === 'ready') {
+            indicator.classList.remove('refreshing');
+            indicatorText.textContent = '放開立即更新';
+        } else if (mode === 'refreshing') {
+            indicator.classList.add('refreshing');
+            indicatorText.textContent = '更新中...';
+        } else if (mode === 'done') {
+            indicator.classList.remove('refreshing');
+            indicatorText.textContent = '更新完成';
+        }
+    };
 
     const canStart = () => {
         if (!isMobileLayout()) return false;
@@ -4569,6 +4595,7 @@ function initMobilePullToRefresh() {
     const runRefresh = async () => {
         if (refreshing) return;
         refreshing = true;
+        setIndicator('refreshing');
         try {
             if (isCloudSyncActive()) {
                 await mergeCloudFromRemote();
@@ -4577,8 +4604,11 @@ function initMobilePullToRefresh() {
             }
             renderSidePanel();
             syncNotifyPermissionUi();
+            setIndicator('done');
+            setTimeout(() => setIndicator('hide'), 700);
         } catch (err) {
             console.error('pullToRefresh', err);
+            setTimeout(() => setIndicator('hide'), 500);
         } finally {
             refreshing = false;
         }
@@ -4589,6 +4619,7 @@ function initMobilePullToRefresh() {
         startY = e.touches[0]?.clientY || 0;
         tracking = true;
         pulling = false;
+        setIndicator('pull');
     }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
@@ -4597,14 +4628,17 @@ function initMobilePullToRefresh() {
         const delta = currentY - startY;
         if (delta <= 0) {
             tracking = false;
+            setIndicator('hide');
             return;
         }
         pulling = delta > threshold;
+        setIndicator(pulling ? 'ready' : 'pull');
     }, { passive: true });
 
     window.addEventListener('touchend', () => {
         if (!tracking) return;
         if (pulling) runRefresh();
+        else setIndicator('hide');
         tracking = false;
         pulling = false;
     }, { passive: true });
