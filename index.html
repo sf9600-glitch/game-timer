@@ -11,7 +11,7 @@
     <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#090d16" media="(prefers-color-scheme: dark)">
     <title>遊戲計時器</title>
-    <link rel="stylesheet" href="css/app.css?v=27">
+    <link rel="stylesheet" href="css/app.css?v=28">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -34,6 +34,10 @@
         <div class="control-panel-inner" id="sidePanelContent"></div>
     </div>
     <div class="main-column">
+        <div class="pull-refresh-indicator" id="pullRefreshIndicator" aria-hidden="true">
+            <span class="pull-refresh-spinner" id="pullRefreshSpinner" aria-hidden="true"></span>
+            <span class="pull-refresh-text" id="pullRefreshText">下拉更新</span>
+        </div>
         <div class="notify-enable-banner" id="notifyEnableBanner" hidden>
             <div class="notify-enable-banner-head">
                 <strong id="notifyEnableBannerTitle">請開啟到點通知</strong>
@@ -77,6 +81,6 @@
         </div>
     </div>
 
-    <script src="js/app.js?v=31"></script>
+    <script src="js/app.js?v=32"></script>
 </body>
 </html>
