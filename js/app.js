@@ -550,18 +550,26 @@ function renderNotificationHelpHtml() {
     if (standalone) extraHints.push(t('notifyReinstallHint'));
     extraHints.push(t('notifySafariOnly'), t('notifyLimitHint'));
     if (ios && !canUseWebNotification()) extraHints.unshift(t('notifyIosOld'));
-    return `
-        <div class="notify-setup-block">
-            <div class="sys-block-title" style="margin-bottom:6px;">${t('notifySectionTitle')}</div>
+    const panelOpen = uiState.notifySetupExpanded ? ' notify-setup-panel--open' : '';
+    const panelActive = uiState.notifySetupExpanded ? ' active' : '';
+    const bodyInner = `
             <p class="notify-setup-hint">${installHint}</p>
             ${extraHints.map(h => `<p class="notify-setup-hint notify-setup-hint--sub">${h}</p>`).join('')}
             <div class="notify-setup-row">
                 <span>${t('notifyPermissionLabel')}</span>
                 <span class="notify-setup-status notify-setup-status--${statusClass}">${t(statusKey)}</span>
             </div>
-            ${canAsk ? `<button type="button" class="notify-permission-btn notify-permission-btn--block btn-press-3d" onclick="requestNotificationPermissionExplicit()">${t('notifyPermissionBtn')}</button>` : ''}
-            ${granted ? `<button type="button" class="notify-permission-btn notify-permission-btn--block btn-press-3d" onclick="sendTestNotification()">${t('notifyTestBtn')}</button>` : ''}
-            ${denied ? `<p class="notify-setup-hint notify-setup-hint--warn">${t('notifyDeniedHint')}</p>` : ''}
+            ${canAsk ? `<button type="button" class="notify-permission-btn notify-permission-btn--compact btn-press-3d" onclick="requestNotificationPermissionExplicit()">${t('notifyPermissionBtn')}</button>` : ''}
+            ${granted ? `<button type="button" class="notify-permission-btn notify-permission-btn--compact btn-press-3d" onclick="sendTestNotification()">${t('notifyTestBtn')}</button>` : ''}
+            ${denied ? `<p class="notify-setup-hint notify-setup-hint--warn">${t('notifyDeniedHint')}</p>` : ''}`;
+    return `
+        <div class="notify-setup-panel${panelOpen}" id="notifySetupPanel">
+            <div class="notify-setup-panel-title" role="button" tabindex="0" onclick="toggleNotifySetupPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNotifySetupPanel();}" aria-expanded="${uiState.notifySetupExpanded}">
+                <span class="notify-setup-panel-title-text">${t('notifySectionTitle')}</span>
+                <span class="notify-setup-panel-meta notify-setup-status--${statusClass}">${t(statusKey)}</span>
+                <span class="notify-setup-panel-chevron" aria-hidden="true">›</span>
+            </div>
+            <div id="notifySetupPanelBody" class="notify-setup-panel-body collapsible-content${panelActive}"><div>${bodyInner}</div></div>
         </div>
         <div class="sys-block-divider"></div>`;
 }
