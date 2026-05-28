@@ -502,8 +502,11 @@ async function requestNotificationPermissionExplicit() {
         const perm = await Notification.requestPermission();
         afterNotificationPermissionChanged();
         if (perm === 'granted') {
+            persistNotifyBannerDismissed();
             await ensureWebPushSubscription();
             afterNotificationPermissionChanged();
+        } else if (perm === 'denied') {
+            persistNotifyBannerDismissed();
         }
     } catch (_) {
         afterNotificationPermissionChanged();
@@ -519,10 +522,24 @@ function sendTestNotification() {
 
 function isNotifyBannerDismissed() {
     try {
+        if (config && config.notifyPromptDismissed === true) return true;
+    } catch (_) {}
+    try {
         if (sessionStorage.getItem(NOTIFY_BANNER_DISMISS_KEY) === '1') return true;
         if (localStorage.getItem(NOTIFY_BANNER_DISMISS_KEY) === '1') return true;
     } catch (_) {}
     return false;
+}
+
+function persistNotifyBannerDismissed() {
+    try { sessionStorage.setItem(NOTIFY_BANNER_DISMISS_KEY, '1'); } catch (_) {}
+    try { localStorage.setItem(NOTIFY_BANNER_DISMISS_KEY, '1'); } catch (_) {}
+    try {
+        if (config && config.notifyPromptDismissed !== true) {
+            config.notifyPromptDismissed = true;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+        }
+    } catch (_) {}
 }
 
 function dismissNotifyEnableBanner(ev) {
@@ -530,8 +547,7 @@ function dismissNotifyEnableBanner(ev) {
         ev.preventDefault();
         ev.stopPropagation();
     }
-    try { sessionStorage.setItem(NOTIFY_BANNER_DISMISS_KEY, '1'); } catch (_) {}
-    try { localStorage.setItem(NOTIFY_BANNER_DISMISS_KEY, '1'); } catch (_) {}
+    persistNotifyBannerDismissed();
     ['notifyEnableBanner', 'notifyDesktopPrompt'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
