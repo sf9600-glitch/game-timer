@@ -4364,6 +4364,7 @@ window.addEventListener('resize', () => {
     maybeStartInteractiveTutorial();
     syncFinishedNotifyState();
     registerAppServiceWorker();
+    initNotifyBannerDismissButtons();
     syncNotifyEnableBanner();
     runGlobalClockTick();
 })();
