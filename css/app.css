@@ -1223,6 +1223,10 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     overflow: visible;
     padding-bottom: 14px;
 }
+.notify-enable-banner[hidden],
+.notify-desktop-prompt[hidden] {
+    display: none !important;
+}
 [data-theme="dark"] .notify-enable-banner {
     border-color: #1d4ed8;
     background: #172554;
