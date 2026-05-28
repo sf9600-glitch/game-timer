@@ -2143,6 +2143,7 @@ async function uploadToCloud() {
     lastCloudUploadAt = Date.now();
     lastCloudUpdatedAt = updatedAt;
     updateCloudSyncUI('cloudSynced');
+    await syncPushScheduleToServer().catch(err => console.warn('push schedule after upload', err));
 }
 
 function scheduleCloudSync() {
