@@ -1220,7 +1220,8 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     border: 1px solid #93c5fd;
     background: #eff6ff;
     color: #1e3a8a;
-    overflow: hidden;
+    overflow: visible;
+    padding-bottom: 14px;
 }
 [data-theme="dark"] .notify-enable-banner {
     border-color: #1d4ed8;
