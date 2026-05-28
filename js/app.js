@@ -70,6 +70,7 @@ const LOCALE_INLINE_FALLBACK = {
         notifyStatusGranted: '已允許',
         notifyStatusDenied: '已拒絕',
         notifyStatusDefault: '尚未詢問',
+        notifyStatusNeedHome: '請從主畫面開啟',
         notifyStatusUnsupported: '不支援',
         notifyDeniedHint: '若先前按了「不允許」，請到 iPhone「設定→通知→遊戲計時器」改為允許。',
         notifyMustAllowFirst: '重要：iPhone 要先在 App 內按下方「允許通知」，系統跳出詢問並選「允許」後，「設定→通知」清單才會出現本 App。',
