@@ -137,7 +137,7 @@
   "notifyReinstallHint": "若已加入主屏幕仍异常：长按主屏幕图标删除 → Safari 重新加入主屏幕 → 从新图标打开 → 再按「允许通知」。",
   "notifyIosOld": "此 iPhone 需 iOS 16.4 以上才支持网页 App 通知；请到「设置→通用→软件更新」检查。",
   "notifyBannerTitle": "请开启到点通知",
-  "notifyBannerBody": "按右侧按钮并在系统窗口选「允许」，之后才会出现在 iPhone「设置→通知」。",
+  "notifyBannerBody": "按下方按钮并在系统窗口选「允许」，之后才会出现在 iPhone「设置→通知」。",
   "notifyTestBtn": "测试通知",
   "notifyTestBody": "若看到这则通知，代表已设定成功。",
   "notifyStatusNeedHome": "请从主屏幕打开",

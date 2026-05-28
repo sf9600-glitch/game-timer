@@ -1376,13 +1376,31 @@ html.timer-display-list #mainDisplay .timer-list-side .timer-list-status {
     }
 }
 .notify-enable-banner-dismiss {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 36px;
+    min-height: 36px;
+    margin: -4px -6px 0 0;
+    padding: 0;
     border: none;
-    background: transparent;
-    color: inherit;
-    font-size: 1.1rem;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.08);
+    color: #334155;
+    font-size: 1.25rem;
     line-height: 1;
     cursor: pointer;
-    padding: 2px 4px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+.notify-enable-banner-dismiss:active {
+    background: rgba(15, 23, 42, 0.16);
+}
+[data-theme="dark"] .notify-enable-banner-dismiss {
+    background: rgba(255, 255, 255, 0.12);
+    color: #dbeafe;
 }
 .notify-setup-block {
     margin-bottom: 10px;
