@@ -3827,12 +3827,41 @@ function updateClearFinishedButtonHighlight() {
     btn.classList.toggle('has-finished-pending', hasAnyFinishedTimers());
 }
 
+function dispatchTimersToGlobalCharView(allSavedData, now) {
+    const container = document.getElementById('content-chars-global');
+    if (!container) return;
+    const accountEmails = new Set(config.accounts.map(a => a.email));
+    const timers = allSavedData.filter(t => accountEmails.has(t.email));
+    const activeTimers = timers.filter(t => new Date(t.finishDate).getTime() > now);
+    const activeCharGroups = getActiveTimersByGlobalCharGroups(activeTimers);
+
+    if (!activeCharGroups.length) {
+        if (!timers.length) {
+            container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
+        } else {
+            container.innerHTML = '';
+        }
+        return;
+    }
+    container.innerHTML = `<div class="timer-section timer-section-active">
+        <div class="timer-section-title">${t('sectionActive')}</div>
+        <div class="timers-by-char active-by-char" id="active-by-char-global"></div>
+    </div>`;
+    const activeByChar = container.querySelector('#active-by-char-global');
+    appendActiveCharGroups(activeByChar, activeCharGroups, { email: '' }, 'global');
+}
+
 function dispatchTimersToDOM() {
     if (isDispatchingTimers) return;
     isDispatchingTimers = true;
     try {
     const allSavedData = getActiveTimers();
     const now = Date.now();
+    if (!isAccountHeaderVisible()) {
+        dispatchTimersToGlobalCharView(allSavedData, now);
+        dispatchFinishedGlobalPanel(allSavedData, now);
+        return;
+    }
     const accountsOrdered = getAccountsOrderedBySoonestActiveFinish(allSavedData, now);
     accountsOrdered.forEach(acc => {
         const safeId = acc.email.replace(/[@.\s]/g, '_');
