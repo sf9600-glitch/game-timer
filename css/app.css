@@ -423,7 +423,18 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     line-height: normal;
     overflow: visible;
 }
-.account-group--no-header .account-content { margin-top: 0; }
+.main-char-root {
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+}
+.main-char-root .char-group-title {
+    font-size: 0.82rem;
+    margin-bottom: 2px;
+}
+.main-char-root .char-group-title .char-badge {
+    font-size: 0.82rem;
+}
 .account-group-header--controls-only {
     justify-content: flex-end;
     margin-bottom: 6px;

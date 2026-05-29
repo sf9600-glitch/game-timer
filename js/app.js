@@ -3571,6 +3571,31 @@ function getGlobalCharOrder() {
     return order;
 }
 
+function getActiveTimersByGlobalCharGroups(activeTimers) {
+    if (!activeTimers.length) return [];
+    const sortActiveByFinish = (a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime();
+    const grouped = new Map();
+    activeTimers.forEach(timer => {
+        const key = getCharGroupKey(timer.char);
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(timer);
+    });
+    const groups = [];
+    getGlobalCharOrder().forEach(charName => {
+        if (!grouped.has(charName)) return;
+        groups.push({ charName, timers: grouped.get(charName).sort(sortActiveByFinish) });
+        grouped.delete(charName);
+    });
+    grouped.forEach((timers, charName) => {
+        groups.push({ charName, timers: [...timers].sort(sortActiveByFinish) });
+    });
+    return groups.sort((a, b) => {
+        const aSoon = new Date(a.timers[0].finishDate).getTime();
+        const bSoon = new Date(b.timers[0].finishDate).getTime();
+        return aSoon - bSoon;
+    });
+}
+
 function getFinishedTimersByRoleGroups(allSavedData, now) {
     const accountEmails = new Set(config.accounts.map(a => a.email));
     const sortFinishedByFinish = (a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime();
