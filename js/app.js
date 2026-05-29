@@ -3734,6 +3734,7 @@ function getAccountsOrderedBySoonestActiveFinish(allSavedData, now) {
 }
 
 function reorderAccountGroupsInMain(allSavedData, now) {
+    if (!isAccountHeaderVisible()) return;
     const main = document.getElementById('mainDisplay');
     if (!main) return;
     getAccountsOrderedBySoonestActiveFinish(allSavedData, now).forEach(acc => {
