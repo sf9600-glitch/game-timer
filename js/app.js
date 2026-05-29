@@ -3785,28 +3785,31 @@ function refreshMainDisplay() {
     finishedMount.id = 'finishedGlobalMount';
     finishedMount.className = 'finished-global-mount is-empty';
     main.appendChild(finishedMount);
-    const mobile = isMobileLayout();
     const showAccountHeader = isAccountHeaderVisible();
     const now = Date.now();
     const allSavedData = getActiveTimers();
-    const accountsOrdered = getAccountsOrderedBySoonestActiveFinish(allSavedData, now);
-    accountsOrdered.forEach((acc, i) => { 
-        const origIdx = config.accounts.findIndex(a => a.email === acc.email);
-        const div = document.createElement('div'); div.className = `account-group${showAccountHeader ? '' : ' account-group--no-header'}`; 
-        div.style.setProperty('--acc-theme', acc.color || defaultAccColors[(origIdx >= 0 ? origIdx : i) % 6]); 
-        const headerActions = '';
-        const headerHtml = showAccountHeader
-            ? `<div class="account-group-header">
-                <div class="account-tab-item">${acc.email}</div>
-                ${headerActions}
-            </div>`
-            : (headerActions ? `<div class="account-group-header account-group-header--controls-only">${headerActions}</div>` : '');
-        div.innerHTML = `
-            ${headerHtml}
-            <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
-        `; 
-        main.appendChild(div); 
-    }); 
+    if (!showAccountHeader) {
+        const root = document.createElement('div');
+        root.className = 'main-char-root';
+        root.innerHTML = `<div class="account-content" id="content-chars-global"></div>`;
+        main.appendChild(root);
+    } else {
+        const accountsOrdered = getAccountsOrderedBySoonestActiveFinish(allSavedData, now);
+        accountsOrdered.forEach((acc, i) => { 
+            const origIdx = config.accounts.findIndex(a => a.email === acc.email);
+            const div = document.createElement('div'); div.className = 'account-group'; 
+            div.style.setProperty('--acc-theme', acc.color || defaultAccColors[(origIdx >= 0 ? origIdx : i) % 6]); 
+            const headerActions = '';
+            div.innerHTML = `
+                <div class="account-group-header">
+                    <div class="account-tab-item">${acc.email}</div>
+                    ${headerActions}
+                </div>
+                <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
+            `; 
+            main.appendChild(div); 
+        });
+    }
     applyTimerCardMinWidth();
     syncMainTimerDisplayBar();
     dispatchTimersToDOM();
