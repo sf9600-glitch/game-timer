@@ -3514,11 +3514,15 @@ function appendActiveCharGroups(parentEl, activeCharGroups, acc, safeId) {
         appendListRowsFromCharGroups(wrap.querySelector('.timer-list'), activeCharGroups, buildActiveTimerListRow);
         return;
     }
+    const showCharTitles = !isAccountHeaderVisible();
     activeCharGroups.forEach(({ charName, timers: groupTimers }) => {
         const charSafe = safeDomIdPart(charName);
         const groupEl = document.createElement('div');
         groupEl.className = 'char-timer-group';
-        groupEl.innerHTML = `<div class="timer-grid" id="grid-active-${safeId}-${charSafe}"></div>`;
+        const titleHtml = showCharTitles
+            ? `<div class="char-group-title">${getCharGroupTitleHtml(groupTimers[0]?.email || acc.email, charName)}</div>`
+            : '';
+        groupEl.innerHTML = `${titleHtml}<div class="timer-grid" id="grid-active-${safeId}-${charSafe}"></div>`;
         parentEl.appendChild(groupEl);
         const grid = groupEl.querySelector('.timer-grid');
         groupTimers.forEach((t, i) => grid.appendChild(buildActiveTimerCard(t, i)));
