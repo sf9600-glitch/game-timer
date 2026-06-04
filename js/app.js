@@ -3571,6 +3571,31 @@ function getGlobalCharOrder() {
     return order;
 }
 
+function getActiveTimersByGlobalCharGroups(activeTimers) {
+    if (!activeTimers.length) return [];
+    const sortActiveByFinish = (a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime();
+    const grouped = new Map();
+    activeTimers.forEach(timer => {
+        const key = getCharGroupKey(timer.char);
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(timer);
+    });
+    const groups = [];
+    getGlobalCharOrder().forEach(charName => {
+        if (!grouped.has(charName)) return;
+        groups.push({ charName, timers: grouped.get(charName).sort(sortActiveByFinish) });
+        grouped.delete(charName);
+    });
+    grouped.forEach((timers, charName) => {
+        groups.push({ charName, timers: [...timers].sort(sortActiveByFinish) });
+    });
+    return groups.sort((a, b) => {
+        const aSoon = new Date(a.timers[0].finishDate).getTime();
+        const bSoon = new Date(b.timers[0].finishDate).getTime();
+        return aSoon - bSoon;
+    });
+}
+
 function getFinishedTimersByRoleGroups(allSavedData, now) {
     const accountEmails = new Set(config.accounts.map(a => a.email));
     const sortFinishedByFinish = (a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime();
@@ -3709,6 +3734,7 @@ function getAccountsOrderedBySoonestActiveFinish(allSavedData, now) {
 }
 
 function reorderAccountGroupsInMain(allSavedData, now) {
+    if (!isAccountHeaderVisible()) return;
     const main = document.getElementById('mainDisplay');
     if (!main) return;
     getAccountsOrderedBySoonestActiveFinish(allSavedData, now).forEach(acc => {
@@ -3759,28 +3785,31 @@ function refreshMainDisplay() {
     finishedMount.id = 'finishedGlobalMount';
     finishedMount.className = 'finished-global-mount is-empty';
     main.appendChild(finishedMount);
-    const mobile = isMobileLayout();
     const showAccountHeader = isAccountHeaderVisible();
     const now = Date.now();
     const allSavedData = getActiveTimers();
-    const accountsOrdered = getAccountsOrderedBySoonestActiveFinish(allSavedData, now);
-    accountsOrdered.forEach((acc, i) => { 
-        const origIdx = config.accounts.findIndex(a => a.email === acc.email);
-        const div = document.createElement('div'); div.className = `account-group${showAccountHeader ? '' : ' account-group--no-header'}`; 
-        div.style.setProperty('--acc-theme', acc.color || defaultAccColors[(origIdx >= 0 ? origIdx : i) % 6]); 
-        const headerActions = '';
-        const headerHtml = showAccountHeader
-            ? `<div class="account-group-header">
-                <div class="account-tab-item">${acc.email}</div>
-                ${headerActions}
-            </div>`
-            : (headerActions ? `<div class="account-group-header account-group-header--controls-only">${headerActions}</div>` : '');
-        div.innerHTML = `
-            ${headerHtml}
-            <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
-        `; 
-        main.appendChild(div); 
-    }); 
+    if (!showAccountHeader) {
+        const root = document.createElement('div');
+        root.className = 'main-char-root';
+        root.innerHTML = `<div class="account-content" id="content-chars-global"></div>`;
+        main.appendChild(root);
+    } else {
+        const accountsOrdered = getAccountsOrderedBySoonestActiveFinish(allSavedData, now);
+        accountsOrdered.forEach((acc, i) => { 
+            const origIdx = config.accounts.findIndex(a => a.email === acc.email);
+            const div = document.createElement('div'); div.className = 'account-group'; 
+            div.style.setProperty('--acc-theme', acc.color || defaultAccColors[(origIdx >= 0 ? origIdx : i) % 6]); 
+            const headerActions = '';
+            div.innerHTML = `
+                <div class="account-group-header">
+                    <div class="account-tab-item">${acc.email}</div>
+                    ${headerActions}
+                </div>
+                <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
+            `; 
+            main.appendChild(div); 
+        });
+    }
     applyTimerCardMinWidth();
     syncMainTimerDisplayBar();
     dispatchTimersToDOM();
@@ -3798,12 +3827,41 @@ function updateClearFinishedButtonHighlight() {
     btn.classList.toggle('has-finished-pending', hasAnyFinishedTimers());
 }
 
+function dispatchTimersToGlobalCharView(allSavedData, now) {
+    const container = document.getElementById('content-chars-global');
+    if (!container) return;
+    const accountEmails = new Set(config.accounts.map(a => a.email));
+    const timers = allSavedData.filter(t => accountEmails.has(t.email));
+    const activeTimers = timers.filter(t => new Date(t.finishDate).getTime() > now);
+    const activeCharGroups = getActiveTimersByGlobalCharGroups(activeTimers);
+
+    if (!activeCharGroups.length) {
+        if (!timers.length) {
+            container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
+        } else {
+            container.innerHTML = '';
+        }
+        return;
+    }
+    container.innerHTML = `<div class="timer-section timer-section-active">
+        <div class="timer-section-title">${t('sectionActive')}</div>
+        <div class="timers-by-char active-by-char" id="active-by-char-global"></div>
+    </div>`;
+    const activeByChar = container.querySelector('#active-by-char-global');
+    appendActiveCharGroups(activeByChar, activeCharGroups, { email: '' }, 'global');
+}
+
 function dispatchTimersToDOM() {
     if (isDispatchingTimers) return;
     isDispatchingTimers = true;
     try {
     const allSavedData = getActiveTimers();
     const now = Date.now();
+    if (!isAccountHeaderVisible()) {
+        dispatchTimersToGlobalCharView(allSavedData, now);
+        dispatchFinishedGlobalPanel(allSavedData, now);
+        return;
+    }
     const accountsOrdered = getAccountsOrderedBySoonestActiveFinish(allSavedData, now);
     accountsOrdered.forEach(acc => {
         const safeId = acc.email.replace(/[@.\s]/g, '_');
