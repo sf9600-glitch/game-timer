@@ -25,8 +25,11 @@ if ! git remote get-url origin >/dev/null 2>&1; then
 fi
 
 git add -A
+# 排除自動監聽產生的 log，避免「有上傳但網站沒變」
+git restore --staged logs/ 2>/dev/null || true
 
 if git diff --staged --quiet; then
+  echo "（沒有變更，略過上傳）"
   exit 0
 fi
 
