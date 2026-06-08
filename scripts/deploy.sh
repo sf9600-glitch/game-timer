@@ -4,6 +4,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+STATUS_LOG="$ROOT/logs/deploy-last.txt"
+mkdir -p "$ROOT/logs"
+write_status() { echo "$1" | tee "$STATUS_LOG"; }
 
 LOCK="${TMPDIR:-/tmp}/game-timer-deploy.lock"
 if [[ -f "$LOCK" ]]; then
@@ -29,7 +32,7 @@ git add -A
 git restore --staged logs/ 2>/dev/null || true
 
 if git diff --staged --quiet; then
-  echo "（沒有變更，略過上傳）"
+  write_status "$(date '+%Y-%m-%d %H:%M:%S') — 沒有變更，略過上傳"
   exit 0
 fi
 
@@ -40,9 +43,11 @@ MSG="deploy: $(date '+%Y-%m-%d %H:%M:%S')"
 git commit -m "$MSG"
 git push origin "$BRANCH"
 
-echo "✓ 已推送到 GitHub，GitHub Pages 約 1–3 分鐘內會更新："
-echo "   https://sf9600-glitch.github.io/game-timer/"
-echo "📦 本次上傳檔案："
-while IFS= read -r f; do
-  [[ -n "$f" ]] && echo "   - $f"
-done <<< "$CHANGED_FILES"
+{
+  echo "✓ $(date '+%Y-%m-%d %H:%M:%S') 已推送到 GitHub"
+  echo "   https://sf9600-glitch.github.io/game-timer/"
+  echo "📦 本次上傳檔案："
+  while IFS= read -r f; do
+    [[ -n "$f" ]] && echo "   - $f"
+  done <<< "$CHANGED_FILES"
+} | tee "$STATUS_LOG"

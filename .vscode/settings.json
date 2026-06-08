@@ -1,9 +1,12 @@
 {
+  "terminal.integrated.defaultLocation": "view",
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.panel.opensMaximized": "never",
   "runOnSave.commands": [
     {
       "match": "(index\\.html|css/app\\.css|js/app\\.js)$",
       "command": "bash \"${workspaceFolder}/scripts/deploy.sh\"",
-      "runIn": "terminal",
+      "runIn": "backend",
       "runningStatusMessage": "正在部署到 Netlify…",
       "finishStatusMessage": "部署指令已執行"
     }
