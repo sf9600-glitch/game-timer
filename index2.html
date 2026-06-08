@@ -1,0 +1,2791 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#090d16" media="(prefers-color-scheme: dark)">
+    <title>遊戲計時器</title>
+    <style>
+        :root {
+            --primary: #4a90e2; --success: #4caf50; --warning: #ffcc00; --danger: #ef5350;
+            --bg: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-sub: #64748b;
+            --panel-bg: #ffffff; --border-color: #e2e8f0;
+            --color-acc: #64748b; --color-task: #475569; --color-system: #475569; --color-start: #3b82f6;
+            --btn-shadow-opacity: 0.12;
+            --btn-active-shadow-opacity: 0.05;
+            
+            /* 已完成狀態底色 */
+            --finished-bg: #fef2f2;      
+            --finished-border: #fca5a5;  
+            --finished-text: #991b1b;    
+            
+            /* 捲軸美化 */
+            --scroll-thumb: rgba(100, 116, 139, 0.2);
+            --scroll-thumb-hover: rgba(100, 116, 139, 0.35);
+        }
+
+        [data-theme="dark"] {
+            --bg: #090d16; --card-bg: #131c2e; --text-main: #f8fafc; --text-sub: #94a3b8;
+            --panel-bg: #131c2e; --border-color: #1e293b;
+            --btn-shadow-opacity: 0.3;
+            --btn-active-shadow-opacity: 0.1;
+            
+            --finished-bg: #2d1515;
+            --finished-border: #7f1d1d;
+            --finished-text: #fca5a5;
+            
+            --scroll-thumb: rgba(148, 163, 184, 0.2);
+            --scroll-thumb-hover: rgba(148, 163, 184, 0.35);
+        }
+        
+        html { scrollbar-gutter: stable; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px; display: flex; gap: 20px; align-items: flex-start; transition: background 0.3s; }
+        button, input, select { outline: none; -webkit-tap-highlight-color: transparent; }
+
+        /* 控制面板外殼 */
+        .control-panel { 
+            box-sizing: border-box;
+            background: var(--panel-bg); 
+            padding: 12px 8px 12px 12px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05); 
+            width: 340px; min-width: 340px; max-width: 340px;
+            flex-shrink: 0; position: sticky; top: 15px; z-index: 100; 
+            max-height: 95vh; overflow-y: auto; border: 1px solid var(--border-color); 
+            scrollbar-gutter: stable;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        #mainDisplay { flex-grow: 1; min-width: 0; }
+
+        /* 捲軸設計 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: var(--scroll-thumb); border-radius: 10px; transition: background-color 0.2s; }
+        ::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover); }
+
+        .config-section { margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--section-color); background-color: color-mix(in srgb, var(--section-color) 4%, var(--panel-bg)); transition: border-color 0.3s ease, border-top-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; }
+        .config-title { font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); padding: 5px 0; cursor: pointer; user-select: none; transition: color 0.3s ease; }
+        .config-title-static { cursor: default; }
+        .color-input {
+            width: 20px; height: 20px; min-width: 20px; min-height: 20px; max-width: 20px; max-height: 20px;
+            padding: 0; margin: 0; border: 1px solid var(--border-color); background: none; cursor: pointer;
+            border-radius: 3px; flex-shrink: 0; box-sizing: border-box;
+            -webkit-appearance: none; appearance: none;
+        }
+        .color-input::-webkit-color-swatch-wrapper { padding: 0; }
+        .color-input::-webkit-color-swatch { border: none; border-radius: 2px; }
+        .color-input::-moz-color-swatch { border: none; border-radius: 2px; }
+        .color-input-sm { width: 16px; height: 16px; min-width: 16px; min-height: 16px; max-width: 16px; max-height: 16px; }
+        .color-input:active { transform: scale(0.92); transition: transform 0.1s; }
+        .tag-item-box.drag-over { transform: scale(1.02); box-shadow: 0 0 8px rgba(0,0,0,0.2); border-left-width: 8px !important; }
+        .sub-tag-item {
+            cursor: grab; display: inline-flex; align-items: center; gap: 3px;
+            padding: 2px 10px; font-size: 0.65rem; font-weight: bold; border-radius: 999px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .sub-tag-item:active { cursor: grabbing; }
+        .sub-tag-item.drag-over { transform: scale(1.06); box-shadow: 0 0 6px rgba(0,0,0,0.25); }
+
+        .collapsible-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        .collapsible-content.active { grid-template-rows: 1fr; margin-top: 10px; }
+        .collapsible-content > div {
+            min-height: 0; visibility: hidden; opacity: 0;
+            transition: opacity 0.28s ease-out, visibility 0s linear 0.28s;
+        }
+        .collapsible-content.active > div {
+            visibility: visible; opacity: 1;
+            transition: opacity 0.28s ease-out 0.04s, visibility 0s;
+        }
+        .sub-edit-panel {
+            display: grid; grid-template-rows: 0fr; overflow: hidden;
+            transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0;
+        }
+        .sub-edit-panel.open { grid-template-rows: 1fr; margin-top: 10px; }
+        .sub-edit-panel > .sub-edit-inner {
+            min-height: 0; overflow: hidden;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.28s ease-out, visibility 0s linear 0.28s;
+        }
+        .sub-edit-panel.open > .sub-edit-inner {
+            opacity: 1; visibility: visible;
+            transition: opacity 0.28s ease-out 0.04s, visibility 0s;
+        }
+
+        input, select { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; padding: 4px; }
+
+        .btn-adjust, .btn-main, .btn-mini {
+            border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-adjust { padding: 6px 0; background-color: var(--card-bg); color: var(--text-main); font-size: 0.7rem; border: 1px solid var(--border-color); box-shadow: 0 3px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent); margin-bottom: 3px; }
+        .btn-adjust:not(:disabled) { transform: translateY(-3px); }
+        .btn-adjust:not(:disabled):active { transform: translateY(0); box-shadow: 0 0 0 transparent; }
+
+        .btn-main { width: 100%; padding: 10px 12px; background-color: var(--section-color); color: white; font-size: 1rem; border: none; margin-top: 10px; margin-bottom: 5px; box-shadow: 0 4px 0 color-mix(in srgb, black 25%, var(--section-color)); text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .btn-main:not(:disabled) { transform: translateY(-4px); }
+        .btn-main:not(:disabled):active { transform: translateY(0); box-shadow: 0 0 0 transparent; }
+
+        .btn-mini { padding: 2px 8px; font-size: 0.65rem; background-color: var(--card-bg); color: var(--text-sub); border: 1px solid var(--border-color); box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent); margin-bottom: 2px; }
+        .tag-item-box { background: color-mix(in srgb, var(--tag-color) 16%, var(--card-bg)); border: 1px solid color-mix(in srgb, var(--tag-color) 28%, var(--border-color)); border-radius: 8px; padding: 8px; margin-bottom: 4px; cursor: pointer; position: relative; border-left: 5px solid var(--tag-color) !important; transition: transform 0.1s ease, box-shadow 0.3s ease, background-color 0.2s ease, border-color 0.3s ease; }
+
+        .editable-text { cursor: pointer; border-bottom: 1px dashed currentColor; padding-bottom: 1px; transition: opacity 0.2s; }
+        .editable-text:hover { opacity: 0.7; }
+
+        /* 活頁夾外殼結構 */
+        .account-group { margin-bottom: 25px; display: flex; flex-direction: column; padding: 0; position: relative; }
+        .account-group-header {
+            position: relative;
+            display: block;
+            line-height: 0;
+        }
+        .account-tab-item { 
+            background-color: var(--acc-theme); 
+            color: #ffffff; 
+            text-shadow: 0 1px 1px rgba(0,0,0,0.15); 
+            padding: 5px 12px; 
+            font-weight: bold; 
+            font-size: 0.85rem; 
+            border-radius: 8px 8px 0 0; 
+            display: inline-block;
+            vertical-align: bottom;
+            box-shadow: 2px -2px 5px rgba(15, 23, 42, 0.04);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            position: relative;
+            z-index: 2;
+            line-height: normal;
+        }
+        .main-settings-btn { display: none; }
+        .account-content { 
+            padding: 16px; 
+            background-color: color-mix(in srgb, var(--acc-theme) 1.5%, var(--card-bg)); 
+            border-radius: 0 14px 14px 14px; 
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.02);
+            position: relative;
+            top: -1px; 
+            z-index: 1;
+        }
+
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+        .timer-section-active .timer-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+        .timer-card--active {
+            max-width: 380px;
+            justify-self: start;
+        }
+        .timer-card--active .active-layout {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "char"
+                "task"
+                "time"
+                "date";
+            gap: 6px;
+            align-items: center;
+        }
+        .timer-card--active .active-slot-id {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            z-index: 2;
+            border: 1.5px solid var(--local-raw-color);
+            background: color-mix(in srgb, var(--local-raw-color) 18%, var(--card-bg));
+            color: var(--local-raw-color);
+            font-size: 0.62rem;
+            height: auto;
+            min-height: 16px;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+        .timer-card--active .active-slot-char {
+            grid-area: char;
+            justify-self: center;
+            width: 100%;
+            text-align: center;
+            padding-top: 2px;
+        }
+        .timer-card--active .active-slot-task {
+            grid-area: task;
+            justify-self: center;
+            width: 100%;
+            min-width: 0;
+            text-align: center;
+        }
+        .timer-card--active .active-slot-task .task-title-display {
+            display: inline-block;
+            max-width: 100%;
+            text-align: center;
+            font-size: 0.78rem;
+            padding: 3px 11px;
+            border-radius: 999px;
+            border: 1.5px solid var(--local-raw-color);
+            background-color: var(--local-badge-bg);
+            color: var(--local-dark-color);
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.3;
+            overflow: visible;
+            text-overflow: unset;
+        }
+        .timer-card--active .active-slot-time {
+            grid-area: time;
+            width: 100%;
+            text-align: center;
+        }
+        .timer-card--active .active-slot-time .time-text {
+            text-align: center;
+            margin: 0;
+            width: 100%;
+            font-size: 1.5rem;
+            color: var(--local-dark-color);
+        }
+        .timer-card--active .active-slot-date {
+            grid-area: date;
+            width: 100%;
+            text-align: center;
+        }
+        .timer-card--active .active-slot-date .date-label {
+            font-size: 0.875rem;
+            text-align: center;
+            margin: 0;
+            color: var(--local-dark-color);
+        }
+        
+        /* 計時器卡片基礎外殼：任務色延伸為整圈邊框（進行中維持原比例，不設固定寬高） */
+        .timer-card { 
+            position: relative; border-radius: 12px; padding: 0; display: flex; flex-direction: column; 
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.02);
+            background: var(--card-bg);
+            border: 3px solid var(--local-raw-color);
+            overflow: visible;
+            box-sizing: border-box;
+            width: auto;
+            max-width: none;
+            aspect-ratio: auto;
+            align-self: start;
+            justify-self: stretch;
+        }
+        /* 進度條背景 */
+        .timer-card-bg { 
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+            background: conic-gradient(var(--local-progress-color) var(--p, 100%), transparent 0); 
+            border-radius: 9px;
+            z-index: 0; pointer-events: none; 
+        }
+        
+        /* 帳號內分區：進行中 / 已完成 */
+        .timer-section { margin-bottom: 18px; }
+        .timer-section:last-child { margin-bottom: 0; }
+        .timer-section-title {
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
+        }
+        .timer-section-finished .timer-section-title { color: var(--text-sub); }
+        .finished-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(136px, 148px));
+            gap: 10px;
+            align-items: start;
+        }
+        .finished-by-char { display: flex; flex-direction: column; gap: 14px; }
+        .finished-char-group { display: flex; flex-direction: column; gap: 6px; }
+        .finished-char-group-title {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* 已完成卡片：獨立小卡，任務色淡底、標籤字色跟隨任務色 */
+        .timer-card.is-finished {
+            width: 148px;
+            max-width: 148px;
+            height: auto;
+            aspect-ratio: auto;
+            justify-self: start;
+            align-self: start;
+            background: color-mix(in srgb, var(--local-raw-color) 16%, var(--card-bg)) !important;
+            border: 3px solid var(--local-raw-color) !important;
+        }
+        .timer-card.is-finished .timer-card-bg { display: none; }
+        .timer-card.is-finished .finished-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            height: auto;
+            text-align: center;
+        }
+        .timer-card.is-finished .finished-header {
+            position: relative;
+            width: 100%;
+            min-height: 22px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .timer-card.is-finished .finished-header .card-id-badge {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 2;
+        }
+        .timer-card.is-finished .finished-char-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: calc(100% - 34px);
+            margin: 0 auto;
+        }
+        .timer-card.is-finished .finished-row-2 {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .timer-card.is-finished .finished-row-2 .task-title-display {
+            display: inline-block;
+            width: auto;
+            max-width: 100%;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-align: center;
+            color: var(--local-dark-color) !important;
+            background-color: var(--local-badge-bg) !important;
+            border-radius: 999px;
+            padding: 2px 10px;
+        }
+        .timer-card.is-finished .finished-end-line {
+            font-size: 0.68rem;
+            line-height: 1.35;
+            text-align: center;
+            color: var(--text-sub) !important;
+        }
+        .timer-card.is-finished .finished-elapsed-line {
+            font-size: 0.68rem;
+            line-height: 1.35;
+            text-align: center;
+            color: var(--local-dark-color, var(--text-main)) !important;
+            font-weight: bold;
+        }
+        .timer-card.is-finished .char-title-badge { font-size: 0.68rem; max-width: 72px; }
+
+        .sys-block { margin-bottom: 4px; }
+        .sys-block-title {
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin: 0 0 10px 0;
+            letter-spacing: 0.02em;
+        }
+        .sys-block-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 14px 0;
+        }
+
+        /* 深色霓虹光暈（可於設定關閉；html.neon-glow-enabled） */
+        html.neon-glow-enabled[data-theme="dark"] .control-panel {
+            border-color: color-mix(in srgb, var(--primary) 72%, #ffffff 10%);
+            box-shadow:
+                0 0 10px color-mix(in srgb, var(--primary) 78%, transparent),
+                0 0 26px color-mix(in srgb, var(--primary) 52%, transparent),
+                0 0 44px color-mix(in srgb, var(--primary) 32%, transparent),
+                0 4px 28px rgba(0, 0, 0, 0.55);
+        }
+        html.neon-glow-enabled[data-theme="dark"] .config-section {
+            border-color: color-mix(in srgb, var(--section-color) 62%, var(--border-color));
+            border-top-color: color-mix(in srgb, var(--section-color) 92%, #ffffff 14%);
+            box-shadow:
+                0 0 8px color-mix(in srgb, var(--section-color) 95%, transparent),
+                0 0 22px color-mix(in srgb, var(--section-color) 72%, transparent),
+                0 0 38px color-mix(in srgb, var(--section-color) 48%, transparent),
+                inset 0 0 20px color-mix(in srgb, var(--section-color) 18%, transparent);
+        }
+        html.neon-glow-enabled[data-theme="dark"] .cloud-sync-box {
+            border-color: color-mix(in srgb, var(--primary) 68%, #ffffff 8%);
+            box-shadow:
+                0 0 8px color-mix(in srgb, var(--primary) 88%, transparent),
+                0 0 22px color-mix(in srgb, var(--primary) 58%, transparent),
+                0 0 36px color-mix(in srgb, var(--primary) 35%, transparent);
+        }
+        html.neon-glow-enabled[data-theme="dark"] .cloud-sync-unconfigured {
+            border-color: color-mix(in srgb, var(--danger) 82%, #ffffff 10%) !important;
+            box-shadow:
+                0 0 8px color-mix(in srgb, var(--danger) 92%, transparent),
+                0 0 22px color-mix(in srgb, var(--danger) 62%, transparent),
+                0 0 36px color-mix(in srgb, var(--danger) 38%, transparent);
+        }
+        html.neon-glow-enabled[data-theme="dark"] .tag-item-box {
+            border-color: color-mix(in srgb, var(--tag-color) 58%, var(--border-color));
+            box-shadow:
+                0 0 8px color-mix(in srgb, var(--tag-color) 92%, transparent),
+                0 0 20px color-mix(in srgb, var(--tag-color) 65%, transparent),
+                0 0 32px color-mix(in srgb, var(--tag-color) 40%, transparent),
+                inset 0 0 14px color-mix(in srgb, var(--tag-color) 14%, transparent);
+        }
+        html.neon-glow-enabled[data-theme="dark"] #timeDisplay {
+            box-shadow:
+                0 0 10px color-mix(in srgb, var(--section-color) 85%, transparent),
+                0 0 24px color-mix(in srgb, var(--section-color) 58%, transparent),
+                0 0 40px color-mix(in srgb, var(--section-color) 35%, transparent);
+        }
+        @media (prefers-color-scheme: dark) {
+            html.neon-glow-enabled:not([data-theme="light"]) .control-panel {
+                border-color: color-mix(in srgb, var(--primary) 72%, #ffffff 10%);
+                box-shadow:
+                    0 0 10px color-mix(in srgb, var(--primary) 78%, transparent),
+                    0 0 26px color-mix(in srgb, var(--primary) 52%, transparent),
+                    0 0 44px color-mix(in srgb, var(--primary) 32%, transparent),
+                    0 4px 28px rgba(0, 0, 0, 0.55);
+            }
+            html.neon-glow-enabled:not([data-theme="light"]) .config-section {
+                border-color: color-mix(in srgb, var(--section-color) 62%, var(--border-color));
+                border-top-color: color-mix(in srgb, var(--section-color) 92%, #ffffff 14%);
+                box-shadow:
+                    0 0 8px color-mix(in srgb, var(--section-color) 95%, transparent),
+                    0 0 22px color-mix(in srgb, var(--section-color) 72%, transparent),
+                    0 0 38px color-mix(in srgb, var(--section-color) 48%, transparent),
+                    inset 0 0 20px color-mix(in srgb, var(--section-color) 18%, transparent);
+            }
+            html.neon-glow-enabled:not([data-theme="light"]) .cloud-sync-box {
+                border-color: color-mix(in srgb, var(--primary) 68%, #ffffff 8%);
+                box-shadow:
+                    0 0 8px color-mix(in srgb, var(--primary) 88%, transparent),
+                    0 0 22px color-mix(in srgb, var(--primary) 58%, transparent),
+                    0 0 36px color-mix(in srgb, var(--primary) 35%, transparent);
+            }
+            html.neon-glow-enabled:not([data-theme="light"]) .cloud-sync-unconfigured {
+                border-color: color-mix(in srgb, var(--danger) 82%, #ffffff 10%) !important;
+                box-shadow:
+                    0 0 8px color-mix(in srgb, var(--danger) 92%, transparent),
+                    0 0 22px color-mix(in srgb, var(--danger) 62%, transparent),
+                    0 0 36px color-mix(in srgb, var(--danger) 38%, transparent);
+            }
+            html.neon-glow-enabled:not([data-theme="light"]) .tag-item-box {
+                border-color: color-mix(in srgb, var(--tag-color) 58%, var(--border-color));
+                box-shadow:
+                    0 0 8px color-mix(in srgb, var(--tag-color) 92%, transparent),
+                    0 0 20px color-mix(in srgb, var(--tag-color) 65%, transparent),
+                    0 0 32px color-mix(in srgb, var(--tag-color) 40%, transparent),
+                    inset 0 0 14px color-mix(in srgb, var(--tag-color) 14%, transparent);
+            }
+            html.neon-glow-enabled:not([data-theme="light"]) #timeDisplay {
+                box-shadow:
+                    0 0 10px color-mix(in srgb, var(--section-color) 85%, transparent),
+                    0 0 24px color-mix(in srgb, var(--section-color) 58%, transparent),
+                    0 0 40px color-mix(in srgb, var(--section-color) 35%, transparent);
+            }
+        }
+
+        html.neon-glow-enabled[data-theme="dark"] .timer-card:not(.is-warning-blinking) {
+            border-color: color-mix(in srgb, var(--local-raw-color) 92%, #ffffff 14%);
+            box-shadow:
+                0 0 10px color-mix(in srgb, var(--local-raw-color) 96%, transparent),
+                0 0 24px color-mix(in srgb, var(--local-raw-color) 78%, transparent),
+                0 0 42px color-mix(in srgb, var(--local-raw-color) 55%, transparent),
+                0 0 58px color-mix(in srgb, var(--local-raw-color) 32%, transparent),
+                inset 0 0 22px color-mix(in srgb, var(--local-raw-color) 22%, transparent),
+                0 6px 22px rgba(0, 0, 0, 0.55);
+        }
+        @media (prefers-color-scheme: dark) {
+            html.neon-glow-enabled:not([data-theme="light"]) .timer-card:not(.is-warning-blinking) {
+                border-color: color-mix(in srgb, var(--local-raw-color) 92%, #ffffff 14%);
+                box-shadow:
+                    0 0 10px color-mix(in srgb, var(--local-raw-color) 96%, transparent),
+                    0 0 24px color-mix(in srgb, var(--local-raw-color) 78%, transparent),
+                    0 0 42px color-mix(in srgb, var(--local-raw-color) 55%, transparent),
+                    0 0 58px color-mix(in srgb, var(--local-raw-color) 32%, transparent),
+                    inset 0 0 22px color-mix(in srgb, var(--local-raw-color) 22%, transparent),
+                    0 6px 22px rgba(0, 0, 0, 0.55);
+            }
+        }
+        html.neon-glow-enabled[data-theme="dark"] .timer-card.is-warning-blinking {
+            animation: warning-card-pulse-dark 0.85s ease-in-out infinite;
+        }
+        @media (prefers-color-scheme: dark) {
+            html.neon-glow-enabled:not([data-theme="light"]) .timer-card.is-warning-blinking {
+                animation: warning-card-pulse-dark 0.85s ease-in-out infinite;
+            }
+        }
+        @keyframes warning-card-pulse-dark {
+            0%, 100% {
+                border-color: #f87171;
+                box-shadow:
+                    0 0 10px rgba(248, 113, 113, 0.95),
+                    0 0 26px rgba(239, 83, 80, 0.78),
+                    0 0 44px rgba(239, 83, 80, 0.52),
+                    0 0 60px rgba(239, 83, 80, 0.3);
+            }
+            50% {
+                border-color: #fecaca;
+                box-shadow:
+                    0 0 16px rgba(254, 202, 202, 1),
+                    0 0 34px rgba(239, 83, 80, 0.92),
+                    0 0 52px rgba(239, 83, 80, 0.68),
+                    0 0 72px rgba(239, 83, 80, 0.42);
+            }
+        }
+
+        .timer-card-inner {
+            position: relative;
+            z-index: 1;
+            border-radius: 9px;
+            overflow: hidden;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            box-sizing: border-box;
+        }
+        /* 關閉鈕：疊在右上角圓弧邊框上 */
+        .btn-close-circle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            color: var(--local-raw-color);
+            border: 2px solid var(--local-raw-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            opacity: 0;
+            transform: translate(38%, -38%) scale(0.85) translateY(-2px);
+            transition: opacity 0.2s, transform 0.15s, background-color 0.15s, box-shadow 0.15s;
+            font-size: 0.7rem;
+            line-height: 1;
+            box-shadow: 0 2px 0 color-mix(in srgb, var(--local-raw-color) 55%, black);
+        }
+        .timer-card:hover .btn-close-circle {
+            opacity: 1;
+            transform: translate(38%, -38%) scale(1) translateY(-2px);
+        }
+        .btn-close-circle:active {
+            transform: translate(38%, -38%) scale(1) translateY(0);
+            box-shadow: 0 0 0 transparent;
+            background-color: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        
+        .time-text { font-size: 1.5rem; font-family: monospace; font-weight: bold; text-align: right; letter-spacing: 0.5px; margin-top: 4px; color: var(--text-main); }
+        .card-id-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            background: color-mix(in srgb, var(--local-raw-color) 22%, var(--card-bg));
+            color: var(--local-raw-color);
+            border: 1px solid color-mix(in srgb, var(--local-raw-color) 38%, transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 18px;
+            flex-shrink: 0;
+        }
+        
+        /* 角色標籤 */
+        .char-title-badge { font-size: 0.75rem; border-radius: 4px; padding: 2px 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-weight: bold; text-shadow: 0 1px 1px rgba(0,0,0,0.2); }
+
+        /* 任務標籤：膠囊形、同色系深字 */
+        .task-title-display {
+            font-size: 0.8rem; font-weight: bold; 
+            color: var(--local-dark-color); 
+            background-color: var(--local-badge-bg); 
+            padding: 2px 10px; border-radius: 999px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .char-title-badge.contrast-light { text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .char-title-badge.contrast-dark { text-shadow: none; }
+        .timer-card .time-text, .timer-card .date-label { transition: color 0.25s ease; }
+
+        /* DHMS 輸入區 */
+        .dhms-container { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; gap: 4px; }
+        .dhms-group { display: flex; align-items: center; gap: 2px; font-size: 0.75rem; font-weight: bold; color: var(--text-sub); }
+        .dhms-input { width: 35px; text-align: center; font-family: monospace; font-weight: bold; border-radius: 4px; padding: 2px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); }
+        .dhms-input::-webkit-outer-spin-button, .dhms-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .dhms-input[type=number] { -moz-appearance: textfield; }
+
+        #btn-expand-all-tasks { display: none; margin: 0; padding: 3px 8px; font-weight: bold; font-size: 0.65rem; background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent); transform: translateY(-2px); }
+        #btn-expand-all-tasks:active { transform: translateY(0); box-shadow: 0 0 0 transparent; }
+        .config-section:has(#taskContent.active) #btn-expand-all-tasks { display: block; }
+
+        /* 預警：忽略任務自訂色，統一紅色系（加強閃爍） */
+        .timer-card.is-warning-blinking {
+            border-color: #ef5350 !important;
+            animation: warning-card-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-card-pulse {
+            0%, 100% {
+                border-color: #ef5350;
+                box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.55), 0 4px 10px rgba(15, 23, 42, 0.06);
+            }
+            50% {
+                border-color: #b91c1c;
+                box-shadow: 0 0 0 5px rgba(239, 83, 80, 0.5), 0 0 22px rgba(239, 83, 80, 0.55);
+            }
+        }
+        .timer-card.is-warning-blinking .timer-card-bg {
+            background: conic-gradient(rgba(239, 83, 80, 0.78) var(--p, 100%), transparent 0) !important;
+            animation: warning-progress-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-progress-pulse {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.35; filter: brightness(1.15); }
+        }
+        .timer-card.is-warning-blinking .char-title-badge {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+            animation: warning-badge-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-badge-pulse {
+            0%, 100% { background-color: #dc2626; }
+            50% { background-color: #991b1b; }
+        }
+        .timer-card.is-warning-blinking .task-title-display {
+            color: #991b1b !important;
+            background-color: rgba(239, 83, 80, 0.35) !important;
+        }
+        .timer-card.is-warning-blinking .time-text,
+        .timer-card.is-warning-blinking .date-label {
+            color: #b91c1c !important;
+            animation: warning-text-pulse 0.85s ease-in-out infinite;
+        }
+        @keyframes warning-text-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.55; }
+        }
+        .timer-card.is-warning-blinking .card-id-badge {
+            background: rgba(239, 83, 80, 0.35) !important;
+            color: #991b1b !important;
+            border-color: #ef5350 !important;
+        }
+        .timer-card.is-warning-blinking .btn-close-circle {
+            color: #991b1b !important;
+            border-color: #ef5350 !important;
+        }
+        .timer-card.is-warning-blinking .timer-card-inner {
+            animation: pulse-warning 0.85s ease-in-out infinite;
+        }
+        @keyframes pulse-warning {
+            0%, 100% { background-color: rgba(239, 83, 80, 0.1); }
+            50% { background-color: rgba(239, 83, 80, 0.42); }
+        }
+
+        #btn-clear-finished {
+            background-color: transparent;
+            color: var(--text-sub);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            transition: background-color 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+        #btn-clear-finished.has-finished-pending {
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+            border: 2px solid #ef5350 !important;
+            font-weight: 800 !important;
+            animation: clear-finished-attention 1.25s ease-in-out infinite;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 4px 0 #b91c1c, 0 0 14px rgba(239, 83, 80, 0.45) !important;
+        }
+        @keyframes clear-finished-attention {
+            0%, 100% { box-shadow: 0 4px 0 #b91c1c, 0 0 10px rgba(239, 83, 80, 0.35); }
+            50% { box-shadow: 0 4px 0 #b91c1c, 0 0 20px 6px rgba(239, 83, 80, 0.65); }
+        }
+        [data-theme="dark"] #btn-clear-finished.has-finished-pending {
+            background-color: #3f1515 !important;
+            color: #fca5a5 !important;
+            border-color: #f87171 !important;
+            box-shadow: 0 4px 0 #7f1d1d, 0 0 14px rgba(239, 83, 80, 0.4) !important;
+        }
+
+        .undo-toast { position: fixed; bottom: 25px; right: 25px; background-color: var(--text-main); color: var(--card-bg); padding: 12px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+        .undo-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .undo-btn-text { font-weight: bold; font-size: 0.95rem; cursor: pointer; }
+
+        /* 手機版側欄：主畫面標題列設定鈕 + 面板內收起列 */
+        .panel-close-bar { display: none; }
+        .control-panel-inner { min-height: 0; }
+        .panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            z-index: 140;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .panel-overlay.show { display: block; opacity: 1; pointer-events: auto; }
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .card-tags-row { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
+        .char-title-badge { flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                padding: 10px;
+                padding-top: max(10px, env(safe-area-inset-top, 0px));
+                padding-left: max(10px, env(safe-area-inset-left, 0px));
+                padding-right: max(10px, env(safe-area-inset-right, 0px));
+                padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+                gap: 12px;
+            }
+            body.side-panel-open { overflow: hidden; touch-action: none; }
+            .main-settings-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%);
+                z-index: 3;
+                padding: 4px 14px;
+                border-radius: 999px;
+                border: 1px solid var(--border-color);
+                background: var(--card-bg);
+                color: var(--text-main);
+                font-size: 0.72rem;
+                font-weight: bold;
+                line-height: 1.2;
+                cursor: pointer;
+                box-shadow: 0 1px 6px rgba(15, 23, 42, 0.12);
+                -webkit-tap-highlight-color: transparent;
+            }
+            body.side-panel-open .main-settings-btn {
+                visibility: hidden;
+                pointer-events: none;
+            }
+            .panel-close-bar {
+                display: none;
+                flex-shrink: 0;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                width: 100%;
+                padding: 5px 8px;
+                margin: 0 0 4px 0;
+                border: none;
+                border-bottom: 1px solid var(--border-color);
+                border-radius: 0;
+                background: color-mix(in srgb, var(--bg) 55%, var(--panel-bg));
+                color: var(--text-sub);
+                font-size: 0.68rem;
+                font-weight: bold;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .control-panel.panel-open .panel-close-bar { display: flex; }
+            .control-panel {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: min(340px, 92vw);
+                min-width: unset;
+                max-width: 92vw;
+                max-height: 100vh;
+                max-height: 100dvh;
+                border-radius: 0 16px 16px 0;
+                transform: translateX(-105%);
+                transition: transform 0.3s ease;
+                z-index: 150;
+                padding-left: max(12px, env(safe-area-inset-left, 0px));
+                padding-top: max(12px, env(safe-area-inset-top, 0px));
+                padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .control-panel-inner {
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
+            .control-panel.panel-open { transform: translateX(0); }
+            /* 設定面板：緊湊排版（僅手機） */
+            .control-panel .config-section {
+                margin-bottom: 5px;
+                padding: 5px 7px;
+                border-top-width: 3px;
+                border-radius: 8px;
+            }
+            .control-panel .config-title {
+                min-height: 0;
+                padding: 1px 0;
+                font-size: 0.74rem;
+            }
+            .control-panel .collapsible-content.active { margin-top: 5px; }
+            .control-panel .btn-main {
+                min-height: 0;
+                padding: 6px 8px;
+                font-size: 0.74rem;
+                margin-top: 5px;
+                margin-bottom: 2px;
+                box-shadow: 0 2px 0 color-mix(in srgb, black 22%, var(--section-color));
+            }
+            .control-panel .btn-main:not(:disabled) { transform: translateY(-2px); }
+            .control-panel .btn-main:not(:disabled):active { transform: translateY(0); }
+            .control-panel .btn-secondary-main {
+                background: transparent !important;
+                color: var(--text-main) !important;
+                border: 1px solid var(--border-color) !important;
+                box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent) !important;
+                text-shadow: none !important;
+            }
+            .control-panel #btnStartTask.btn-main {
+                padding: 7px 8px;
+                font-size: 0.8rem;
+            }
+            .control-panel .btn-adjust {
+                min-height: 0;
+                padding: 4px 2px;
+                font-size: 0.64rem;
+                margin-bottom: 2px;
+                box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent);
+            }
+            .control-panel .btn-adjust:not(:disabled) { transform: translateY(-2px); }
+            .control-panel .cloud-sync-box {
+                padding: 6px 7px;
+                margin-bottom: 6px;
+            }
+            .control-panel .cloud-sync-title { font-size: 0.7rem; margin-bottom: 4px; }
+            .control-panel .cloud-sync-hint { font-size: 0.62rem; line-height: 1.35; }
+            .control-panel .cloud-auth-row { gap: 4px; margin-top: 4px !important; }
+            .control-panel .cloud-forgot-link {
+                font-size: 0.62rem;
+                min-height: 0;
+                padding: 2px 0 4px;
+            }
+            .control-panel .sys-block-divider { margin: 8px 0; }
+            .control-panel .sys-block-title { margin-bottom: 5px; font-size: 0.66rem; }
+            .control-panel .tag-item-box { padding: 5px 6px; margin-bottom: 3px; }
+            .control-panel .dhms-container { margin-bottom: 6px; padding: 4px 6px; }
+            .control-panel #timeDisplay {
+                padding: 6px !important;
+                margin: 4px 0 5px 0 !important;
+                font-size: 1.35rem !important;
+            }
+            .control-panel input,
+            .control-panel select,
+            .control-panel .cloud-sync-box input {
+                min-height: 34px;
+                padding: 5px 7px;
+                font-size: 16px;
+            }
+            #mainDisplay { width: 100%; min-width: 0; }
+            .timer-grid { grid-template-columns: 1fr; gap: 10px; }
+            .timer-section-active .timer-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .timer-card--active {
+                max-width: 100%;
+                width: 100%;
+                border-width: 2px;
+            }
+            .timer-card--active .timer-card-inner {
+                padding: 8px 10px 6px;
+            }
+            .timer-card--active .active-slot-char .char-title-badge {
+                font-size: 0.72rem;
+                max-width: none;
+            }
+            .timer-card--active .active-slot-task .task-title-display {
+                font-size: 0.76rem;
+            }
+            .timer-card--active .active-slot-time .time-text {
+                font-size: 1.28rem;
+            }
+            .timer-card--active .active-slot-date .date-label {
+                font-size: 0.8rem;
+            }
+            .finished-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+            .timer-card.is-finished {
+                width: 100%;
+                max-width: none;
+            }
+            .account-group { margin-bottom: 18px; }
+            .account-content { padding: 12px; border-radius: 0 12px 12px 12px; }
+            .account-tab-item { font-size: 0.8rem; padding: 6px 12px; }
+            .timer-section-title { font-size: 0.75rem; margin-bottom: 6px; }
+            .time-text { font-size: 1.35rem; }
+            input, select, textarea {
+                font-size: 16px;
+                box-sizing: border-box;
+            }
+            .cloud-auth-row { gap: 8px; }
+            .cloud-forgot-link {
+                font-size: 0.75rem;
+                padding: 6px 0;
+                min-height: 32px;
+            }
+            .undo-toast {
+                left: max(12px, env(safe-area-inset-left, 0px));
+                right: max(12px, env(safe-area-inset-right, 0px));
+                bottom: max(16px, env(safe-area-inset-bottom, 0px));
+                max-width: calc(100vw - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .timer-section-active .timer-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 390px) {
+            .finished-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+            .timer-card--active .active-slot-time .time-text { font-size: 1.15rem; }
+            .timer-card--active .active-slot-date .date-label { font-size: 0.78rem; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .timer-card .btn-close-circle {
+                opacity: 1;
+                transform: translate(38%, -38%) scale(0.92);
+            }
+            .editable-text { border-bottom-width: 0; }
+            .config-title { -webkit-tap-highlight-color: transparent; }
+        }
+
+        .cloud-sync-box {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .cloud-sync-title { font-size: 0.78rem; font-weight: bold; margin-bottom: 6px; }
+        .cloud-sync-hint { font-size: 0.68rem; color: var(--text-sub); line-height: 1.45; margin: 0; }
+        .cloud-user-line { font-size: 0.72rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cloud-status-line { font-size: 0.68rem; color: var(--text-sub); margin-top: 6px; }
+        .cloud-sync-unconfigured { border-color: color-mix(in srgb, var(--danger) 35%, var(--border-color)); }
+        .cloud-auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+        .cloud-auth-row.single { grid-template-columns: 1fr; }
+        .cloud-forgot-link {
+            display: inline-block;
+            margin: 2px 0 8px;
+            font-size: 0.68rem;
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="panel-overlay" id="panelOverlay" onclick="closeSidePanel()"></div>
+
+    <div class="control-panel" id="sidePanel">
+        <button type="button" class="panel-close-bar" id="panelCloseBar" onclick="closeSidePanel()"></button>
+        <div class="control-panel-inner" id="sidePanelContent"></div>
+    </div>
+    <button type="button" class="panel-fab" id="panelFab" onclick="toggleSidePanel()"></button>
+    <div id="mainDisplay"></div>
+
+    <div id="undoToast" class="undo-toast">
+        <div class="undo-btn-text" onclick="undoAction()" id="undoText"></div>
+        <span onclick="dismissUndo()" style="margin-left:10px; cursor:pointer; font-weight: bold;">&times;</span>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'GameTimer_Config_V7';
+        const ACTIVE_TIMERS_KEY = 'GameTimer_Active_Single';
+        const THEME_KEY = 'GameTimer_Theme_Preference';
+        const LANG_KEY = 'GameTimer_Lang_Preference';
+        const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
+        const I18N = {
+            'zh-TW': {
+                appTitle: '遊戲計時器',
+                openPanel: '開啟設定面板', closePanel: '關閉設定面板',
+                panelFabOpen: '設定', panelCloseBar: '‹ 收起',
+                undo: '↩ 復原', undoOne: '↩ 復原「{name}」 (剩餘 {sec}s)', undoMany: '↩ 復原「{name}」等 {n} 項 (剩餘 {sec}s)',
+                sectionActive: '進行中', sectionFinished: '已完成', noTimers: '尚無計時器',
+                accMgmt: '帳號管理', accNamePh: '帳號名稱', add: '新增',
+                allTags: '全部標籤', collapseAll: '收合全部', expandAll: '展開全部', taskNamePh: '任務名稱',
+                dragSortTask: '拖拉可排列順序', dragSortSub: '拖拉可排列順序',
+                taskStart: '任務啟動', resetTime: '重置時間', flashWarning: '預警閃爍:', startTask: '啟動任務', clearFinished: '清除已完成計時器',
+                sysTheme: '系統與主題', sysSectionSystem: '系統', sysSectionTheme: '主題',
+                neonGlowLabel: '深色霓虹光暈', neonGlowOn: '開啟', neonGlowOff: '關閉', neonGlowHint: '僅在深色／自動深色時顯示',
+                saveDefaultTags: '★ 將目前標籤設為預設', restoreDefaultTags: '↺ 還原預設標籤',
+                confirmSaveDefaultTags: '確定將「全部標籤」目前的內容設為預設？\n\n之後按「還原預設標籤」會還原到此狀態。',
+                alertDefaultTagsSaved: '已將目前標籤儲存為預設；之後可按「還原預設標籤」還原。',
+                themeLight: '淺色', themeDark: '深色', themeAuto: '自動', themeLabel: '外觀模式',
+                langLabel: '介面語言', langZhTW: '繁體中文', langZhCN: '简体中文',
+                undoDisplaySec: '復原顯示時間(秒):', exportBackup: '匯出(完整備份)', importBtn: '匯入',
+                finishedEnd: '結束 {date}', finishedElapsed: '已過 {elapsed}',
+                dateEnded: '{date} (已結束)', dateSoon: '{date} (即將結束)',
+                dateMinLater: '{date} ({n}分鐘後)', dateHourLater: '{date} ({n}小時後)', dateDayLater: '{date} ({n}天後)',
+                elapsedJust: '剛剛', elapsedMin: '{n} 分鐘', elapsedHour: '{h} 小時', elapsedHourMin: '{h} 小時 {m} 分鐘',
+                elapsedDay: '{d} 天', elapsedDayHour: '{d} 天 {h} 小時',
+                undoOp: '操作', undoClearFinished: '清除已完成', undoTimer: '計時器', undoSettings: '設定',
+                finishedTimersLabel: '已完成計時器',
+                confirmDeleteAcc: '確定刪除帳號「{name}」？\n（該帳號下所有進行中計時器也會一併移除）',
+                confirmResetTasks: '確定還原為你儲存的預設標籤？\n\n現有標籤與子項目將被覆蓋。\n帳號、進行中計時器不受影響，可用「復原」還原此操作。',
+                promptRenameAcc: '修改帳號', promptRenameChar: '修改角色名稱', promptRenameSub: '修改子項目',
+                promptCharName: '輸入角色名稱', promptTaskTag: '任務標籤',
+                alertLoginFirst: '請先登入帳號', alertSyncFailed: '同步失敗：{msg}',
+                alertSupabaseNotSet: '尚未設定 Supabase，請見 DEPLOY.md', alertSupabaseNotSetShort: '尚未設定 Supabase',
+                alertEnterEmailPassword: '請輸入 Email 與密碼', alertPasswordMin6: '密碼至少 6 個字元',
+                alertSignUpSuccess: '註冊成功！若 Supabase 有開啟 Email 驗證，請先到信箱點確認連結再登入。',
+                alertEnterRegisteredEmail: '請輸入註冊時使用的 Email',
+                alertResetEmailSent: '已寄出重設密碼信，請到信箱點連結（若沒收到請查看垃圾郵件）。',
+                alertPasswordMismatch: '兩次輸入的密碼不一致', alertPasswordUpdated: '密碼已更新，你可以用新密碼登入。',
+                cloudTitle: '☁ 雲端同步', cloudResetTitle: '☁ 重設密碼', cloudForgotTitle: '☁ 忘記密碼',
+                cloudHintUnconfigured: '請先在 index.html 填入 SUPABASE_URL 與 SUPABASE_ANON_KEY，並依 DEPLOY.md 建立資料庫後再部署上線。',
+                cloudHintLoggedIn: '已登入帳號的設定與計時器會自動同步；手機、平板、電腦登入同一帳號即可共用。',
+                cloudHintLogin: '註冊／登入後，你的帳號、標籤與進行中計時器會保存在雲端，並在所有裝置間同步。',
+                cloudHintNewPassword: '你已從信箱連結進入，請設定新密碼（至少 6 字）。',
+                cloudHintForgot: '輸入註冊 Email，我們會寄重設連結到信箱（請一併查看垃圾郵件）。',
+                cloudPasswordPh: '密碼（至少 6 字）', cloudNewPasswordPh: '新密碼', cloudNewPassword2Ph: '再輸入一次新密碼',
+                cloudForgotLink: '忘記密碼？', cloudSyncNow: '立即同步', cloudSignOut: '登出',
+                cloudSignIn: '登入', cloudSignUp: '註冊', cloudSavePassword: '儲存新密碼', cloudCancel: '取消',
+                cloudSendReset: '寄送重設信', cloudBackLogin: '返回登入',
+                cloudLoggedInShort: '已登入',
+                cloudLoginPrompt: '請登入以同步', cloudBackendNotConfigured: '後端未設定',
+                cloudEnterEmailReset: '輸入 Email 以收取重設信', cloudSynced: '已同步至雲端', cloudSyncing: '同步中…',
+                cloudSyncFailed: '同步失敗', cloudLoading: '正在載入雲端…', cloudUploadedLocal: '已將本機資料上傳至雲端',
+                cloudRestoredNewer: '已從雲端還原較新資料', cloudInSync: '已與雲端一致', cloudUpdatedFromOther: '已從其他裝置更新',
+                cloudSigningIn: '登入中…', cloudSignInFailed: '登入失敗', cloudSigningUp: '註冊中…', cloudSignUpFailed: '註冊失敗',
+                cloudVerifyEmail: '請至信箱完成驗證後登入', cloudSignedOut: '已登出（本機資料仍保留）',
+                cloudSendingReset: '寄送重設信中…', cloudSendResetFailed: '寄送失敗', cloudResetSent: '已寄出重設信，請至信箱操作',
+                cloudUpdatingPassword: '更新密碼中…', cloudUpdatePasswordFailed: '更新失敗', cloudPasswordUpdated: '密碼已更新',
+                cloudLoggedIn: '已登入', cloudLoadFailed: '雲端載入失敗', cloudSetNewPassword: '請設定新密碼'
+            },
+            'zh-CN': {
+                appTitle: '游戏计时器',
+                openPanel: '打开设置面板', closePanel: '关闭设置面板',
+                panelFabOpen: '设置', panelCloseBar: '‹ 收起',
+                undo: '↩ 撤销', undoOne: '↩ 撤销「{name}」 (剩余 {sec}s)', undoMany: '↩ 撤销「{name}」等 {n} 项 (剩余 {sec}s)',
+                sectionActive: '进行中', sectionFinished: '已完成', noTimers: '暂无计时器',
+                accMgmt: '账号管理', accNamePh: '账号名称', add: '新增',
+                allTags: '全部标签', collapseAll: '收起全部', expandAll: '展开全部', taskNamePh: '任务名称',
+                dragSortTask: '拖动可排列顺序', dragSortSub: '拖动可排列顺序',
+                taskStart: '任务启动', resetTime: '重置时间', flashWarning: '预警闪烁:', startTask: '启动任务', clearFinished: '清除已完成计时器',
+                sysTheme: '系统与主题', sysSectionSystem: '系统', sysSectionTheme: '主题',
+                neonGlowLabel: '深色霓虹光晕', neonGlowOn: '开启', neonGlowOff: '关闭', neonGlowHint: '仅在深色／自动深色时显示',
+                saveDefaultTags: '★ 将当前标签设为默认', restoreDefaultTags: '↺ 还原默认标签',
+                confirmSaveDefaultTags: '确定将「全部标签」目前的内容设为默认？\n\n之后按「还原默认标签」会还原到此状态。',
+                alertDefaultTagsSaved: '已将当前标签保存为默认；之后可按「还原默认标签」还原。',
+                themeLight: '浅色', themeDark: '深色', themeAuto: '自动', themeLabel: '外观模式',
+                langLabel: '界面语言', langZhTW: '繁體中文', langZhCN: '简体中文',
+                undoDisplaySec: '撤销显示时间(秒):', exportBackup: '导出(完整备份)', importBtn: '导入',
+                finishedEnd: '结束 {date}', finishedElapsed: '已过 {elapsed}',
+                dateEnded: '{date} (已结束)', dateSoon: '{date} (即将结束)',
+                dateMinLater: '{date} ({n}分钟后)', dateHourLater: '{date} ({n}小时后)', dateDayLater: '{date} ({n}天后)',
+                elapsedJust: '刚刚', elapsedMin: '{n} 分钟', elapsedHour: '{h} 小时', elapsedHourMin: '{h} 小时 {m} 分钟',
+                elapsedDay: '{d} 天', elapsedDayHour: '{d} 天 {h} 小时',
+                undoOp: '操作', undoClearFinished: '清除已完成', undoTimer: '计时器', undoSettings: '设置',
+                finishedTimersLabel: '已完成计时器',
+                confirmDeleteAcc: '确定删除账号「{name}」？\n（该账号下所有进行中计时器也会一并移除）',
+                confirmResetTasks: '确定还原为你保存的默认标签？\n\n现有标签与子项目将被覆盖。\n账号、进行中计时器不受影响，可用「撤销」还原此操作。',
+                promptRenameAcc: '修改账号', promptRenameChar: '修改角色名称', promptRenameSub: '修改子项目',
+                promptCharName: '输入角色名称', promptTaskTag: '任务标签',
+                alertLoginFirst: '请先登录账号', alertSyncFailed: '同步失败：{msg}',
+                alertSupabaseNotSet: '尚未设置 Supabase，请见 DEPLOY.md', alertSupabaseNotSetShort: '尚未设置 Supabase',
+                alertEnterEmailPassword: '请输入 Email 与密码', alertPasswordMin6: '密码至少 6 个字符',
+                alertSignUpSuccess: '注册成功！若 Supabase 开启了 Email 验证，请先到邮箱点击确认链接再登录。',
+                alertEnterRegisteredEmail: '请输入注册时使用的 Email',
+                alertResetEmailSent: '已发出重置密码邮件，请到邮箱点击链接（若没收到请查看垃圾邮件）。',
+                alertPasswordMismatch: '两次输入的密码不一致', alertPasswordUpdated: '密码已更新，你可以用新密码登录。',
+                cloudTitle: '☁ 云端同步', cloudResetTitle: '☁ 重置密码', cloudForgotTitle: '☁ 忘记密码',
+                cloudHintUnconfigured: '请先在 index.html 填入 SUPABASE_URL 与 SUPABASE_ANON_KEY，并按 DEPLOY.md 建立数据库后再部署上线。',
+                cloudHintLoggedIn: '已登录账号的设置与计时器会自动同步；手机、平板、电脑登录同一账号即可共用。',
+                cloudHintLogin: '注册／登录后，你的账号、标签与进行中计时器会保存在云端，并在所有设备间同步。',
+                cloudHintNewPassword: '你已从邮箱链接进入，请设置新密码（至少 6 字）。',
+                cloudHintForgot: '输入注册 Email，我们会寄重置链接到邮箱（请一并查看垃圾邮件）。',
+                cloudPasswordPh: '密码（至少 6 字）', cloudNewPasswordPh: '新密码', cloudNewPassword2Ph: '再输入一次新密码',
+                cloudForgotLink: '忘记密码？', cloudSyncNow: '立即同步', cloudSignOut: '登出',
+                cloudSignIn: '登录', cloudSignUp: '注册', cloudSavePassword: '保存新密码', cloudCancel: '取消',
+                cloudSendReset: '发送重置信', cloudBackLogin: '返回登录',
+                cloudLoggedInShort: '已登录',
+                cloudLoginPrompt: '请登录以同步', cloudBackendNotConfigured: '后端未设置',
+                cloudEnterEmailReset: '输入 Email 以收取重置信', cloudSynced: '已同步至云端', cloudSyncing: '同步中…',
+                cloudSyncFailed: '同步失败', cloudLoading: '正在加载云端…', cloudUploadedLocal: '已将本机数据上传至云端',
+                cloudRestoredNewer: '已从云端还原较新数据', cloudInSync: '已与云端一致', cloudUpdatedFromOther: '已从其他设备更新',
+                cloudSigningIn: '登录中…', cloudSignInFailed: '登录失败', cloudSigningUp: '注册中…', cloudSignUpFailed: '注册失败',
+                cloudVerifyEmail: '请至邮箱完成验证后登录', cloudSignedOut: '已登出（本机数据仍保留）',
+                cloudSendingReset: '发送重置信中…', cloudSendResetFailed: '发送失败', cloudResetSent: '已发出重置信，请至邮箱操作',
+                cloudUpdatingPassword: '更新密码中…', cloudUpdatePasswordFailed: '更新失败', cloudPasswordUpdated: '密码已更新',
+                cloudLoggedIn: '已登录', cloudLoadFailed: '云端加载失败', cloudSetNewPassword: '请设置新密码'
+            }
+        };
+        let currentLang = localStorage.getItem(LANG_KEY) || 'zh-TW';
+        if (!I18N[currentLang]) currentLang = 'zh-TW';
+        let cloudSyncStatusKey = 'cloudLoginPrompt';
+        function t(key) { const d = I18N[currentLang] || I18N['zh-TW']; return d[key] ?? I18N['zh-TW'][key] ?? key; }
+        function tp(key, params) {
+            let s = t(key);
+            if (params) Object.keys(params).forEach(k => { s = s.split('{' + k + '}').join(String(params[k])); });
+            return s;
+        }
+        function setLang(lang, opts = {}) {
+            if (!I18N[lang]) return;
+            currentLang = lang;
+            localStorage.setItem(LANG_KEY, lang);
+            document.documentElement.lang = lang;
+            document.title = t('appTitle');
+            syncPanelMobileControls();
+            updateCloudSyncUI();
+            if (undoStack.length) updateUndoToastText();
+            else { const el = document.getElementById('undoText'); if (el) el.textContent = t('undo'); }
+            renderSidePanel();
+            refreshMainDisplay();
+            if (!opts.skipCloud) scheduleCloudSync();
+        }
+        function applyLangFromStorage() {
+            const lang = localStorage.getItem(LANG_KEY);
+            if (lang && I18N[lang]) currentLang = lang;
+            document.documentElement.lang = currentLang;
+            document.title = t('appTitle');
+            syncPanelMobileControls();
+            const undoEl = document.getElementById('undoText');
+            if (undoEl) undoEl.textContent = t('undo');
+        }
+        const LOCAL_UPDATED_KEY = 'GameTimer_LocalUpdatedAt';
+
+        /* 部署時填入 Supabase 專案的 URL 與 Publishable key（見 DEPLOY.md） */
+        const SUPABASE_URL = 'https://gnfukohkisiknbbnxjce.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_06A2mHaxzTXHx6DhQLI2XQ_zSoaveJv';
+        
+        const defaultAccColors = ['#4a90e2', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
+        let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set() };
+        const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
+        let dragSourceTaskIdx = null;
+        let dragSourceSub = { taskIdx: null, subIdx: null };
+
+        const BUILTIN_DEFAULT_TASKS = [
+            { name: '訓練', subs: ['盾兵', '矛兵', '射手'], color: '#f6b26b' },
+            { name: '寵物', subs: ['泰坦巨鳥', '劍齒虎', '雪猿', '洞獅', '雪豹', '板齒犀'], color: '#22d3ee' },
+            { name: '建築', subs: ['大熔爐', '盾兵營', '矛兵營', '射手營', '大使館'], color: '#b4a7d6' },
+            { name: '採集', subs: ['生肉', '木材', '煤礦', '鐵礦', '聯盟資源'], color: '#3b82f6' },
+            { name: '研究', subs: ['科技研究所', '戰爭研究所'], color: '#76a5af' },
+            { name: '專家', subs: ['西里爾', '艾格妮絲', '霍爾格', '羅慕路斯', '巴爾德', '法比安', '瓦萊莉亞', '羅妮', '凱西'], color: '#93c47d' },
+            { name: '其他', subs: ['掛機探險', '捐獻'], color: '#a855f7' }
+        ];
+
+        function cloneTasks(tasks) {
+            return JSON.parse(JSON.stringify(tasks));
+        }
+
+        function normalizeConfig() {
+            if (!config.tasks || !Array.isArray(config.tasks)) {
+                config.tasks = cloneTasks(BUILTIN_DEFAULT_TASKS);
+            }
+            if (!config.defaultTasks || !Array.isArray(config.defaultTasks) || !config.defaultTasks.length) {
+                config.defaultTasks = cloneTasks(config.tasks.length ? config.tasks : BUILTIN_DEFAULT_TASKS);
+            }
+            if (config.neonGlow === undefined) config.neonGlow = true;
+            applyNeonGlow();
+        }
+
+        function applyNeonGlow() {
+            const on = config.neonGlow !== false;
+            document.documentElement.classList.toggle('neon-glow-enabled', on);
+        }
+
+        function setNeonGlow(on) {
+            config.neonGlow = !!on;
+            applyNeonGlow();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            touchLocalUpdated();
+            scheduleCloudSync();
+            renderSidePanel();
+        }
+
+        function getUserDefaultTasks() {
+            normalizeConfig();
+            return cloneTasks(config.defaultTasks);
+        }
+
+        const defaultConfig = {
+            colors: { acc: '#64748b', task: '#475569', start: '#4a90e2', sys: '#475569' },
+            accounts: [
+                { email: '帳號1', characters: ['角色1'], color: '#4a90e2' },
+                { email: '帳號2', characters: ['角色2'], color: '#e28743' }
+            ],
+            tasks: cloneTasks(BUILTIN_DEFAULT_TASKS),
+            defaultTasks: cloneTasks(BUILTIN_DEFAULT_TASKS),
+            undoTime: 10,
+            neonGlow: true
+        };
+
+        let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
+        if (config.undoTime === undefined) config.undoTime = 10;
+        if (!localStorage.getItem(STORAGE_KEY)) config = JSON.parse(JSON.stringify(defaultConfig));
+        normalizeConfig();
+
+        let undoStack = [];
+        let undoTimerInterval = null; 
+        let undoTimeout = null; 
+        let currentUndoTimeLeft = 0;
+        let isDispatchingTimers = false;
+
+        let cloudSyncTimer = null;
+        let cloudPollInterval = null;
+        let isApplyingCloudData = false;
+        let lastCloudUpdatedAt = 0;
+        let lastCloudUploadAt = 0;
+        let supabaseClient = null;
+        let currentUser = null;
+        /** @type {'login'|'forgot'|'newPassword'} */
+        let cloudAuthView = 'login';
+
+        function getCloudAuthRedirectUrl() {
+            if (location.protocol === 'http:' || location.protocol === 'https:') {
+                const path = location.pathname || '/';
+                return location.origin + (path.endsWith('/') ? path : path.replace(/\/[^/]*$/, '/') || '/');
+            }
+            return 'https://sf9600-glitch.github.io/game-timer/';
+        }
+
+        function clearCloudAuthHash() {
+            if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+        }
+
+        function showCloudForgotPassword() {
+            cloudAuthView = 'forgot';
+            updateCloudSyncUI('cloudEnterEmailReset');
+            renderSidePanel();
+        }
+
+        async function cancelCloudForgotPassword() {
+            if (cloudAuthView === 'newPassword') {
+                const sb = getSupabase();
+                if (sb) await sb.auth.signOut();
+                currentUser = null;
+                stopCloudPoll();
+                clearCloudAuthHash();
+            }
+            cloudAuthView = 'login';
+            updateCloudSyncUI('cloudLoginPrompt');
+            renderSidePanel();
+        }
+
+        function isSupabaseConfigured() {
+            const url = String(SUPABASE_URL || '').trim();
+            const key = String(SUPABASE_ANON_KEY || '').trim();
+            return !!(url && key && url.startsWith('https://') && !url.includes('YOUR_'));
+        }
+
+        function getSupabase() {
+            if (!isSupabaseConfigured()) return null;
+            if (!supabaseClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL.trim(), SUPABASE_ANON_KEY.trim(), {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true,
+                        storage: window.localStorage
+                    }
+                });
+            }
+            return supabaseClient;
+        }
+
+        function isCloudSyncActive() {
+            return !!(getSupabase() && currentUser);
+        }
+
+        async function fetchCloudRecord() {
+            const sb = getSupabase();
+            if (!sb || !currentUser) return null;
+            const { data, error } = await sb
+                .from('timer_snapshots')
+                .select('payload, updated_at')
+                .eq('user_id', currentUser.id)
+                .maybeSingle();
+            if (error) throw new Error(error.message || '讀取失敗');
+            if (!data || !data.payload) return null;
+            const payload = data.payload;
+            const updatedAt = data.updated_at ? new Date(data.updated_at).getTime() : (payload.updatedAt || 0);
+            return { ...payload, updatedAt };
+        }
+
+        async function putCloudRecord(payload) {
+            const sb = getSupabase();
+            if (!sb || !currentUser) return;
+            const updatedAt = new Date(payload.updatedAt || Date.now()).toISOString();
+            const { error } = await sb.from('timer_snapshots').upsert({
+                user_id: currentUser.id,
+                payload,
+                updated_at: updatedAt
+            }, { onConflict: 'user_id' });
+            if (error) throw new Error(error.message || '上傳失敗');
+        }
+
+        function getClientId() {
+            const key = 'GameTimer_ClientId';
+            let id = localStorage.getItem(key);
+            if (!id) {
+                id = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+                localStorage.setItem(key, id);
+            }
+            return id;
+        }
+
+        function touchLocalUpdated() {
+            const t = Date.now();
+            localStorage.setItem(LOCAL_UPDATED_KEY, String(t));
+            return t;
+        }
+
+        function getLocalUpdatedAt() {
+            return parseInt(localStorage.getItem(LOCAL_UPDATED_KEY) || '0', 10) || 0;
+        }
+
+        function getActiveTimers() {
+            return JSON.parse(localStorage.getItem(ACTIVE_TIMERS_KEY) || '[]');
+        }
+
+        function setActiveTimers(data) {
+            localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(data));
+            touchLocalUpdated();
+            scheduleCloudSync();
+        }
+
+        function buildCloudPayload() {
+            return {
+                config,
+                activeTimers: getActiveTimers(),
+                undoStack,
+                theme: localStorage.getItem(THEME_KEY) || 'auto',
+                lang: currentLang,
+                updatedAt: Math.max(getLocalUpdatedAt(), Date.now()),
+                clientId: getClientId()
+            };
+        }
+
+        function updateCloudSyncUI(key) {
+            if (key !== undefined) cloudSyncStatusKey = key;
+            const el = document.getElementById('cloudSyncStatus');
+            if (el) el.textContent = t(cloudSyncStatusKey);
+        }
+
+        function applyCloudPayload(data) {
+            if (!data) return;
+            isApplyingCloudData = true;
+            try {
+                if (data.config) {
+                    config = data.config;
+                    if (config.undoTime === undefined) config.undoTime = 10;
+                    normalizeConfig();
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+                }
+                if (data.activeTimers) {
+                    localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(data.activeTimers));
+                }
+                if (data.undoStack) {
+                    undoStack = Array.isArray(data.undoStack) ? data.undoStack : [];
+                    persistUndoStack({ skipCloud: true });
+                }
+                if (data.theme) {
+                    localStorage.setItem(THEME_KEY, data.theme);
+                    setTheme(data.theme, { skipCloud: true });
+                }
+                if (data.lang && I18N[data.lang]) {
+                    currentLang = data.lang;
+                    localStorage.setItem(LANG_KEY, data.lang);
+                    document.documentElement.lang = data.lang;
+                    document.title = t('appTitle');
+                    if (undoStack.length) updateUndoToastText();
+                }
+                if (data.updatedAt) {
+                    localStorage.setItem(LOCAL_UPDATED_KEY, String(data.updatedAt));
+                    lastCloudUpdatedAt = data.updatedAt;
+                }
+                renderSidePanel();
+                refreshMainDisplay();
+                dispatchTimersToDOM();
+            } finally {
+                isApplyingCloudData = false;
+            }
+        }
+
+        async function uploadToCloud() {
+            if (!isCloudSyncActive() || isApplyingCloudData) return;
+            const payload = buildCloudPayload();
+            await putCloudRecord(payload);
+            lastCloudUploadAt = Date.now();
+            lastCloudUpdatedAt = payload.updatedAt;
+            updateCloudSyncUI('cloudSynced');
+        }
+
+        function scheduleCloudSync() {
+            if (!isCloudSyncActive() || isApplyingCloudData) return;
+            updateCloudSyncUI('cloudSyncing');
+            clearTimeout(cloudSyncTimer);
+            cloudSyncTimer = setTimeout(() => {
+                uploadToCloud().catch(err => {
+                    console.error(err);
+                    updateCloudSyncUI('cloudSyncFailed');
+                });
+            }, 900);
+        }
+
+        function flushCloudSyncNow() {
+            if (!isCloudSyncActive() || isApplyingCloudData) return;
+            clearTimeout(cloudSyncTimer);
+            return uploadToCloud().catch(err => {
+                console.error(err);
+                updateCloudSyncUI('cloudSyncFailed');
+            });
+        }
+
+        async function mergeCloudFromRemote() {
+            if (!isCloudSyncActive()) return;
+            updateCloudSyncUI('cloudLoading');
+            const cloudPayload = await fetchCloudRecord();
+            const localPayload = buildCloudPayload();
+
+            if (!cloudPayload) {
+                await uploadToCloud();
+                updateCloudSyncUI('cloudUploadedLocal');
+                return;
+            }
+
+            lastCloudUpdatedAt = cloudPayload.updatedAt || 0;
+            if (cloudPayload.updatedAt > localPayload.updatedAt) {
+                applyCloudPayload(cloudPayload);
+                updateCloudSyncUI('cloudRestoredNewer');
+            } else if (localPayload.updatedAt > cloudPayload.updatedAt) {
+                await uploadToCloud();
+            } else {
+                updateCloudSyncUI('cloudInSync');
+            }
+        }
+
+        function stopCloudPoll() {
+            if (cloudPollInterval) {
+                clearInterval(cloudPollInterval);
+                cloudPollInterval = null;
+            }
+        }
+
+        function startCloudPoll() {
+            stopCloudPoll();
+            if (!isCloudSyncActive()) return;
+            cloudPollInterval = setInterval(async () => {
+                if (isApplyingCloudData || document.visibilityState === 'hidden') return;
+                try {
+                    const cloudPayload = await fetchCloudRecord();
+                    if (!cloudPayload || !cloudPayload.updatedAt) return;
+                    if (cloudPayload.clientId === getClientId() && cloudPayload.updatedAt <= lastCloudUploadAt + 2000) return;
+                    if (cloudPayload.updatedAt <= lastCloudUpdatedAt) return;
+                    if (cloudPayload.updatedAt > getLocalUpdatedAt()) {
+                        applyCloudPayload(cloudPayload);
+                        updateCloudSyncUI('cloudUpdatedFromOther');
+                    }
+                } catch (e) { /* 輪詢失敗時靜默 */ }
+            }, 20000);
+        }
+
+        async function syncNowCloud() {
+            if (!isCloudSyncActive()) {
+                alert(t('alertLoginFirst'));
+                return;
+            }
+            try {
+                await mergeCloudFromRemote();
+            } catch (e) {
+                console.error(e);
+                updateCloudSyncUI('cloudSyncFailed');
+                alert(tp('alertSyncFailed', { msg: e.message || e }));
+            }
+        }
+
+        async function signInFromUI() {
+            const sb = getSupabase();
+            if (!sb) { alert(t('alertSupabaseNotSet')); return; }
+            const email = document.getElementById('cloudEmail')?.value.trim();
+            const password = document.getElementById('cloudPassword')?.value;
+            if (!email || !password) { alert(t('alertEnterEmailPassword')); return; }
+            updateCloudSyncUI('cloudSigningIn');
+            const { error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) {
+                updateCloudSyncUI('cloudSignInFailed');
+                alert(error.message);
+                return;
+            }
+            const { data: { session } } = await sb.auth.getSession();
+            currentUser = session?.user ?? null;
+            await mergeCloudFromRemote();
+            startCloudPoll();
+            renderSidePanel();
+        }
+
+        async function signUpFromUI() {
+            const sb = getSupabase();
+            if (!sb) { alert(t('alertSupabaseNotSet')); return; }
+            const email = document.getElementById('cloudEmail')?.value.trim();
+            const password = document.getElementById('cloudPassword')?.value;
+            if (!email || !password) { alert(t('alertEnterEmailPassword')); return; }
+            if (password.length < 6) { alert(t('alertPasswordMin6')); return; }
+            updateCloudSyncUI('cloudSigningUp');
+            const { data, error } = await sb.auth.signUp({ email, password });
+            if (error) {
+                updateCloudSyncUI('cloudSignUpFailed');
+                alert(error.message);
+                return;
+            }
+            if (data.session) {
+                currentUser = data.user;
+                await mergeCloudFromRemote();
+                startCloudPoll();
+                renderSidePanel();
+                return;
+            }
+            alert(t('alertSignUpSuccess'));
+            updateCloudSyncUI('cloudVerifyEmail');
+        }
+
+        async function signOutCloud() {
+            const sb = getSupabase();
+            if (sb) await sb.auth.signOut();
+            currentUser = null;
+            cloudAuthView = 'login';
+            stopCloudPoll();
+            updateCloudSyncUI('cloudSignedOut');
+            renderSidePanel();
+        }
+
+        async function sendPasswordResetFromUI() {
+            const sb = getSupabase();
+            if (!sb) { alert(t('alertSupabaseNotSet')); return; }
+            const email = document.getElementById('cloudEmail')?.value.trim();
+            if (!email) { alert(t('alertEnterRegisteredEmail')); return; }
+            updateCloudSyncUI('cloudSendingReset');
+            const redirectTo = getCloudAuthRedirectUrl();
+            const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+            if (error) {
+                updateCloudSyncUI('cloudSendResetFailed');
+                alert(error.message);
+                return;
+            }
+            alert(t('alertResetEmailSent'));
+            cloudAuthView = 'login';
+            updateCloudSyncUI('cloudResetSent');
+            renderSidePanel();
+        }
+
+        async function confirmNewPasswordFromUI() {
+            const sb = getSupabase();
+            if (!sb) { alert(t('alertSupabaseNotSetShort')); return; }
+            const p1 = document.getElementById('cloudNewPassword')?.value || '';
+            const p2 = document.getElementById('cloudNewPassword2')?.value || '';
+            if (p1.length < 6) { alert(t('alertPasswordMin6')); return; }
+            if (p1 !== p2) { alert(t('alertPasswordMismatch')); return; }
+            updateCloudSyncUI('cloudUpdatingPassword');
+            const { error } = await sb.auth.updateUser({ password: p1 });
+            if (error) {
+                updateCloudSyncUI('cloudUpdatePasswordFailed');
+                alert(error.message);
+                return;
+            }
+            clearCloudAuthHash();
+            cloudAuthView = 'login';
+            const { data: { session } } = await sb.auth.getSession();
+            currentUser = session?.user ?? null;
+            if (currentUser) {
+                try {
+                    await mergeCloudFromRemote();
+                    startCloudPoll();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+            updateCloudSyncUI('cloudPasswordUpdated');
+            alert(t('alertPasswordUpdated'));
+            renderSidePanel();
+        }
+
+        function renderCloudSyncHtml() {
+            const status = t(cloudSyncStatusKey);
+            const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+            if (!isSupabaseConfigured()) {
+                return `<div class="cloud-sync-box cloud-sync-unconfigured">
+                    <div class="cloud-sync-title">${t('cloudTitle')}</div>
+                    <p class="cloud-sync-hint">${t('cloudHintUnconfigured')}</p>
+                    <div class="cloud-status-line" id="cloudSyncStatus">${t('cloudBackendNotConfigured')}</div>
+                </div>`;
+            }
+            const loggedIn = !!currentUser;
+            const email = loggedIn ? (currentUser.email || t('cloudLoggedInShort')) : '';
+            if (loggedIn) {
+                return `<div class="cloud-sync-box">
+                    <div class="cloud-sync-title">${t('cloudTitle')}</div>
+                    <p class="cloud-sync-hint">${t('cloudHintLoggedIn')}</p>
+                    <div class="cloud-user-line" title="${esc(email)}">${esc(email)}</div>
+                    <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                    <div class="cloud-auth-row" style="margin-top:8px;">
+                        <button type="button" class="btn-adjust" onclick="syncNowCloud()">${t('cloudSyncNow')}</button>
+                        <button type="button" class="btn-adjust" onclick="signOutCloud()" style="color:var(--danger);">${t('cloudSignOut')}</button>
+                    </div>
+                </div>`;
+            }
+            if (cloudAuthView === 'newPassword') {
+                return `<div class="cloud-sync-box">
+                    <div class="cloud-sync-title">${t('cloudResetTitle')}</div>
+                    <p class="cloud-sync-hint">${t('cloudHintNewPassword')}</p>
+                    <input type="password" id="cloudNewPassword" placeholder="${t('cloudNewPasswordPh')}" autocomplete="new-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                    <input type="password" id="cloudNewPassword2" placeholder="${t('cloudNewPassword2Ph')}" autocomplete="new-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                    <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                    <div class="cloud-auth-row">
+                        <button type="button" class="btn-adjust" onclick="confirmNewPasswordFromUI()">${t('cloudSavePassword')}</button>
+                        <button type="button" class="btn-adjust" onclick="cancelCloudForgotPassword()">${t('cloudCancel')}</button>
+                    </div>
+                </div>`;
+            }
+            if (cloudAuthView === 'forgot') {
+                return `<div class="cloud-sync-box">
+                    <div class="cloud-sync-title">${t('cloudForgotTitle')}</div>
+                    <p class="cloud-sync-hint">${t('cloudHintForgot')}</p>
+                    <input type="email" id="cloudEmail" placeholder="Email" autocomplete="username" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                    <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                    <div class="cloud-auth-row">
+                        <button type="button" class="btn-adjust" onclick="sendPasswordResetFromUI()">${t('cloudSendReset')}</button>
+                        <button type="button" class="btn-adjust" onclick="cancelCloudForgotPassword()">${t('cloudBackLogin')}</button>
+                    </div>
+                </div>`;
+            }
+            return `<div class="cloud-sync-box cloud-sync-unconfigured">
+                <div class="cloud-sync-title">${t('cloudTitle')}</div>
+                <p class="cloud-sync-hint">${t('cloudHintLogin')}</p>
+                <input type="email" id="cloudEmail" placeholder="Email" autocomplete="username" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                <input type="password" id="cloudPassword" placeholder="${t('cloudPasswordPh')}" autocomplete="current-password" style="width:100%; margin-bottom:6px; font-size:0.72rem;">
+                <button type="button" class="cloud-forgot-link" onclick="showCloudForgotPassword()">${t('cloudForgotLink')}</button>
+                <div class="cloud-status-line" id="cloudSyncStatus">${status}</div>
+                <div class="cloud-auth-row">
+                    <button type="button" class="btn-adjust" onclick="signInFromUI()">${t('cloudSignIn')}</button>
+                    <button type="button" class="btn-adjust" onclick="signUpFromUI()">${t('cloudSignUp')}</button>
+                </div>
+            </div>`;
+        }
+
+        async function initCloudSync() {
+            const sb = getSupabase();
+            if (!sb) {
+                updateCloudSyncUI('cloudBackendNotConfigured');
+                return;
+            }
+            const { data: { session }, error } = await sb.auth.getSession();
+            if (error) console.error('getSession', error);
+            currentUser = session?.user ?? null;
+            if (currentUser) {
+                try {
+                    await mergeCloudFromRemote();
+                    startCloudPoll();
+                    updateCloudSyncUI('cloudLoggedIn');
+                } catch (err) {
+                    console.error(err);
+                    updateCloudSyncUI('cloudLoadFailed');
+                }
+            } else {
+                updateCloudSyncUI('cloudLoginPrompt');
+            }
+
+            sb.auth.onAuthStateChange(async (event, session) => {
+                currentUser = session?.user ?? null;
+                if (event === 'PASSWORD_RECOVERY') {
+                    cloudAuthView = 'newPassword';
+                    updateCloudSyncUI('cloudSetNewPassword');
+                } else if (event === 'SIGNED_OUT') {
+                    stopCloudPoll();
+                    cloudAuthView = 'login';
+                    updateCloudSyncUI('cloudSignedOut');
+                } else if (currentUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+                    if (cloudAuthView !== 'newPassword') {
+                        try {
+                            await mergeCloudFromRemote();
+                            startCloudPoll();
+                            if (event === 'SIGNED_IN') updateCloudSyncUI('cloudLoggedIn');
+                        } catch (e) {
+                            console.error(e);
+                            updateCloudSyncUI('cloudLoadFailed');
+                        }
+                    }
+                }
+                renderSidePanel();
+            });
+        }
+
+        function getLiteColorSpectrum(hex) {
+            if(!hex) hex = '#475569';
+            hex = hex.replace('#', '');
+            if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+            let r = parseInt(hex.substring(0,2), 16), g = parseInt(hex.substring(2,4), 16), b = parseInt(hex.substring(4,6), 16);
+            
+            let lr = Math.round(r + (255 - r) * 0.65); let lg = Math.round(g + (255 - g) * 0.65); let lb = Math.round(b + (255 - b) * 0.65);
+            let br = Math.round(r + (255 - r) * 0.85); let bg = Math.round(g + (255 - g) * 0.85); let bb = Math.round(b + (255 - b) * 0.85);
+            /* 進度條：降低漂向白色的比例，讓底色更深、更易辨識 */
+            let pr = Math.round(r + (255 - r) * 0.52); let pg = Math.round(g + (255 - g) * 0.52); let pb = Math.round(b + (255 - b) * 0.52);
+            let dr = Math.round(r * 0.7), dg = Math.round(g * 0.7), db = Math.round(b * 0.7);
+            
+            const badgeBg = `rgb(${br}, ${bg}, ${bb})`;
+            const progress = `rgb(${pr}, ${pg}, ${pb})`;
+            const badgeL = getRelativeLuminance(br, bg, bb);
+            const rawL = getRelativeLuminance(r, g, b);
+            let subText = `rgb(${dr}, ${dg}, ${db})`;
+            let subBorder = `color-mix(in srgb, rgb(${r}, ${g}, ${b}) 48%, #64748b)`;
+            if (badgeL > 0.68 || rawL > 0.58) {
+                const shade = 0.38;
+                const edge = 0.52;
+                subText = `rgb(${Math.round(r * shade)}, ${Math.round(g * shade)}, ${Math.round(b * shade)})`;
+                subBorder = `rgb(${Math.round(r * edge)}, ${Math.round(g * edge)}, ${Math.round(b * edge)})`;
+            }
+            return {
+                raw: `rgb(${r}, ${g}, ${b})`, lite: `rgb(${lr}, ${lg}, ${lb})`,
+                badgeBg, progress, dark: `rgb(${dr}, ${dg}, ${db})`,
+                subText, subBorder,
+                badgeText: getContrastTextColor(badgeBg),
+                progressText: getContrastTextColor(progress)
+            };
+        }
+
+        function parseColorToRgb(color) {
+            if (!color) return { r: 128, g: 128, b: 128 };
+            if (color.startsWith('#')) {
+                let hex = color.replace('#', '');
+                if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+                return { r: parseInt(hex.slice(0,2), 16), g: parseInt(hex.slice(2,4), 16), b: parseInt(hex.slice(4,6), 16) };
+            }
+            const m = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+            if (m) return { r: +m[1], g: +m[2], b: +m[3] };
+            return { r: 128, g: 128, b: 128 };
+        }
+
+        function getRelativeLuminance(r, g, b) {
+            const lin = [r, g, b].map(c => {
+                c /= 255;
+                return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+        }
+
+        /** 依背景亮度回傳深色或淺色字（WCAG 相對亮度） */
+        function getContrastTextColor(bgColor, opts = {}) {
+            const { r, g, b } = parseColorToRgb(bgColor);
+            const L = getRelativeLuminance(r, g, b);
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+            const lightText = '#ffffff';
+            const darkText = isDarkTheme ? '#f8fafc' : '#0f172a';
+            if (opts.muted) {
+                return L > 0.52
+                    ? (isDarkTheme ? '#94a3b8' : '#475569')
+                    : 'rgba(255,255,255,0.85)';
+            }
+            return L > 0.52 ? darkText : lightText;
+        }
+
+        function getCardSurfaceRgb() {
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDarkTheme ? { r: 19, g: 28, b: 46 } : { r: 255, g: 255, b: 255 };
+        }
+
+        function blendRgb(a, b, ratio) {
+            return {
+                r: Math.round(a.r * (1 - ratio) + b.r * ratio),
+                g: Math.round(a.g * (1 - ratio) + b.g * ratio),
+                b: Math.round(a.b * (1 - ratio) + b.b * ratio)
+            };
+        }
+
+        function applyTimerCardReadableText(card, taskHex, pPercent, isFinished) {
+            const timeEl = card.querySelector('.time-text');
+            const dateEl = card.querySelector('.date-label');
+            if (!timeEl || !dateEl) return;
+            if (isFinished || card.classList.contains('is-finished') || card.classList.contains('is-warning-blinking') || card.classList.contains('timer-card--active')) {
+                timeEl.style.color = '';
+                dateEl.style.color = '';
+                return;
+            }
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const progressRgb = parseColorToRgb(spectrum.progress);
+            const cardRgb = getCardSurfaceRgb();
+            const blendRatio = Math.min(1, (pPercent / 100) * 0.9);
+            const surface = blendRgb(cardRgb, progressRgb, blendRatio);
+            const surfaceStr = `rgb(${surface.r}, ${surface.g}, ${surface.b})`;
+            timeEl.style.color = getContrastTextColor(surfaceStr);
+            dateEl.style.color = getContrastTextColor(surfaceStr, { muted: true });
+        }
+
+        function setTheme(theme, opts = {}) {
+            theme === 'auto' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem(THEME_KEY, theme);
+            if (!opts.skipCloud) {
+                touchLocalUpdated();
+                scheduleCloudSync();
+            }
+            updateTimersDataTicker();
+        }
+        if (localStorage.getItem(THEME_KEY)) setTheme(localStorage.getItem(THEME_KEY), { skipCloud: true });
+
+        function syncCollapsibleClasses() {
+            SECTION_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('active', uiState.openSection === id);
+            });
+        }
+
+        function smartToggle(id) {
+            if (!SECTION_IDS.includes(id)) return;
+
+            const prevSection = uiState.openSection;
+            const leavingTask = prevSection === 'taskContent' && id !== 'taskContent';
+            const hadOpenTaskSubs = uiState.allTasksExpanded || uiState.editingTaskIdx !== null
+                || !!document.querySelector('.sub-edit-panel.open');
+
+            uiState.openSection = (uiState.openSection === id) ? null : id;
+            if (!uiState.openSection) uiState.openSection = 'startContent';
+
+            if (uiState.openSection !== 'taskContent') {
+                uiState.allTasksExpanded = false;
+                uiState.editingTaskIdx = null;
+                uiState.collapsedTaskIndices.clear();
+            }
+
+            syncCollapsibleClasses();
+
+            if (leavingTask || hadOpenTaskSubs) {
+                document.querySelectorAll('.sub-edit-panel.open').forEach(el => el.classList.remove('open'));
+            }
+
+            if (hadOpenTaskSubs && uiState.openSection !== 'taskContent') {
+                setTimeout(() => renderSidePanel(), 320);
+            }
+        }
+
+        function isTaskSubPanelOpen(i) {
+            if (uiState.allTasksExpanded) return !uiState.collapsedTaskIndices.has(i);
+            return uiState.editingTaskIdx === i;
+        }
+
+        function syncSubEditPanels() {
+            document.querySelectorAll('.sub-edit-panel').forEach(el => {
+                const m = el.id.match(/^sub-edit-(\d+)$/);
+                if (!m) return;
+                const i = parseInt(m[1], 10);
+                el.classList.toggle('open', isTaskSubPanelOpen(i));
+            });
+        }
+
+        function updateExpandAllButtonLabel() {
+            const btn = document.getElementById('btn-expand-all-tasks');
+            if (btn) btn.textContent = uiState.allTasksExpanded ? '收合全部' : '展開全部';
+        }
+
+        function toggleExpandAllTasks() {
+            uiState.allTasksExpanded = !uiState.allTasksExpanded;
+            uiState.collapsedTaskIndices.clear();
+            if (uiState.allTasksExpanded) uiState.editingTaskIdx = null;
+            syncSubEditPanels();
+            updateExpandAllButtonLabel();
+        }
+
+        function toggleEditTask(i) {
+            if (uiState.allTasksExpanded) {
+                if (uiState.collapsedTaskIndices.has(i)) uiState.collapsedTaskIndices.delete(i);
+                else uiState.collapsedTaskIndices.add(i);
+                syncSubEditPanels();
+                return;
+            }
+            uiState.editingTaskIdx = (uiState.editingTaskIdx === i) ? null : i;
+            syncSubEditPanels();
+        }
+
+        function updateCharColor(accIdx, charIdx, color) {
+            let char = config.accounts[accIdx].characters[charIdx];
+            if (typeof char === 'string') config.accounts[accIdx].characters[charIdx] = { name: char, color: color };
+            else char.color = color;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            touchLocalUpdated();
+            scheduleCloudSync();
+            renderSidePanel(); refreshMainDisplay(); 
+        }
+
+        function getCharColor(accEmail, charName) {
+            let acc = config.accounts.find(a => a.email === accEmail);
+            if (!acc) return '#94a3b8';
+            let char = acc.characters.find(c => (typeof c === 'string' ? c : c.name) === charName);
+            return char && char.color ? char.color : '#94a3b8';
+        }
+
+        function handleDragStart(e, index) {
+            if (e.target.closest('.sub-tag-item')) return;
+            dragSourceTaskIdx = index;
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => { e.currentTarget.style.opacity = '0.4'; }, 0);
+        }
+        function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+        function handleDragEnter(e) { let box = e.target.closest('.tag-item-box'); if(box && !e.target.closest('.sub-tag-item')) box.classList.add('drag-over'); }
+        function handleDragLeave(e) { let box = e.target.closest('.tag-item-box'); if(box) box.classList.remove('drag-over'); }
+        function handleDrop(e, targetIndex) {
+            e.preventDefault();
+            if (e.target.closest('.sub-tag-item')) return false;
+            let box = e.target.closest('.tag-item-box');
+            if(box) box.classList.remove('drag-over');
+            if (dragSourceTaskIdx !== null && dragSourceTaskIdx !== targetIndex) {
+                let tasks = config.tasks;
+                let dragged = tasks.splice(dragSourceTaskIdx, 1)[0];
+                tasks.splice(targetIndex, 0, dragged);
+                saveConfig();
+            }
+            return false;
+        }
+        function handleDragEnd(e) {
+            if (e.target.closest('.sub-tag-item')) return;
+            e.currentTarget.style.opacity = '1';
+            dragSourceTaskIdx = null;
+            document.querySelectorAll('.tag-item-box').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function handleSubDragStart(e, taskIdx, subIdx) {
+            e.stopPropagation();
+            dragSourceSub = { taskIdx, subIdx };
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => { e.currentTarget.style.opacity = '0.4'; }, 0);
+        }
+        function handleSubDragOver(e) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'move'; return false; }
+        function handleSubDragEnter(e) {
+            e.stopPropagation();
+            const el = e.target.closest('.sub-tag-item');
+            if (el) el.classList.add('drag-over');
+        }
+        function handleSubDragLeave(e) {
+            e.stopPropagation();
+            const el = e.target.closest('.sub-tag-item');
+            if (el) el.classList.remove('drag-over');
+        }
+        function handleSubDrop(e, taskIdx, targetSubIdx) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll('.sub-tag-item').forEach(el => el.classList.remove('drag-over'));
+            const { taskIdx: srcTask, subIdx: srcSub } = dragSourceSub;
+            if (srcTask === null || srcSub === null || srcTask !== taskIdx || srcSub === targetSubIdx) return false;
+            const subs = config.tasks[taskIdx].subs;
+            const dragged = subs.splice(srcSub, 1)[0];
+            subs.splice(targetSubIdx, 0, dragged);
+            saveConfig();
+            return false;
+        }
+        function handleSubDragEnd(e) {
+            e.stopPropagation();
+            e.currentTarget.style.opacity = '1';
+            dragSourceSub = { taskIdx: null, subIdx: null };
+            document.querySelectorAll('.sub-tag-item').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function isMobileLayout() {
+            return window.innerWidth <= 768;
+        }
+
+        function syncPanelMobileControls() {
+            const fab = document.getElementById('panelFab');
+            const closeBar = document.getElementById('panelCloseBar');
+            if (fab) {
+                fab.textContent = t('panelFabOpen');
+                fab.setAttribute('aria-label', t('openPanel'));
+            }
+            if (closeBar) {
+                closeBar.textContent = t('panelCloseBar');
+                closeBar.setAttribute('aria-label', t('closePanel'));
+            }
+        }
+
+        function setSidePanelOpen(open) {
+            const panel = document.getElementById('sidePanel');
+            const overlay = document.getElementById('panelOverlay');
+            if (!panel) return;
+            panel.classList.toggle('panel-open', !!open);
+            if (overlay) overlay.classList.toggle('show', !!open);
+            document.body.classList.toggle('side-panel-open', !!open);
+        }
+
+        function toggleSidePanel() {
+            const panel = document.getElementById('sidePanel');
+            setSidePanelOpen(!panel.classList.contains('panel-open'));
+        }
+
+        function closeSidePanel() {
+            setSidePanelOpen(false);
+        }
+
+        function initMobilePanelState() {
+            if (!isMobileLayout()) return;
+            if (!getActiveTimers().length) setSidePanelOpen(true);
+        }
+
+        function renderSidePanel() {
+            const panel = document.getElementById('sidePanelContent');
+            if (!panel) return;
+            panel.innerHTML = `
+                <div class="config-section" id="sec-acc" style="--section-color: ${config.colors.acc};">
+                    <div class="config-title" onclick="smartToggle('accContent')"><span>${t('accMgmt')}</span><input type="color" class="color-input" value="${config.colors.acc}" onclick="event.stopPropagation()" onchange="updateSectionColor('acc', this.value)"></div>
+                    <div id="accContent" class="collapsible-content ${uiState.openSection === 'accContent' ? 'active' : ''}"><div>
+                        <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
+                        <div id="emailList">${config.accounts.map((acc, i) => `
+                            <div style="background-color:var(--bg); padding:8px; border-radius:8px; margin-bottom:4px; border:1px solid var(--border-color);">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span class="editable-text" style="font-weight:bold;" onclick="renameAccount(${i})">${acc.email}</span>
+                                    <div style="display:flex; gap:5px; align-items:center;">
+                                        <input type="color" class="color-input" value="${acc.color || defaultAccColors[i%6]}" onchange="updateAccountColor(${i}, this.value)">
+                                        <button class="btn-mini" onclick="removeAcc(${i})">×</button>
+                                    </div>
+                                </div>
+                                <div style="margin-top:5px; display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
+                                    ${acc.characters.map((c, ci) => {
+                                        let cName = typeof c === 'string' ? c : c.name;
+                                        let cColor = typeof c === 'string' ? '#94a3b8' : (c.color || '#94a3b8');
+                                        return `<div class="btn-mini" style="display:inline-flex; align-items:center; gap:4px; padding: 2px 6px;">
+                                            <span class="editable-text" onclick="renameChar(${i},${ci})">${cName}</span> 
+                                            <input type="color" class="color-input color-input-sm" value="${cColor}" onchange="updateCharColor(${i},${ci},this.value)">
+                                            <span onclick="removeChar(${i},${ci})" style="color:var(--danger); cursor:pointer; font-weight:bold; padding-left:2px;">×</span>
+                                        </div>`;
+                                    }).join('')}
+                                    <button class="btn-mini" onclick="addCharacter(${i})" style="height:22px;">+</button>
+                                </div>
+                            </div>`).join('')}</div>
+                    </div></div>
+                </div>
+
+                <div class="config-section" id="sec-task" style="--section-color: ${config.colors.task};">
+                    <div class="config-title" onclick="smartToggle('taskContent')">
+                        <span>${t('allTags')}</span>
+                        <div style="display:flex; gap:8px; align-items:center;" onclick="event.stopPropagation()">
+                            <button id="btn-expand-all-tasks" class="btn-mini" onclick="toggleExpandAllTasks()">
+                                ${uiState.allTasksExpanded ? t('collapseAll') : t('expandAll')}
+                            </button>
+                            <input type="color" class="color-input" value="${config.colors.task}" onchange="updateSectionColor('task', this.value)">
+                        </div>
+                    </div>
+                    <div id="taskContent" class="collapsible-content ${uiState.openSection === 'taskContent' ? 'active' : ''}"><div>
+                        <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newTaskInput" placeholder="${t('taskNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') saveTask()"><button class="btn-adjust" onclick="saveTask()" style="width: 60px;">${t('add')}</button></div>
+                        <div id="taskList">${config.tasks.map((taskItem, i) => {
+                            const isDisplay = isTaskSubPanelOpen(i);
+                            const tagHex = taskItem.color || config.colors.task;
+                            const tagSpec = getLiteColorSpectrum(tagHex);
+                            return `
+                            <div class="tag-item-box" style="--tag-color: ${tagHex}" 
+                                 title="${t('dragSortTask')}"
+                                 onclick="toggleEditTask(${i})"
+                                 draggable="true" 
+                                 ondragstart="handleDragStart(event, ${i})" 
+                                 ondragover="handleDragOver(event)" 
+                                 ondragenter="handleDragEnter(event)" 
+                                 ondragleave="handleDragLeave(event)" 
+                                 ondrop="handleDrop(event, ${i})" 
+                                 ondragend="handleDragEnd(event)">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span class="editable-text" style="font-weight:bold;" onclick="event.stopPropagation(); renameTask(${i});">${taskItem.name}</span>
+                                    <div style="display:flex; gap:5px;">
+                                        <input type="color" class="color-input" value="${taskItem.color || config.colors.task}" onclick="event.stopPropagation()" onchange="updateTaskColorItem(${i}, this.value)">
+                                        <button class="btn-mini" onclick="event.stopPropagation(); removeTask(${i})">×</button>
+                                    </div>
+                                </div>
+                                <div id="sub-edit-${i}" class="sub-edit-panel ${isDisplay ? 'open' : ''}" onclick="event.stopPropagation()">
+                                    <div class="sub-edit-inner">
+                                    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">${taskItem.subs.map((s, si) => `<span class="sub-tag-item" draggable="true" title="${t('dragSortSub')}" style="background-color:${tagSpec.badgeBg}; color:${tagSpec.subText}; border:1px solid ${tagSpec.subBorder};" ondragstart="handleSubDragStart(event, ${i}, ${si})" ondragover="handleSubDragOver(event)" ondragenter="handleSubDragEnter(event)" ondragleave="handleSubDragLeave(event)" ondrop="handleSubDrop(event, ${i}, ${si})" ondragend="handleSubDragEnd(event)"><span class="editable-text" onclick="renameSubTask(${i},${si})">${s}</span> <span onclick="removeSubTask(${i},${si})" style="cursor:pointer;">×</span></span>`).join('')}</div>
+                                    <div style="display:flex; gap:3px;"><input type="text" id="subIn-${i}" style="flex:1;" onkeyup="if(event.key==='Enter') addSubTask(${i})"><button class="btn-mini" onclick="addSubTask(${i})">+</button></div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')}</div>
+                    </div></div>
+                </div>
+
+                <div class="config-section" id="sec-start" style="--section-color: ${(config.tasks[0] && config.tasks[0].color) || config.colors.task};">
+                    <div class="config-title" onclick="smartToggle('startContent')"><span>${t('taskStart')}</span></div>
+                    <div id="startContent" class="collapsible-content ${uiState.openSection === 'startContent' ? 'active' : ''}"><div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:5px;"><select id="accSelect" onchange="updateCharSelect()">${config.accounts.map(a => `<option value="${a.email}">${a.email}</option>`).join('')}</select><select id="charSelect"></select></div>
+                        <select id="taskSelect" style="width:100%; margin-bottom:5px;" onchange="updateSubTaskSelect()">${config.tasks.map((t,i) => `<option value="${i}">${t.name}</option>`).join('')}</select>
+                        <select id="subTaskSelect" style="width:100%; margin-bottom:5px; display:none;"></select>
+                        
+                        <div id="timeDisplay" style="text-align:center; background:var(--bg); padding:10px; border-radius:10px; margin:5px 0 6px 0; font-size:1.8rem; font-family:monospace; font-weight:bold; color:var(--section-color);">00:00:00</div>
+                        
+                        <div class="dhms-container">
+                            <div class="dhms-group"><input type="number" id="in-d" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>D</span></div>
+                            <div class="dhms-group"><input type="number" id="in-h" class="dhms-input" value="0" min="0" oninput="updateSecFromDhms()"><span>H</span></div>
+                            <div class="dhms-group"><input type="number" id="in-m" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>M</span></div>
+                            <div class="dhms-group"><input type="number" id="in-s" class="dhms-input" value="0" min="0" max="59" oninput="updateSecFromDhms()"><span>S</span></div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:6px;">
+                            <button class="btn-adjust" onclick="adj(86400)">+1d</button><button class="btn-adjust" onclick="adj(43200)">+12h</button><button class="btn-adjust" onclick="adj(3600)">+1h</button>
+                            <button class="btn-adjust" onclick="adj(600)">+10m</button><button class="btn-adjust" onclick="adj(60)">+1m</button><button class="btn-adjust" onclick="adj(30)">+30s</button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr; gap:6px;">
+                            <button class="btn-adjust" onclick="resetTime()" style="color:var(--danger);">${t('resetTime')}</button>
+                        </div>
+                        <div style="margin-top:15px; font-size:0.75rem; background-color:var(--bg); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:2px;">${t('flashWarning')} <input type="number" id="fMin" value="0" style="width:28px; text-align:center;">:<input type="number" id="fSec" value="30" style="width:28px; text-align:center;"></div>
+                        <button class="btn-main" id="btnStartTask" onclick="startTask()">${t('startTask')}</button>
+                        <button class="btn-main" id="btn-clear-finished" onclick="clearFinishedTasks()">${t('clearFinished')}</button>
+                    </div></div>
+                </div>
+
+                <div class="config-section" id="sec-sys" style="--section-color: ${config.colors.sys};">
+                    <div class="config-title" onclick="smartToggle('sysContent')">${t('sysTheme')}</div>
+                    <div id="sysContent" class="collapsible-content ${uiState.openSection === 'sysContent' ? 'active' : ''}"><div>
+                        <div class="sys-block">
+                            <div class="sys-block-title">${t('sysSectionSystem')}</div>
+                            ${renderCloudSyncHtml()}
+                            <div style="display:grid; grid-template-columns:1fr; gap:6px; margin-bottom:10px;">
+                                <button class="btn-adjust" onclick="saveCurrentTasksAsDefault()" style="font-size:0.68rem;">${t('saveDefaultTags')}</button>
+                                <button class="btn-adjust" onclick="resetDefaultTasks()" style="font-size:0.68rem; color:var(--danger);">${t('restoreDefaultTags')}</button>
+                            </div>
+                            <div style="margin-bottom:12px; font-size:0.75rem; padding:8px; background:var(--bg); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                                <span>${t('undoDisplaySec')}</span>
+                                <input type="number" id="undoTimeInput" value="${config.undoTime}" style="width:40px; text-align:center;" onchange="config.undoTime=parseInt(this.value)||10; saveConfig();">
+                            </div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
+                                <button class="btn-main btn-compact-main" onclick="exportConfig()">${t('exportBackup')}</button>
+                                <button class="btn-main btn-compact-main btn-secondary-main" onclick="document.getElementById('importFile').click()">${t('importBtn')}</button>
+                            </div>
+                            <input type="file" id="importFile" style="display:none" onchange="importConfig(event)">
+                        </div>
+                        <div class="sys-block-divider"></div>
+                        <div class="sys-block">
+                            <div class="sys-block-title">${t('sysSectionTheme')}</div>
+                            <div style="margin-bottom:8px; font-size:0.75rem;">${t('langLabel')}</div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
+                                <button class="btn-adjust" onclick="setLang('zh-TW')" style="${currentLang === 'zh-TW' ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('langZhTW')}</button>
+                                <button class="btn-adjust" onclick="setLang('zh-CN')" style="${currentLang === 'zh-CN' ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('langZhCN')}</button>
+                            </div>
+                            <div style="margin-bottom:8px; font-size:0.75rem;">${t('themeLabel')}</div>
+                            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px;">
+                                <button class="btn-adjust" onclick="setTheme('light')">${t('themeLight')}</button>
+                                <button class="btn-adjust" onclick="setTheme('dark')">${t('themeDark')}</button>
+                                <button class="btn-adjust" onclick="setTheme('auto')">${t('themeAuto')}</button>
+                            </div>
+                            <div style="margin-bottom:6px; font-size:0.75rem;">${t('neonGlowLabel')}</div>
+                            <p style="margin:0 0 8px; font-size:0.65rem; color:var(--text-sub); line-height:1.4;">${t('neonGlowHint')}</p>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                                <button class="btn-adjust" onclick="setNeonGlow(true)" style="${config.neonGlow !== false ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('neonGlowOn')}</button>
+                                <button class="btn-adjust" onclick="setNeonGlow(false)" style="${config.neonGlow === false ? 'font-weight:bold; box-shadow: inset 0 0 0 2px var(--primary);' : ''}">${t('neonGlowOff')}</button>
+                            </div>
+                        </div>
+                    </div></div>
+                </div>
+            `;
+            updateCharSelect(); updateSubTaskSelect(); updateStartSectionTheme();
+            updateClearFinishedButtonHighlight();
+            refreshMainDisplay(); 
+        }
+
+        function getFinishDateLabel(targetDate) {
+            const now = new Date(); const target = new Date(targetDate); const diffMs = target - now;
+            const dateStr = `${target.getMonth() + 1}/${target.getDate()}`;
+            if (diffMs <= 0) return tp('dateEnded', { date: dateStr });
+            if (diffMs < 60000) return tp('dateSoon', { date: dateStr });
+            if (diffMs < 3600000) return tp('dateMinLater', { date: dateStr, n: Math.ceil(diffMs / 60000) });
+            if (diffMs < 86400000) return tp('dateHourLater', { date: dateStr, n: Math.ceil(diffMs / 3600000) });
+            const d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const d2 = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+            return tp('dateDayLater', { date: dateStr, n: Math.round((d2 - d1) / 86400000) });
+        }
+
+        function formatElapsedSinceFinish(elapsedSec) {
+            if (elapsedSec < 60) return t('elapsedJust');
+            if (elapsedSec < 3600) return tp('elapsedMin', { n: Math.floor(elapsedSec / 60) });
+            if (elapsedSec < 86400) {
+                const h = Math.floor(elapsedSec / 3600);
+                const m = Math.floor((elapsedSec % 3600) / 60);
+                return m > 0 ? tp('elapsedHourMin', { h, m }) : tp('elapsedHour', { h });
+            }
+            const d = Math.floor(elapsedSec / 86400);
+            const h = Math.floor((elapsedSec % 86400) / 3600);
+            return h > 0 ? tp('elapsedDayHour', { d, h }) : tp('elapsedDay', { d });
+        }
+
+        function getFinishedEndLine(finishDate) {
+            const target = new Date(finishDate);
+            const dateStr = `${target.getMonth() + 1}/${target.getDate()} ${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
+            return tp('finishedEnd', { date: dateStr });
+        }
+
+        function getFinishedElapsedLine(finishDate) {
+            const elapsedSec = Math.max(0, Math.floor((Date.now() - new Date(finishDate).getTime()) / 1000));
+            return tp('finishedElapsed', { elapsed: formatElapsedSinceFinish(elapsedSec) });
+        }
+
+        function applyTimerCardColorVars(card, taskHex, spectrum) {
+            card.dataset.taskColor = taskHex;
+            card.style.setProperty('--local-raw-color', spectrum.raw);
+            card.style.setProperty('--local-progress-color', spectrum.progress);
+            card.style.setProperty('--local-dark-color', spectrum.dark);
+            card.style.setProperty('--local-badge-bg', spectrum.badgeBg);
+            card.style.setProperty('--local-badge-text', spectrum.badgeText);
+        }
+
+        function getCharBadgeHtml(accEmail, charName) {
+            if (!charName) return '';
+            const charColor = getCharColor(accEmail, charName);
+            const charRgb = parseColorToRgb(charColor);
+            const charTextColor = getContrastTextColor(charColor);
+            const charContrastClass = getRelativeLuminance(charRgb.r, charRgb.g, charRgb.b) > 0.52 ? 'contrast-dark' : 'contrast-light';
+            return `<span class="char-title-badge ${charContrastClass}" style="background-color:${charColor}; color:${charTextColor};">${charName}</span>`;
+        }
+
+        function buildActiveTimerCard(t, index) {
+            const card = document.createElement('div');
+            card.className = 'timer-card timer-card--active';
+            card.id = `t-${t.id}`;
+            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const charName = t.char || '';
+            applyTimerCardColorVars(card, taskHex, spectrum);
+            card.innerHTML = `
+                <div class="timer-card-bg"></div>
+                <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
+                <div class="timer-card-inner">
+                    <div class="active-layout">
+                        <span class="card-id-badge active-slot-id">#${index + 1}</span>
+                        <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
+                        <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div></div>
+                        <div class="active-slot-time"><div class="time-text">00:00:00</div></div>
+                        <div class="active-slot-date"><div class="date-label">--/--</div></div>
+                    </div>
+                </div>`;
+            return card;
+        }
+
+        function getFinishedCharGroups(finishedTimers, acc) {
+            const grouped = new Map();
+            finishedTimers.forEach(t => {
+                const key = (t.char && String(t.char).trim()) ? String(t.char).trim() : '（未指定角色）';
+                if (!grouped.has(key)) grouped.set(key, []);
+                grouped.get(key).push(t);
+            });
+            const order = [];
+            if (acc && acc.characters) {
+                acc.characters.forEach(c => {
+                    const name = typeof c === 'string' ? c : c.name;
+                    if (name && grouped.has(name)) order.push(name);
+                });
+            }
+            grouped.forEach((_, key) => { if (!order.includes(key)) order.push(key); });
+            return order.map(charName => ({ charName, timers: grouped.get(charName) }));
+        }
+
+        function safeDomIdPart(s) {
+            return String(s).replace(/[@.\s\u3000]/g, '_').replace(/[^\w\u4e00-\u9fff-]/g, '_');
+        }
+
+        function buildFinishedTimerCard(t, index) {
+            const card = document.createElement('div');
+            card.className = 'timer-card is-finished';
+            card.id = `t-${t.id}`;
+            const taskObj = config.tasks.find(x => x.name === t.taskBase);
+            const taskHex = taskObj ? taskObj.color : '#475569';
+            const spectrum = getLiteColorSpectrum(taskHex);
+            const charName = t.char || '';
+            const finishTime = new Date(t.finishDate);
+            applyTimerCardColorVars(card, taskHex, spectrum);
+            card.style.setProperty('--p', '0%');
+            const charCell = getCharBadgeHtml(t.email, charName) || '<span class="finished-char-placeholder"></span>';
+            card.innerHTML = `
+                <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
+                <div class="timer-card-inner finished-layout">
+                    <div class="finished-header">
+                        <span class="card-id-badge">#${index + 1}</span>
+                        <div class="finished-char-center">${charCell}</div>
+                    </div>
+                    <div class="finished-row-2"><div class="task-title-display">${t.taskName}</div></div>
+                    <div class="finished-end-line">${getFinishedEndLine(finishTime)}</div>
+                    <div class="finished-elapsed-line">${getFinishedElapsedLine(finishTime)}</div>
+                </div>`;
+            return card;
+        }
+
+        function refreshMainDisplay() { 
+            const main = document.getElementById('mainDisplay'); main.innerHTML = ''; 
+            config.accounts.forEach((acc, i) => { 
+                const div = document.createElement('div'); div.className = 'account-group'; 
+                div.style.setProperty('--acc-theme', acc.color || defaultAccColors[i%6]); 
+                div.innerHTML = `
+                    <div class="account-tab-item">${acc.email}</div>
+                    <div class="account-content" id="content-acc-${acc.email.replace(/[@.]/g, '_')}"></div>
+                `; 
+                main.appendChild(div); 
+            }); 
+            dispatchTimersToDOM();
+        }
+
+        function hasAnyFinishedTimers() {
+            const now = Date.now();
+            return getActiveTimers().some(t => new Date(t.finishDate).getTime() <= now);
+        }
+
+        function updateClearFinishedButtonHighlight() {
+            const btn = document.getElementById('btn-clear-finished');
+            if (!btn) return;
+            btn.classList.toggle('has-finished-pending', hasAnyFinishedTimers());
+        }
+
+        function dispatchTimersToDOM() {
+            if (isDispatchingTimers) return;
+            isDispatchingTimers = true;
+            const allSavedData = getActiveTimers();
+            const now = Date.now();
+            config.accounts.forEach(acc => {
+                const safeId = acc.email.replace(/[@.\s]/g, '_');
+                const container = document.getElementById(`content-acc-${acc.email.replace(/[@.]/g, '_')}`);
+                if (!container) return;
+
+                const timers = allSavedData.filter(t => t.email === acc.email);
+                const activeTimers = timers.filter(t => new Date(t.finishDate).getTime() > now);
+                const finishedTimers = timers.filter(t => new Date(t.finishDate).getTime() <= now);
+
+                activeTimers.sort((a, b) => new Date(a.finishDate).getTime() - new Date(b.finishDate).getTime());
+                finishedTimers.sort((a, b) => new Date(b.finishDate).getTime() - new Date(a.finishDate).getTime());
+                const finishedCharGroups = finishedTimers.length ? getFinishedCharGroups(finishedTimers, acc) : [];
+
+                let html = '';
+                if (activeTimers.length) {
+                    html += `<div class="timer-section timer-section-active">
+                        <div class="timer-section-title">${t('sectionActive')}</div>
+                        <div class="timer-grid" id="grid-active-${safeId}"></div>
+                    </div>`;
+                }
+                if (finishedCharGroups.length) {
+                    html += `<div class="timer-section timer-section-finished">
+                        <div class="timer-section-title">${t('sectionFinished')}</div>
+                        <div class="finished-by-char" id="finished-by-char-${safeId}"></div>
+                    </div>`;
+                }
+                container.innerHTML = html || `<div style="font-size:0.8rem; color:var(--text-sub); padding:8px 0;">${t('noTimers')}</div>`;
+
+                const activeGrid = container.querySelector(`#grid-active-${safeId}`);
+                activeTimers.forEach((t, i) => activeGrid && activeGrid.appendChild(buildActiveTimerCard(t, i)));
+
+                const finishedByChar = container.querySelector(`#finished-by-char-${safeId}`);
+                if (finishedByChar) {
+                    finishedCharGroups.forEach(({ charName, timers: groupTimers }) => {
+                        const charSafe = safeDomIdPart(charName);
+                        const groupEl = document.createElement('div');
+                        groupEl.className = 'finished-char-group';
+                        groupEl.innerHTML = `<div class="timer-grid finished-grid" id="grid-finished-${safeId}-${charSafe}"></div>`;
+                        finishedByChar.appendChild(groupEl);
+                        const grid = groupEl.querySelector('.finished-grid');
+                        groupTimers.forEach((t, i) => grid.appendChild(buildFinishedTimerCard(t, i)));
+                    });
+                }
+            });
+            isDispatchingTimers = false;
+            updateClearFinishedButtonHighlight();
+            updateTimersDataTicker(true);
+        }
+
+        function updateTimersDataTicker(skipRelayout = false) {
+            const allSavedData = getActiveTimers();
+            const accountEmails = new Set(config.accounts.map(a => a.email));
+            const now = Date.now();
+            let needsRelayout = false;
+
+            allSavedData.filter(t => accountEmails.has(t.email)).forEach(t => {
+                const card = document.getElementById(`t-${t.id}`);
+                if (!card) return;
+
+                const finishMs = new Date(t.finishDate).getTime();
+                if (Number.isNaN(finishMs)) return;
+
+                const totalRemSec = (finishMs - now) / 1000;
+                const isFinished = totalRemSec <= 0;
+                const inFinishedGrid = !!card.closest('.finished-grid');
+
+                if (isFinished !== inFinishedGrid) {
+                    needsRelayout = true;
+                    return;
+                }
+
+                const taskHex = card.dataset.taskColor || '#475569';
+
+                if (isFinished) {
+                    const finishTime = new Date(t.finishDate);
+                    const endEl = card.querySelector('.finished-end-line');
+                    const elapsedEl = card.querySelector('.finished-elapsed-line');
+                    if (endEl) endEl.textContent = getFinishedEndLine(finishTime);
+                    if (elapsedEl) elapsedEl.textContent = getFinishedElapsedLine(finishTime);
+                    return;
+                }
+
+                const timeEl = card.querySelector('.time-text');
+                const dateEl = card.querySelector('.date-label');
+                if (!timeEl || !dateEl) return;
+
+                const pPercent = Math.max(0, Math.min(100, (totalRemSec / parseInt(t.dur)) * 100));
+                card.style.setProperty('--p', `${pPercent}%`);
+                card.classList.toggle('is-warning-blinking', totalRemSec <= parseInt(t.fThres));
+                const h = Math.floor(totalRemSec / 3600), m = Math.floor((totalRemSec % 3600) / 60), s = Math.floor(totalRemSec % 60);
+                timeEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                dateEl.textContent = getFinishDateLabel(new Date(t.finishDate));
+                applyTimerCardReadableText(card, taskHex, pPercent, false);
+            });
+
+            if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
+            else updateClearFinishedButtonHighlight();
+        }
+
+        function runGlobalClockTick() { updateTimersDataTicker(); requestAnimationFrame(runGlobalClockTick); }
+
+        function clearFinishedTasks() {
+            const allSavedData = getActiveTimers();
+            const now = Date.now();
+            const finished = allSavedData.filter(t => new Date(t.finishDate).getTime() <= now);
+            if (!finished.length) return;
+            triggerUndo('已完成計時器', finished.map(t => JSON.parse(JSON.stringify(t))),
+                finished.length === 1 ? (finished[0].taskName || '已完成計時器') : `已完成計時器(${finished.length})`);
+            const active = allSavedData.filter(t => new Date(t.finishDate).getTime() > now);
+            setActiveTimers(active);
+            dispatchTimersToDOM();
+        }
+
+        function persistUndoStack(opts = {}) {
+            if (undoStack.length) localStorage.setItem(UNDO_TEMP_KEY, JSON.stringify(undoStack));
+            else localStorage.removeItem(UNDO_TEMP_KEY);
+            if (!opts.skipCloud) {
+                touchLocalUpdated();
+                scheduleCloudSync();
+            }
+        }
+
+        function getUndoDisplayName(entry) {
+            if (!entry) return t('undoOp');
+            if (entry.detail) return entry.detail;
+            if (entry.label === '已完成計時器') return t('undoClearFinished');
+            if (entry.label === '計時器') return t('undoTimer');
+            return t('undoSettings');
+        }
+
+        function updateUndoToastText() {
+            const undoTextEl = document.getElementById('undoText');
+            const n = undoStack.length;
+            const top = undoStack[n - 1];
+            const name = getUndoDisplayName(top);
+            if (n > 1) undoTextEl.textContent = tp('undoMany', { name, n, sec: currentUndoTimeLeft });
+            else undoTextEl.textContent = tp('undoOne', { name, sec: currentUndoTimeLeft });
+        }
+
+        function loadUndoStackFromStorage() {
+            try {
+                const raw = localStorage.getItem(UNDO_TEMP_KEY) || localStorage.getItem('GameTimer_Undo_Temp');
+                if (!raw) return;
+                const parsed = JSON.parse(raw);
+                undoStack = Array.isArray(parsed) ? parsed : [parsed];
+                if (undoStack.length) {
+                    document.getElementById('undoToast').classList.add('show');
+                    startUndoCountdown();
+                }
+            } catch (e) {
+                undoStack = [];
+                localStorage.removeItem(UNDO_TEMP_KEY);
+            }
+        }
+
+        function triggerUndo(label, actionData, detail) {
+            undoStack.push({ label, data: actionData, startTime: Date.now(), detail: detail || '' });
+            persistUndoStack();
+            document.getElementById('undoToast').classList.add('show');
+            startUndoCountdown();
+        }
+
+        function startUndoCountdown() {
+            const undoTextEl = document.getElementById('undoText');
+            if (undoTimerInterval) clearInterval(undoTimerInterval);
+            currentUndoTimeLeft = config.undoTime || 10;
+            updateUndoToastText();
+            undoTimerInterval = setInterval(() => {
+                currentUndoTimeLeft--;
+                if (currentUndoTimeLeft <= 0) {
+                    clearInterval(undoTimerInterval);
+                    undoTimerInterval = null;
+                    dismissUndo();
+                } else {
+                    updateUndoToastText();
+                }
+            }, 1000);
+        }
+
+        function dismissUndo() {
+            document.getElementById('undoToast').classList.remove('show');
+            undoStack = [];
+            localStorage.removeItem(UNDO_TEMP_KEY);
+            localStorage.removeItem('GameTimer_Undo_Temp');
+            if (undoTimerInterval) { clearInterval(undoTimerInterval); undoTimerInterval = null; }
+            touchLocalUpdated();
+            scheduleCloudSync();
+        }
+
+        function undoAction() {
+            if (!undoStack.length) return;
+            const last = undoStack.pop();
+            if (last.label === '計時器') {
+                const allSavedData = getActiveTimers();
+                if (!allSavedData.some(t => String(t.id) === String(last.data.id))) {
+                    allSavedData.push(last.data);
+                    setActiveTimers(allSavedData);
+                }
+            } else if (last.label === '已完成計時器') {
+                const allSavedData = getActiveTimers();
+                const toRestore = Array.isArray(last.data) ? last.data : [last.data];
+                toRestore.forEach(t => {
+                    if (!allSavedData.some(x => String(x.id) === String(t.id))) allSavedData.push(t);
+                });
+                setActiveTimers(allSavedData);
+                dispatchTimersToDOM();
+            } else {
+                config = last.data;
+                saveConfig();
+            }
+            persistUndoStack();
+            if (undoStack.length) {
+                document.getElementById('undoToast').classList.add('show');
+                startUndoCountdown();
+            } else {
+                document.getElementById('undoToast').classList.remove('show');
+                if (undoTimerInterval) { clearInterval(undoTimerInterval); undoTimerInterval = null; }
+            }
+            dispatchTimersToDOM();
+        }
+
+        function exportConfig() {
+            const b = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `timer_config.json`; a.click();
+        }
+
+        function importConfig(e) {
+            const r = new FileReader();
+            r.onload = (x) => { config = JSON.parse(x.target.result); saveConfig(); location.reload(); };
+            r.readAsText(e.target.files[0]);
+        }
+
+        function delTask(id) { 
+            const allSavedData = getActiveTimers();
+            const target = allSavedData.find(t => String(t.id) === String(id));
+            if(target) triggerUndo('計時器', target, target.taskName || '計時器');
+            setActiveTimers(allSavedData.filter(t => String(t.id) !== String(id)));
+            dispatchTimersToDOM();
+        }
+        
+        function removeAcc(i) {
+            const acc = config.accounts[i];
+            if (!acc) return;
+            if (!confirm(tp('confirmDeleteAcc', { name: acc.email }))) return;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), acc.email);
+            const email = acc.email;
+            config.accounts.splice(i, 1);
+            const allSavedData = getActiveTimers();
+            setActiveTimers(allSavedData.filter(t => t.email !== email));
+            saveConfig();
+            refreshMainDisplay();
+        }
+        function removeChar(ai, ci) {
+            const c = config.accounts[ai].characters[ci];
+            const charName = typeof c === 'string' ? c : c.name;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), charName);
+            config.accounts[ai].characters.splice(ci, 1);
+            saveConfig(); refreshMainDisplay();
+        }
+        function removeTask(i) {
+            const taskName = config.tasks[i].name;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), taskName);
+            config.tasks.splice(i, 1);
+            saveConfig(); refreshMainDisplay();
+        }
+        function removeSubTask(ti, si) {
+            const subName = config.tasks[ti].subs[si];
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), subName);
+            config.tasks[ti].subs.splice(si, 1);
+            saveConfig(); refreshMainDisplay();
+        }
+
+        function startTask() { 
+            if(totalSec <= 0) return; 
+            const acc = document.getElementById('accSelect').value;
+            const char = document.getElementById('charSelect').value; 
+            const tObj = config.tasks[document.getElementById('taskSelect').value]; 
+            const ts = (tObj.subs.length && document.getElementById('subTaskSelect').value) ? document.getElementById('subTaskSelect').value : ''; 
+            const fThres = parseInt(document.getElementById('fMin').value)*60 + parseInt(document.getElementById('fSec').value); 
+            const newTimerData = { id: Date.now(), email: acc, char: char, taskName: tObj.name + (ts ? ` (${ts})` : ''), dur: totalSec, fThres: fThres, finishDate: new Date(Date.now() + totalSec * 1000).toISOString(), taskBase: tObj.name };
+            const allSavedData = getActiveTimers();
+            allSavedData.push(newTimerData);
+            setActiveTimers(allSavedData);
+            resetTime(); dispatchTimersToDOM();
+            if (window.innerWidth <= 768) closeSidePanel();
+        }
+
+        function saveConfig() {
+            normalizeConfig();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            touchLocalUpdated();
+            scheduleCloudSync();
+            renderSidePanel();
+        }
+        function renameAccount(i) {
+            const oldEmail = config.accounts[i].email;
+            const newVal = prompt(t('promptRenameAcc'), oldEmail);
+            if (!newVal || newVal === oldEmail) return;
+            config.accounts[i].email = newVal;
+            const allSavedData = getActiveTimers();
+            allSavedData.forEach(t => { if (t.email === oldEmail) t.email = newVal; });
+            setActiveTimers(allSavedData);
+            saveConfig();
+            refreshMainDisplay();
+        }
+        function renameChar(ai, ci) {
+            const c = config.accounts[ai].characters[ci];
+            const oldName = typeof c === 'string' ? c : c.name;
+            const newVal = prompt(t('promptRenameChar'), oldName);
+            if (!newVal || newVal === oldName) return;
+            if (typeof c === 'string') config.accounts[ai].characters[ci] = newVal;
+            else c.name = newVal;
+            const email = config.accounts[ai].email;
+            const allSavedData = getActiveTimers();
+            allSavedData.forEach(t => { if (t.email === email && t.char === oldName) t.char = newVal; });
+            setActiveTimers(allSavedData);
+            saveConfig();
+            refreshMainDisplay();
+        }
+        function renameSubTask(ti, si) {
+            const newVal = prompt(t('promptRenameSub'), config.tasks[ti].subs[si]);
+            if (newVal) { config.tasks[ti].subs[si] = newVal; saveConfig(); }
+        }
+        function addCharacter(i) { const n = prompt(t('promptCharName')); if(n){ config.accounts[i].characters.push(n); saveConfig(); } }
+        function renameTask(i) { const newVal = prompt(t('promptTaskTag'), config.tasks[i].name); if(newVal){ config.tasks[i].name = newVal; saveConfig(); renderSidePanel(); } }
+        
+        function updateSectionColor(k, v) { config.colors[k] = v; saveConfig(); } 
+        function updateTaskColorItem(i, v) { config.tasks[i].color = v; saveConfig(); renderSidePanel(); } 
+        function updateAccountColor(i, v) { config.accounts[i].color = v; saveConfig(); refreshMainDisplay(); }
+        
+        function addAccount() { const n = document.getElementById('newEmailInput').value; if(n){ config.accounts.push({email:n, characters:[], color:defaultAccColors[config.accounts.length%6]}); saveConfig(); } }
+        function saveTask() { const n = document.getElementById('newTaskInput').value; if(n){ config.tasks.push({name:n, subs:[], color:config.colors.task}); saveConfig(); } }
+
+        function saveCurrentTasksAsDefault() {
+            if (!confirm(t('confirmSaveDefaultTags'))) return;
+            normalizeConfig();
+            config.defaultTasks = cloneTasks(config.tasks);
+            saveConfig();
+            alert(t('alertDefaultTagsSaved'));
+        }
+
+        function resetDefaultTasks() {
+            if (!confirm(t('confirmResetTasks'))) return;
+            triggerUndo('設定', JSON.parse(JSON.stringify(config)), '任務標籤');
+            config.tasks = getUserDefaultTasks();
+            uiState.editingTaskIdx = null;
+            uiState.allTasksExpanded = false;
+            uiState.collapsedTaskIndices.clear();
+            saveConfig();
+            updateStartSectionTheme();
+        }
+
+        function addSubTask(i) { const n = document.getElementById(`subIn-${i}`).value; if(n){ config.tasks[i].subs.push(n); saveConfig(); } }
+
+        function adj(s) { totalSec += s; updateDisp(); }
+        function resetTime() { totalSec = 0; updateDisp(); }
+        
+        function updateDisp() { 
+            const dispH = Math.floor(totalSec / 3600), dispM = Math.floor((totalSec % 3600) / 60), dispS = totalSec % 60;
+            document.getElementById('timeDisplay').textContent = `${String(dispH).padStart(2,'0')}:${String(dispM).padStart(2,'0')}:${String(dispS).padStart(2,'0')}`; 
+            let rem = totalSec; const d = Math.floor(rem / 86400); rem %= 86400; const h = Math.floor(rem / 3600); rem %= 3600; const m = Math.floor(rem / 60); const s = rem % 60;
+            document.getElementById('in-d').value = d; document.getElementById('in-h').value = h; document.getElementById('in-m').value = m; document.getElementById('in-s').value = s;
+        }
+
+        function updateSecFromDhms() {
+            const d = parseInt(document.getElementById('in-d').value) || 0, h = parseInt(document.getElementById('in-h').value) || 0, m = parseInt(document.getElementById('in-m').value) || 0, s = parseInt(document.getElementById('in-s').value) || 0;
+            totalSec = (d * 86400) + (h * 3600) + (m * 60) + s;
+            document.getElementById('timeDisplay').textContent = `${String(Math.floor(totalSec / 3600)).padStart(2,'0')}:${String(Math.floor((totalSec % 3600) / 60)).padStart(2,'0')}:${String(totalSec % 60).padStart(2,'0')}`;
+        }
+
+        function updateCharSelect() { 
+            const a = config.accounts.find(x=>x.email===document.getElementById('accSelect').value); 
+            document.getElementById('charSelect').innerHTML = a ? a.characters.map(c => {
+                const name = typeof c === 'string' ? c : c.name;
+                return `<option value="${name}">${name}</option>`;
+            }).join('') : ''; 
+        }
+
+        function getSelectedTaskColor() {
+            const el = document.getElementById('taskSelect');
+            if (!el || !config.tasks.length) return config.colors.task;
+            const t = config.tasks[parseInt(el.value, 10)];
+            return (t && t.color) ? t.color : config.colors.task;
+        }
+
+        function updateStartSectionTheme() {
+            const sec = document.getElementById('sec-start');
+            if (!sec) return;
+            const color = getSelectedTaskColor();
+            sec.style.setProperty('--section-color', color);
+        }
+
+        function updateSubTaskSelect() {
+            const tIdx = document.getElementById('taskSelect').value;
+            const t = config.tasks[tIdx];
+            const sSelect = document.getElementById('subTaskSelect');
+            if (t && t.subs.length) {
+                sSelect.style.display = 'block';
+                sSelect.innerHTML = t.subs.map(x => `<option value="${x}">${x}</option>`).join('');
+            } else {
+                sSelect.style.display = 'none';
+            }
+            updateStartSectionTheme();
+        }
+        
+        let totalSec = 0;
+        
+        if (!localStorage.getItem(LOCAL_UPDATED_KEY) && (localStorage.getItem(STORAGE_KEY) || localStorage.getItem(ACTIVE_TIMERS_KEY))) {
+            touchLocalUpdated();
+        }
+        loadUndoStackFromStorage();
+        window.addEventListener('beforeunload', () => { if (isCloudSyncActive()) flushCloudSyncNow(); });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && isCloudSyncActive()) flushCloudSyncNow();
+        });
+        applyLangFromStorage();
+        window.addEventListener('resize', () => { if (!isMobileLayout()) setSidePanelOpen(false); });
+        (async () => {
+            await initCloudSync();
+            renderSidePanel();
+            syncPanelMobileControls();
+            initMobilePanelState();
+            runGlobalClockTick();
+        })();
+    </script>
+</body>
+</html>
