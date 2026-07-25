@@ -1539,7 +1539,10 @@ function wizardResetTime() {
     if (!timerWizardState) return;
     timerWizardState.wizardSec = 0;
     wizardUpdateTimeDisplay();
-    wizardAdj(0);
+    ['wizard-in-d', 'wizard-in-h', 'wizard-in-m', 'wizard-in-s'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = 0;
+    });
 }
 
 function wizardUpdateFromDhms() {
