@@ -1,5 +1,7 @@
 {
   "appTitle": "游戏计时器",
+  "timerEntryHome": "进入主页",
+  "timerEntryAddNew": "新增计时器",
   "openPanel": "打开管理面板",
   "closePanel": "关闭管理面板",
   "panelFabOpen": "管理",
