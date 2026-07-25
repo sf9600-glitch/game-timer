@@ -1459,9 +1459,33 @@ function updateTimerWizardTheme() {
     card.style.setProperty('--section-color', color);
 }
 
+function ensureTimerWizardElement() {
+    let wizard = document.getElementById('timerWizard');
+    if (wizard) return wizard;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<div class="timer-wizard" id="timerWizard" role="dialog" aria-modal="true" aria-labelledby="timerWizardTitle" aria-hidden="true">
+        <div class="timer-wizard-card">
+            <div class="timer-wizard-header">
+                <button type="button" class="timer-wizard-back" id="timerWizardBackBtn" onclick="timerWizardBack()" hidden aria-label="">&lsaquo;</button>
+                <div class="timer-wizard-progress" id="timerWizardProgress" aria-hidden="true"></div>
+                <button type="button" class="timer-wizard-close" id="timerWizardCloseBtn" onclick="closeTimerWizard()" aria-label="">&times;</button>
+            </div>
+            <p class="timer-wizard-step-label" id="timerWizardStepLabel"></p>
+            <h2 class="timer-wizard-title" id="timerWizardTitle"></h2>
+            <div class="timer-wizard-body" id="timerWizardBody"></div>
+            <div class="timer-wizard-footer">
+                <button type="button" class="timer-wizard-action btn-main" id="timerWizardActionBtn" onclick="timerWizardAction()"></button>
+            </div>
+        </div>
+    </div>`;
+    wizard = wrap.firstElementChild;
+    document.body.insertBefore(wizard, document.body.firstChild);
+    return wizard;
+}
+
 function openTimerWizard() {
     timerWizardState = getDefaultTimerWizardState();
-    const wizard = document.getElementById('timerWizard');
+    const wizard = ensureTimerWizardElement();
     if (!wizard) return;
     wizard.classList.add('show');
     wizard.setAttribute('aria-hidden', 'false');
