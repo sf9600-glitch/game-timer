@@ -5292,6 +5292,10 @@ function initMobileSwipePanelToggle() {
 
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
+    if (isTimerWizardOpen()) {
+        closeTimerWizard();
+        return;
+    }
     if (onboardingActive) {
         skipInteractiveTutorial();
         return;
