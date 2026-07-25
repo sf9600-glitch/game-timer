@@ -279,16 +279,16 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
         inset 0 2px 5px color-mix(in srgb, black 16%, transparent);
 }
 @keyframes add-timer-metal-shine {
-    0%, 8% { left: -85%; opacity: 0; }
-    16% { opacity: 1; }
+    0%, 3% { left: -85%; opacity: 0; }
+    10% { opacity: 1; }
     54% { left: 135%; opacity: 1; }
     62%, 100% { left: 135%; opacity: 0; }
 }
 @keyframes add-timer-metal-shine-secondary {
-    0%, 8% { left: -107%; opacity: 0; }
-    16% { opacity: 0.85; }
-    54% { left: 113%; opacity: 0.85; }
-    62%, 100% { left: 113%; opacity: 0; }
+    0%, 3% { left: -96%; opacity: 0; }
+    10% { opacity: 0.85; }
+    54% { left: 124%; opacity: 0.85; }
+    62%, 100% { left: 124%; opacity: 0; }
 }
 [data-theme="dark"] .config-section--add-timer {
     --section-color: #8f96a3;

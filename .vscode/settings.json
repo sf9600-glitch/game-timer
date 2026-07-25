@@ -4,6 +4,8 @@
   "workbench.panel.defaultLocation": "bottom",
   "workbench.panel.opensMaximized": "never",
   "workbench.statusBar.visible": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
   "runOnSave.commands": [
     {
       "match": "(index\\.html|css/app\\.css|js/app\\.js)$",
