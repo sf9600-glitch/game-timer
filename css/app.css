@@ -247,7 +247,7 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
 .config-title-add-timer-shine--secondary {
     position: absolute;
     top: -22%;
-    left: -88%;
+    left: -96%;
     width: 34%;
     height: 145%;
     background: linear-gradient(
