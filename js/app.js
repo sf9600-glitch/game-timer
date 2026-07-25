@@ -2896,7 +2896,7 @@ function syncLayoutForViewport() {
     renderSidePanel();
     refreshMainDisplay();
     syncPanelMobileControls();
-    if (mobile && !getActiveTimers().length && !onboardingActive) openStartSheet();
+    if (mobile && !getActiveTimers().length && !onboardingActive && !isTimerEntryGateOpen()) openStartSheet();
     if (onboardingActive) showOnboardingStep(onboardingStepIndex);
 }
 
