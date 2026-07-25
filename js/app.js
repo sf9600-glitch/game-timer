@@ -1672,14 +1672,14 @@ function showTimerEntryGate() {
     syncTimerEntryGateChrome();
 }
 
-function hideTimerEntryGate() {
+function hideTimerEntryGate(opts = {}) {
     const gate = document.getElementById('timerEntryGate');
     if (!gate) return;
     timerEntryGateOpen = false;
     gate.classList.remove('show');
     gate.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('timer-entry-gate-open');
-    maybeStartInteractiveTutorial();
+    if (!opts.skipTutorial) maybeStartInteractiveTutorial();
 }
 
 function applyMobileHomeAfterGate() {
@@ -1688,11 +1688,12 @@ function applyMobileHomeAfterGate() {
 }
 
 function enterTimerFromGate(mode) {
-    hideTimerEntryGate();
     if (mode === 'new') {
+        hideTimerEntryGate({ skipTutorial: true });
         openTimerWizard();
         return;
     }
+    hideTimerEntryGate();
     applyMobileHomeAfterGate();
 }
 
