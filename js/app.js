@@ -1843,6 +1843,70 @@ function applyActiveTimerCardWidth(card) {
     card.classList.remove('timer-card--width-expanded');
 }
 
+function clearLabelMarquee(el) {
+    if (!el) return;
+    if (el.dataset.labelMarquee !== '1') {
+        el.classList.remove('is-label-marquee');
+        return;
+    }
+    const first = el.querySelector('.label-marquee-text');
+    const text = first ? first.textContent : el.textContent;
+    el.textContent = text;
+    el.classList.remove('is-label-marquee');
+    delete el.dataset.labelMarquee;
+    delete el.dataset.labelMarqueeText;
+    delete el.dataset.labelMarqueeMax;
+    el.style.removeProperty('--label-marquee-shift');
+    el.style.removeProperty('--label-marquee-duration');
+}
+
+/** 文字超出寬度時改跑馬燈，維持原字級不縮小 */
+function applyLabelMarquee(el, maxWidthPx, startRem) {
+    if (!el || !maxWidthPx) return;
+    const rem = startRem != null ? startRem : 0.75;
+    const maxKey = String(Math.ceil(maxWidthPx));
+    const text = (el.dataset.labelMarquee === '1'
+        ? el.querySelector('.label-marquee-text')?.textContent
+        : el.textContent)?.trim() || '';
+    if (el.dataset.labelMarquee === '1'
+        && el.dataset.labelMarqueeText === text
+        && el.dataset.labelMarqueeMax === maxKey) {
+        el.style.fontSize = `${rem}rem`;
+        return;
+    }
+    clearLabelMarquee(el);
+    el.style.fontSize = `${rem}rem`;
+    el.style.whiteSpace = 'nowrap';
+    el.style.overflow = 'hidden';
+    el.style.maxWidth = `${Math.ceil(maxWidthPx)}px`;
+    el.textContent = text;
+    if (el.scrollWidth <= maxWidthPx + 1) {
+        el.style.maxWidth = '';
+        el.style.overflow = '';
+        return;
+    }
+    el.textContent = '';
+    el.classList.add('is-label-marquee');
+    el.dataset.labelMarquee = '1';
+    el.dataset.labelMarqueeText = text;
+    el.dataset.labelMarqueeMax = maxKey;
+    const track = document.createElement('span');
+    track.className = 'label-marquee-track';
+    [false, true].forEach((hidden) => {
+        const span = document.createElement('span');
+        span.className = 'label-marquee-text';
+        span.textContent = text;
+        if (hidden) span.setAttribute('aria-hidden', 'true');
+        track.appendChild(span);
+    });
+    el.appendChild(track);
+    const textW = track.querySelector('.label-marquee-text').offsetWidth;
+    const shift = textW + 24;
+    const duration = Math.max(5, Math.min(14, shift / 18));
+    el.style.setProperty('--label-marquee-shift', `${shift}px`);
+    el.style.setProperty('--label-marquee-duration', `${duration}s`);
+}
+
 function fitAdaptiveLabel(el, maxWidthPx, startRem, minRem) {
     if (!el || !maxWidthPx) return;
     const minSizeRem = minRem != null ? minRem : 0.5;
