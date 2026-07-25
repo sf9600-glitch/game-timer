@@ -4911,7 +4911,7 @@ window.addEventListener('resize', () => {
     syncPanelMobileControls();
     lastLayoutWasMobile = isMobileLayout();
     initMobilePanelState();
-    maybeStartInteractiveTutorial();
+    showTimerEntryGate();
     syncFinishedNotifyState();
     registerAppServiceWorker();
     initNotifyBannerDismissButtons();
