@@ -1697,6 +1697,19 @@ function enterTimerFromGate(mode) {
     applyMobileHomeAfterGate();
 }
 
+function openAddTimerFromPanel() {
+    if (isTimerEntryGateOpen()) hideTimerEntryGate({ skipTutorial: true });
+    openTimerWizard();
+}
+
+function getAddTimerSectionPanelHtml() {
+    return `<div class="config-section config-section--add-timer" id="sec-add-timer">
+            <button type="button" class="config-title config-title--add-timer" id="sideAddTimerBtn" onclick="openAddTimerFromPanel()" aria-label="${t('timerEntryAddNew')}">
+                <span class="config-title-add-timer-text">${t('timerEntryAddNew')}</span>
+            </button>
+        </div>`;
+}
+
 async function setLang(lang, opts = {}) {
     if (!I18N[lang]) {
         try { await loadLocaleFile(lang); } catch (e) {
