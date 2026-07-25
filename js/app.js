@@ -1951,30 +1951,23 @@ function fitActiveTimerCardLabels(card) {
     const charSlot = card.querySelector('.active-slot-char');
     const charMax = Math.max(48, (charSlot ? charSlot.clientWidth : innerW) - 4);
     const charBadge = card.querySelector('.char-title-badge');
-    if (charBadge) {
-        charBadge.style.fontSize = '';
-        charBadge.style.maxWidth = 'none';
-        charBadge.style.overflow = 'visible';
-        charBadge.style.textOverflow = 'unset';
-        charBadge.style.whiteSpace = 'nowrap';
-        if (charBadge.scrollWidth > charMax) {
-            fitAdaptiveLabel(charBadge, charMax, 0.75, 0.52);
-        }
-    }
+    if (charBadge) applyLabelMarquee(charBadge, charMax, 0.75);
     const taskEl = card.querySelector('.active-slot-task .task-title-display');
-    if (taskEl) {
-        taskEl.style.fontSize = '0.78rem';
-        fitAdaptiveLabel(taskEl, innerW, 0.78, 0.52);
-    }
+    if (taskEl) applyLabelMarquee(taskEl, innerW, 0.78);
     const timeEl = card.querySelector('.active-slot-time .time-text');
     if (timeEl) {
+        clearLabelMarquee(timeEl);
         timeEl.style.fontSize = '1.5rem';
-        fitAdaptiveLabel(timeEl, innerW, 1.5, 0.9);
+        timeEl.style.letterSpacing = '0.02em';
+        timeEl.style.maxWidth = '';
+        timeEl.style.overflow = '';
     }
     const dateEl = card.querySelector('.active-slot-date .date-label');
     if (dateEl) {
+        clearLabelMarquee(dateEl);
         dateEl.style.fontSize = '0.875rem';
-        fitAdaptiveLabel(dateEl, innerW, 0.875, 0.65);
+        dateEl.style.maxWidth = '';
+        dateEl.style.overflow = '';
     }
 }
 

@@ -662,6 +662,41 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     color: var(--local-dark-color);
     white-space: nowrap;
 }
+.is-label-marquee {
+    overflow: hidden;
+    text-overflow: clip;
+    text-align: left;
+}
+.timer-card--active .char-title-badge.is-label-marquee,
+.timer-card--active .active-slot-task .task-title-display.is-label-marquee {
+    display: inline-block;
+    vertical-align: middle;
+}
+.label-marquee-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 24px;
+    width: max-content;
+    min-width: 100%;
+    animation: label-marquee-scroll var(--label-marquee-duration, 8s) linear infinite;
+}
+.label-marquee-text {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+@keyframes label-marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-1 * var(--label-marquee-shift, 0px))); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .label-marquee-track {
+        animation: none;
+        transform: translateX(0);
+    }
+    .is-label-marquee {
+        text-overflow: ellipsis;
+    }
+}
 /* 計時器卡片基礎外殼：任務色延伸為整圈邊框（進行中維持原比例，不設固定寬高） */
 .timer-card { 
     position: relative; border-radius: 12px; padding: 0; display: flex; flex-direction: column; 
