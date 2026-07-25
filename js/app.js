@@ -14,6 +14,8 @@ const LOCALE_INLINE_FALLBACK = {
         openPanel: '開啟管理面板',
         closePanel: '關閉管理面板',
         taskStart: '開新計時器',
+        timerEntryHome: '進入主頁',
+        timerEntryAddNew: '新增計時器',
         startLabelAccount: '帳號',
         startLabelChar: '角色',
         startLabelTask: '任務',
