@@ -5358,6 +5358,7 @@ window.addEventListener('resize', () => {
     syncPanelMobileControls();
     lastLayoutWasMobile = isMobileLayout();
     initMobilePanelState();
+    ensureTimerWizardElement();
     showTimerEntryGate();
     syncFinishedNotifyState();
     registerAppServiceWorker();
