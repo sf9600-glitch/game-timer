@@ -1900,7 +1900,7 @@ function fitActiveTimerCardLabels(card) {
     const taskEl = card.querySelector('.active-slot-task .task-title-display');
     if (taskEl) {
         taskEl.style.fontSize = '0.78rem';
-        fitAdaptiveLabel(taskEl, innerW);
+        fitAdaptiveLabel(taskEl, innerW, 0.78, 0.52);
     }
     const timeEl = card.querySelector('.active-slot-time .time-text');
     if (timeEl) {
