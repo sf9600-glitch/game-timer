@@ -1448,6 +1448,14 @@ function renderTimerWizardStep() {
     else renderTimerWizardDoneStep();
 }
 
+function updateTimerWizardTheme() {
+    const card = document.querySelector('.timer-wizard-card');
+    if (!card || !timerWizardState) return;
+    const tObj = config.tasks[timerWizardState.taskIdx];
+    const color = (tObj && tObj.color) || config.colors.task || '#4a90e2';
+    card.style.setProperty('--section-color', color);
+}
+
 function openTimerWizard() {
     timerWizardState = getDefaultTimerWizardState();
     const wizard = document.getElementById('timerWizard');
