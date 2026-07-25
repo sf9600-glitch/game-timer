@@ -240,7 +240,7 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
         transparent 100%
     );
     transform: skewX(-20deg);
-    animation: add-timer-metal-shine 3s ease-in-out infinite;
+    animation: add-timer-metal-shine 4.5s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
 }
