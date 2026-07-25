@@ -2833,7 +2833,7 @@ body.timer-entry-gate-open {
 .timer-wizard {
     position: fixed;
     inset: 0;
-    z-index: 2110;
+    z-index: 2300;
     display: flex;
     align-items: center;
     justify-content: center;

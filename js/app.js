@@ -1172,6 +1172,7 @@ function showOnboardingStep(index) {
 }
 
 function startInteractiveTutorial(opts = {}) {
+    if (isTimerWizardOpen()) return;
     if (onboardingActive) return;
     if (!opts.force && localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
     closeTutorialModal();
@@ -1251,9 +1252,11 @@ function advanceInteractiveTutorial() {
 }
 
 function maybeStartInteractiveTutorial() {
-    if (isTimerEntryGateOpen() || isTimerWizardOpen()) return;
     if (localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
-    setTimeout(() => startInteractiveTutorial(), 500);
+    setTimeout(() => {
+        if (isTimerEntryGateOpen() || isTimerWizardOpen()) return;
+        startInteractiveTutorial();
+    }, 500);
 }
 
 const TIMER_WIZARD_STEPS = ['acc', 'task', 'time', 'done'];
