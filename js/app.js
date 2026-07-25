@@ -1215,8 +1215,64 @@ function advanceInteractiveTutorial() {
 }
 
 function maybeStartInteractiveTutorial() {
+    if (isTimerEntryGateOpen()) return;
     if (localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
     setTimeout(() => startInteractiveTutorial(), 500);
+}
+
+let timerEntryGateOpen = true;
+
+function isTimerEntryGateOpen() {
+    return timerEntryGateOpen;
+}
+
+function syncTimerEntryGateChrome() {
+    const title = document.getElementById('timerEntryGateTitle');
+    const homeBtn = document.getElementById('timerEntryHomeBtn');
+    const newBtn = document.getElementById('timerEntryNewBtn');
+    if (title) title.textContent = t('appTitle');
+    if (homeBtn) {
+        homeBtn.textContent = t('timerEntryHome');
+        homeBtn.setAttribute('aria-label', t('timerEntryHome'));
+    }
+    if (newBtn) {
+        newBtn.textContent = t('timerEntryAddNew');
+        newBtn.setAttribute('aria-label', t('timerEntryAddNew'));
+    }
+}
+
+function showTimerEntryGate() {
+    const gate = document.getElementById('timerEntryGate');
+    if (!gate) return;
+    timerEntryGateOpen = true;
+    gate.classList.add('show');
+    gate.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('timer-entry-gate-open');
+    syncTimerEntryGateChrome();
+}
+
+function hideTimerEntryGate() {
+    const gate = document.getElementById('timerEntryGate');
+    if (!gate) return;
+    timerEntryGateOpen = false;
+    gate.classList.remove('show');
+    gate.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('timer-entry-gate-open');
+    maybeStartInteractiveTutorial();
+}
+
+function applyMobileHomeAfterGate() {
+    if (!isMobileLayout()) return;
+    if (!getActiveTimers().length && localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') openStartSheet();
+}
+
+function enterTimerFromGate(mode) {
+    hideTimerEntryGate();
+    if (mode === 'new') {
+        openStartSheet();
+        return;
+    }
+    applyMobileHomeAfterGate();
 }
 
 async function setLang(lang, opts = {}) {
