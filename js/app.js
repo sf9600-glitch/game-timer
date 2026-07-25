@@ -4781,19 +4781,23 @@ function removeSubTask(ti, si) {
     saveConfig(); refreshMainDisplay();
 }
 
-function startTask() { 
-    if(totalSec <= 0) {
-        if (onboardingActive) updateOnboardingChrome();
-        return;
-    }
-    const acc = document.getElementById('accSelect').value;
-    const char = document.getElementById('charSelect').value; 
-    const tObj = config.tasks[document.getElementById('taskSelect').value]; 
-    const ts = (tObj.subs.length && document.getElementById('subTaskSelect').value) ? document.getElementById('subTaskSelect').value : ''; 
-    const fThres = parseInt(document.getElementById('fMin').value)*60 + parseInt(document.getElementById('fSec').value); 
-    const notifyOnFinish = document.getElementById('notifyOnFinish')?.checked !== false;
+function createAndStartTimer({ email, char, taskIdx, durationSec, sub, fThres, notifyOnFinish }) {
+    if (durationSec <= 0) return false;
+    const tObj = config.tasks[taskIdx];
+    if (!tObj) return false;
+    const ts = (tObj.subs.length && sub) ? sub : '';
     requestNotificationPermissionIfNeeded();
-    const newTimerData = { id: Date.now(), email: acc, char: char, taskName: tObj.name + (ts ? ` (${ts})` : ''), dur: totalSec, fThres: fThres, finishDate: new Date(Date.now() + totalSec * 1000).toISOString(), taskBase: tObj.name, notifyOnFinish };
+    const newTimerData = {
+        id: Date.now(),
+        email,
+        char: char || '',
+        taskName: tObj.name + (ts ? ` (${ts})` : ''),
+        dur: durationSec,
+        fThres: fThres ?? 30,
+        finishDate: new Date(Date.now() + durationSec * 1000).toISOString(),
+        taskBase: tObj.name,
+        notifyOnFinish: notifyOnFinish !== false
+    };
     const allSavedData = getActiveTimers();
     allSavedData.push(newTimerData);
     setActiveTimers(allSavedData, { immediateCloud: true });
@@ -4802,7 +4806,23 @@ function startTask() {
         label: newTimerData.taskName,
         timerId: newTimerData.id
     });
-    resetTime(); dispatchTimersToDOM();
+    dispatchTimersToDOM();
+    return true;
+}
+
+function startTask() { 
+    if(totalSec <= 0) {
+        if (onboardingActive) updateOnboardingChrome();
+        return;
+    }
+    const acc = document.getElementById('accSelect').value;
+    const char = document.getElementById('charSelect').value; 
+    const taskIdx = parseInt(document.getElementById('taskSelect').value, 10);
+    const ts = document.getElementById('subTaskSelect')?.value || '';
+    const fThres = parseInt(document.getElementById('fMin').value)*60 + parseInt(document.getElementById('fSec').value); 
+    const notifyOnFinish = document.getElementById('notifyOnFinish')?.checked !== false;
+    if (!createAndStartTimer({ email: acc, char, taskIdx, sub: ts, durationSec: totalSec, fThres, notifyOnFinish })) return;
+    resetTime();
     if (isMobileLayout()) closeStartSheet();
     else closeSidePanel();
 }
