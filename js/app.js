@@ -3248,8 +3248,7 @@ function getFinishDateLabel(targetDate) {
     if (diffMs < 60000) return tp('dateSoon', { date: dateStr });
     if (diffMs < 3600000) return tp('dateMinLater', { date: dateStr, n: Math.ceil(diffMs / 60000) });
     if (diffMs < 86400000) return tp('dateHourLater', { date: dateStr, n: Math.ceil(diffMs / 3600000) });
-    const d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const d2 = new Date(target.getFullYear(), target.getMonth(), target.getDate());
-    return tp('dateDayLater', { date: dateStr, n: Math.round((d2 - d1) / 86400000) });
+    return tp('dateDayLater', { date: dateStr, n: Math.floor(diffMs / 86400000) });
 }
 
 function formatElapsedSinceFinish(elapsedSec) {
