@@ -259,14 +259,15 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
         transparent 100%
     );
     transform: skewX(-20deg);
-    animation: add-timer-metal-shine-secondary 7.5s ease-in-out infinite;
-    animation-delay: 1.4s;
+    animation: add-timer-metal-shine-secondary 6.5s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
 }
 .config-title-add-timer-text {
     position: relative;
     z-index: 2;
+    width: 100%;
+    text-align: center;
 }
 .config-title--add-timer:hover {
     filter: brightness(1.03);
