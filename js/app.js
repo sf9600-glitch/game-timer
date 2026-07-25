@@ -137,6 +137,8 @@ const LOCALE_INLINE_FALLBACK = {
         openPanel: '打开管理面板',
         closePanel: '关闭管理面板',
         taskStart: '开新计时器',
+        timerEntryHome: '进入主页',
+        timerEntryAddNew: '新增计时器',
         startLabelAccount: '账号',
         startLabelChar: '角色',
         startLabelTask: '任务',
