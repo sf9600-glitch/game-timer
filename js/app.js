@@ -2944,7 +2944,8 @@ function closeSidePanel() {
 
 function initMobilePanelState() {
     if (!isMobileLayout()) return;
-    if (!getActiveTimers().length && localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') openStartSheet();
+    if (isTimerEntryGateOpen()) return;
+    applyMobileHomeAfterGate();
 }
 
 function createStartContentElement() {
