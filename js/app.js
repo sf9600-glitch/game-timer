@@ -1440,6 +1440,7 @@ function renderTimerWizardDoneStep() {
 
 function renderTimerWizardStep() {
     if (!timerWizardState) return;
+    updateTimerWizardTheme();
     syncTimerWizardChrome();
     if (timerWizardState.step === 1) renderTimerWizardAccStep();
     else if (timerWizardState.step === 2) renderTimerWizardTaskStep();
