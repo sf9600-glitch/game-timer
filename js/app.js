@@ -1651,7 +1651,7 @@ function applyMobileHomeAfterGate() {
 function enterTimerFromGate(mode) {
     hideTimerEntryGate();
     if (mode === 'new') {
-        openStartSheet();
+        openTimerWizard();
         return;
     }
     applyMobileHomeAfterGate();
