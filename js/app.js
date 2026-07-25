@@ -1839,16 +1839,8 @@ function computeActiveTimerCardWidthPx(card) {
 
 function applyActiveTimerCardWidth(card) {
     if (!card?.classList.contains('timer-card--active')) return;
-    if (document.documentElement.classList.contains('timer-display-list') || document.documentElement.classList.contains('timer-display-clean')) return;
-    const target = computeActiveTimerCardWidthPx(card);
-    const base = getTimerCardBaseWidthPx();
-    if (target > base + 1) {
-        card.style.setProperty('--timer-card-actual-width', `${target}px`);
-        card.classList.add('timer-card--width-expanded');
-    } else {
-        card.style.removeProperty('--timer-card-actual-width');
-        card.classList.remove('timer-card--width-expanded');
-    }
+    card.style.removeProperty('--timer-card-actual-width');
+    card.classList.remove('timer-card--width-expanded');
 }
 
 function fitAdaptiveLabel(el, maxWidthPx, startRem, minRem) {
