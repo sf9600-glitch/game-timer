@@ -305,7 +305,8 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
     }
 }
 @media (prefers-reduced-motion: reduce) {
-    .config-title--add-timer::after {
+    .config-title--add-timer::after,
+    .config-title-add-timer-shine--secondary {
         animation: none;
         opacity: 0;
     }
