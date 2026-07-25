@@ -285,10 +285,10 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
     72%, 100% { left: 135%; opacity: 0; }
 }
 @keyframes add-timer-metal-shine-secondary {
-    0%, 18% { left: -88%; opacity: 0; }
-    26% { opacity: 0.85; }
-    64% { left: 138%; opacity: 0.85; }
-    74%, 100% { left: 138%; opacity: 0; }
+    0%, 16% { left: -107%; opacity: 0; }
+    24% { opacity: 0.85; }
+    62% { left: 113%; opacity: 0.85; }
+    72%, 100% { left: 113%; opacity: 0; }
 }
 [data-theme="dark"] .config-section--add-timer {
     --section-color: #8f96a3;
