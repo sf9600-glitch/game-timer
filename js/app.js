@@ -1677,6 +1677,7 @@ async function setLang(lang, opts = {}) {
     refreshMainDisplay();
     syncStartSheetChrome();
     syncTimerEntryGateChrome();
+    if (isTimerWizardOpen()) renderTimerWizardStep();
     if (document.getElementById('tutorialModal')?.classList.contains('show')) updateTutorialModalChrome();
     updateOnboardingChrome();
     if (!opts.skipCloud) scheduleCloudSync();
