@@ -1705,6 +1705,7 @@ function openAddTimerFromPanel() {
 function getAddTimerSectionPanelHtml() {
     return `<div class="config-section config-section--add-timer" id="sec-add-timer">
             <button type="button" class="config-title config-title--add-timer" id="sideAddTimerBtn" onclick="openAddTimerFromPanel()" aria-label="${t('timerEntryAddNew')}">
+                <span class="config-title-add-timer-shine config-title-add-timer-shine--secondary" aria-hidden="true"></span>
                 <span class="config-title-add-timer-text">${t('timerEntryAddNew')}</span>
             </button>
         </div>`;
