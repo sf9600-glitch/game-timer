@@ -4501,10 +4501,7 @@ function updateTimersDataTicker(skipRelayout = false) {
         syncFinishedNotifyState();
         updateClearFinishedButtonHighlight();
         requestAnimationFrame(() => {
-            if (!isTimerDisplayClean()) {
-                fitAllActiveTimerCardLabels();
-                fitAllFinishedTimerCardLabels();
-            }
+            if (!isTimerDisplayClean()) fitAllFinishedTimerCardLabels();
             syncTimerListSideAlign();
         });
     }
