@@ -1,7 +1,9 @@
 {
   "terminal.integrated.defaultLocation": "view",
+  "terminal.integrated.hideOnStartup": "never",
   "workbench.panel.defaultLocation": "bottom",
   "workbench.panel.opensMaximized": "never",
+  "workbench.statusBar.visible": true,
   "runOnSave.commands": [
     {
       "match": "(index\\.html|css/app\\.css|js/app\\.js)$",

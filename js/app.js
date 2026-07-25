@@ -5349,8 +5349,10 @@ window.addEventListener('resize', () => {
     syncNotifyPermissionUi();
 });
 (async () => {
+    showTimerEntryGate();
     await initI18n();
     applyLangFromStorage();
+    syncTimerEntryGateChrome();
     updateTutorialModalChrome();
     await initCloudSync();
     renderSidePanel();
@@ -5359,7 +5361,6 @@ window.addEventListener('resize', () => {
     lastLayoutWasMobile = isMobileLayout();
     initMobilePanelState();
     ensureTimerWizardElement();
-    showTimerEntryGate();
     syncFinishedNotifyState();
     registerAppServiceWorker();
     initNotifyBannerDismissButtons();

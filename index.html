@@ -15,14 +15,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<body>
+<body class="timer-entry-gate-open">
 
-    <div class="timer-entry-gate" id="timerEntryGate" role="dialog" aria-modal="true" aria-labelledby="timerEntryGateTitle" aria-hidden="true">
+    <div class="timer-entry-gate show" id="timerEntryGate" role="dialog" aria-modal="true" aria-labelledby="timerEntryGateTitle" aria-hidden="false">
         <div class="timer-entry-gate-inner">
-            <h1 class="timer-entry-gate-title" id="timerEntryGateTitle"></h1>
+            <h1 class="timer-entry-gate-title" id="timerEntryGateTitle">遊戲計時器</h1>
             <div class="timer-entry-gate-actions">
-                <button type="button" class="timer-entry-gate-btn timer-entry-gate-btn--home btn-press-3d" id="timerEntryHomeBtn" onclick="enterTimerFromGate('home')"></button>
-                <button type="button" class="timer-entry-gate-btn timer-entry-gate-btn--new btn-press-3d" id="timerEntryNewBtn" onclick="enterTimerFromGate('new')"></button>
+                <button type="button" class="timer-entry-gate-btn timer-entry-gate-btn--home btn-press-3d" id="timerEntryHomeBtn" onclick="enterTimerFromGate('home')">進入主頁</button>
+                <button type="button" class="timer-entry-gate-btn timer-entry-gate-btn--new btn-press-3d" id="timerEntryNewBtn" onclick="enterTimerFromGate('new')">新增計時器</button>
             </div>
         </div>
     </div>
