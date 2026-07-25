@@ -163,6 +163,130 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
 ::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover); }
 
 .config-section { margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--section-color); background-color: color-mix(in srgb, var(--section-color) 4%, var(--panel-bg)); transition: border-color 0.3s ease, border-top-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; }
+/* 左側：新增計時器（金屬銀色標籤） */
+.config-section--add-timer {
+    --section-color: #aeb4bf;
+    --add-timer-metal-hi: #f5f7fa;
+    --add-timer-metal-mid: #c4c9d2;
+    --add-timer-metal-lo: #8b919c;
+    --add-timer-metal-text: #2b3038;
+    padding: 10px;
+    background-color: color-mix(in srgb, var(--add-timer-metal-mid) 8%, var(--panel-bg));
+}
+.config-title--add-timer {
+    width: 100%;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid color-mix(in srgb, var(--add-timer-metal-lo) 55%, var(--border-color));
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    font-family: inherit;
+    line-height: 1.25;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--add-timer-metal-text);
+    text-shadow: 0 1px 0 color-mix(in srgb, white 70%, transparent);
+    background: linear-gradient(
+        168deg,
+        var(--add-timer-metal-hi) 0%,
+        var(--add-timer-metal-mid) 42%,
+        var(--add-timer-metal-lo) 78%,
+        color-mix(in srgb, var(--add-timer-metal-lo) 82%, #000) 100%
+    );
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, white 72%, transparent),
+        inset 0 -1px 0 color-mix(in srgb, black 14%, transparent),
+        0 2px 6px color-mix(in srgb, var(--add-timer-metal-lo) 24%, transparent);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.config-title--add-timer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+        -18deg,
+        color-mix(in srgb, white 7%, transparent) 0 2px,
+        transparent 2px 5px
+    );
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+}
+.config-title--add-timer::after {
+    content: '';
+    position: absolute;
+    top: -25%;
+    left: -85%;
+    width: 58%;
+    height: 150%;
+    background: linear-gradient(
+        105deg,
+        transparent 0%,
+        color-mix(in srgb, white 10%, transparent) 36%,
+        color-mix(in srgb, white 72%, transparent) 50%,
+        color-mix(in srgb, white 10%, transparent) 64%,
+        transparent 100%
+    );
+    transform: skewX(-20deg);
+    animation: add-timer-metal-shine 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+.config-title-add-timer-text {
+    position: relative;
+    z-index: 2;
+}
+.config-title--add-timer:hover {
+    filter: brightness(1.03);
+}
+.config-title--add-timer:active {
+    transform: translateY(1px);
+    filter: brightness(0.97);
+    box-shadow:
+        inset 0 2px 5px color-mix(in srgb, black 16%, transparent),
+        0 1px 2px color-mix(in srgb, var(--add-timer-metal-lo) 20%, transparent);
+}
+@keyframes add-timer-metal-shine {
+    0%, 14% { left: -85%; opacity: 0; }
+    22% { opacity: 1; }
+    58% { left: 135%; opacity: 1; }
+    68%, 100% { left: 135%; opacity: 0; }
+}
+[data-theme="dark"] .config-section--add-timer {
+    --section-color: #8f96a3;
+    --add-timer-metal-hi: #e3e6ec;
+    --add-timer-metal-mid: #a8aeb8;
+    --add-timer-metal-lo: #5c626d;
+    --add-timer-metal-text: #eef0f4;
+}
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .config-section--add-timer {
+        --section-color: #8f96a3;
+        --add-timer-metal-hi: #e3e6ec;
+        --add-timer-metal-mid: #a8aeb8;
+        --add-timer-metal-lo: #5c626d;
+        --add-timer-metal-text: #eef0f4;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .config-title--add-timer::after {
+        animation: none;
+        opacity: 0;
+    }
+}
+html.neon-glow-enabled[data-theme="dark"] .config-section--add-timer,
+html.neon-glow-enabled:not([data-theme="light"]) .config-section--add-timer {
+    box-shadow:
+        0 0 8px color-mix(in srgb, var(--add-timer-metal-mid) 55%, transparent),
+        0 0 18px color-mix(in srgb, var(--add-timer-metal-mid) 28%, transparent);
+}
 /* 開新計時器：改為與其他區塊相同標題樣式 */
 .config-title.config-title--start {
     justify-content: space-between;
