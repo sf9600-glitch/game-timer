@@ -1251,9 +1251,355 @@ function advanceInteractiveTutorial() {
 }
 
 function maybeStartInteractiveTutorial() {
-    if (isTimerEntryGateOpen()) return;
+    if (isTimerEntryGateOpen() || isTimerWizardOpen()) return;
     if (localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
     setTimeout(() => startInteractiveTutorial(), 500);
+}
+
+const TIMER_WIZARD_STEPS = ['acc', 'task', 'time', 'done'];
+let timerWizardState = null;
+
+function isTimerWizardOpen() {
+    return !!document.getElementById('timerWizard')?.classList.contains('show');
+}
+
+function getDefaultTimerWizardState() {
+    const accEmail = config.accounts[0]?.email || '';
+    const acc = config.accounts.find(a => a.email === accEmail);
+    let charName = '';
+    if (acc?.characters?.length) {
+        const c = acc.characters[0];
+        charName = typeof c === 'string' ? c : c.name;
+    }
+    const taskIdx = 0;
+    let subName = '';
+    const tObj = config.tasks[taskIdx];
+    if (tObj?.subs?.length) subName = tObj.subs[0];
+    return {
+        step: 1,
+        accEmail,
+        charName,
+        taskIdx,
+        subName,
+        wizardSec: 0,
+        notifyOnFinish: true
+    };
+}
+
+function formatWizardDuration(sec) {
+    const s = Math.max(0, sec | 0);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const r = s % 60;
+    if (h >= 24) {
+        const d = Math.floor(h / 24);
+        const rh = h % 24;
+        return `${d}${t('dhmsDay')}${rh}${t('dhmsHour')}${m}${t('dhmsMin')}${r}${t('dhmsSec')}`;
+    }
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+}
+
+function getWizardTaskLabel() {
+    const tObj = config.tasks[timerWizardState?.taskIdx];
+    if (!tObj) return '';
+    const sub = timerWizardState?.subName;
+    return tObj.name + (tObj.subs?.length && sub ? ` (${sub})` : '');
+}
+
+function syncTimerWizardChrome() {
+    const wizard = document.getElementById('timerWizard');
+    if (!wizard || !timerWizardState) return;
+    const step = timerWizardState.step;
+    const total = TIMER_WIZARD_STEPS.length;
+    const stepKeys = {
+        1: 'timerWizardStepAcc',
+        2: 'timerWizardStepTask',
+        3: 'timerWizardStepTime',
+        4: 'timerWizardStepDone'
+    };
+    const stepLabel = document.getElementById('timerWizardStepLabel');
+    const title = document.getElementById('timerWizardTitle');
+    const backBtn = document.getElementById('timerWizardBackBtn');
+    const closeBtn = document.getElementById('timerWizardCloseBtn');
+    const actionBtn = document.getElementById('timerWizardActionBtn');
+    const progress = document.getElementById('timerWizardProgress');
+    if (stepLabel) stepLabel.textContent = tp('timerWizardStepOf', { n: step, total });
+    if (title) title.textContent = t(stepKeys[step] || 'timerWizardStepDone');
+    if (backBtn) {
+        backBtn.hidden = step <= 1;
+        backBtn.setAttribute('aria-label', t('timerWizardBack'));
+    }
+    if (closeBtn) closeBtn.setAttribute('aria-label', t('closePanel'));
+    if (actionBtn) actionBtn.textContent = step >= total ? t('timerWizardFinish') : t('timerWizardNext');
+    if (progress) {
+        progress.innerHTML = TIMER_WIZARD_STEPS.map((_, i) => {
+            const n = i + 1;
+            const cls = n < step ? 'is-done' : (n === step ? 'is-current' : '');
+            return `<span class="timer-wizard-progress-dot ${cls}" aria-hidden="true"></span>`;
+        }).join('');
+    }
+}
+
+function renderTimerWizardAccStep() {
+    const body = document.getElementById('timerWizardBody');
+    if (!body || !timerWizardState) return;
+    const accOptions = config.accounts.map(a =>
+        `<option value="${a.email}"${a.email === timerWizardState.accEmail ? ' selected' : ''}>${a.email}</option>`
+    ).join('');
+    const acc = config.accounts.find(a => a.email === timerWizardState.accEmail);
+    const chars = acc?.characters || [];
+    const charOptions = chars.map(c => {
+        const name = typeof c === 'string' ? c : c.name;
+        return `<option value="${name}"${name === timerWizardState.charName ? ' selected' : ''}>${name}</option>`;
+    }).join('');
+    const needCharHint = chars.length ? '' : `<p class="timer-wizard-warn">${t('timerWizardNeedChar')}</p>`;
+    body.innerHTML = `
+        <p class="timer-wizard-hint">${t('timerWizardAccHint')}</p>
+        <div class="timer-wizard-fields">
+            <label class="timer-wizard-field">
+                <span class="timer-wizard-field-label">${t('startLabelAccount')}</span>
+                <select id="wizardAccSelect" class="timer-wizard-select" onchange="onWizardAccChange()">${accOptions}</select>
+            </label>
+            <label class="timer-wizard-field">
+                <span class="timer-wizard-field-label">${t('startLabelChar')}</span>
+                <select id="wizardCharSelect" class="timer-wizard-select" onchange="onWizardCharChange()"${chars.length ? '' : ' disabled'}>${charOptions}</select>
+            </label>
+        </div>
+        ${needCharHint}`;
+}
+
+function renderTimerWizardTaskStep() {
+    const body = document.getElementById('timerWizardBody');
+    if (!body || !timerWizardState) return;
+    const taskOptions = config.tasks.map((tk, i) =>
+        `<option value="${i}"${i === timerWizardState.taskIdx ? ' selected' : ''}>${tk.name}</option>`
+    ).join('');
+    const tObj = config.tasks[timerWizardState.taskIdx];
+    const hasSubs = !!(tObj?.subs?.length);
+    const subOptions = hasSubs
+        ? tObj.subs.map(s => `<option value="${s}"${s === timerWizardState.subName ? ' selected' : ''}>${s}</option>`).join('')
+        : '';
+    body.innerHTML = `
+        <p class="timer-wizard-hint">${t('timerWizardTaskHint')}</p>
+        <div class="timer-wizard-fields">
+            <label class="timer-wizard-field">
+                <span class="timer-wizard-field-label">${t('startLabelTask')}</span>
+                <select id="wizardTaskSelect" class="timer-wizard-select" onchange="onWizardTaskChange()">${taskOptions}</select>
+            </label>
+            <label class="timer-wizard-field" id="wizardSubFieldWrap"${hasSubs ? '' : ' hidden'}>
+                <span class="timer-wizard-field-label">${t('startLabelSub')}</span>
+                <select id="wizardSubSelect" class="timer-wizard-select" onchange="onWizardSubChange()">${subOptions}</select>
+            </label>
+        </div>`;
+}
+
+function renderTimerWizardTimeStep() {
+    const body = document.getElementById('timerWizardBody');
+    if (!body || !timerWizardState) return;
+    const sec = timerWizardState.wizardSec;
+    const d = Math.floor(sec / 86400);
+    const h = Math.floor((sec % 86400) / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    body.innerHTML = `
+        <p class="timer-wizard-hint">${t('timerWizardTimeHint')}</p>
+        <div class="timer-wizard-time-display" id="wizardTimeDisplay">${formatWizardDuration(sec)}</div>
+        <div class="timer-wizard-adj-grid">
+            <button type="button" class="btn-adjust" onclick="wizardAdj(86400)">${t('adj1d')}</button>
+            <button type="button" class="btn-adjust" onclick="wizardAdj(43200)">${t('adj12h')}</button>
+            <button type="button" class="btn-adjust" onclick="wizardAdj(3600)">${t('adj1h')}</button>
+            <button type="button" class="btn-adjust" onclick="wizardAdj(600)">${t('adj10m')}</button>
+            <button type="button" class="btn-adjust" onclick="wizardAdj(60)">${t('adj1m')}</button>
+            <button type="button" class="btn-adjust" onclick="wizardAdj(30)">${t('adj30s')}</button>
+        </div>
+        <div class="timer-wizard-dhms">
+            <div class="dhms-group"><input type="number" id="wizard-in-d" class="dhms-input" value="${d}" min="0" oninput="wizardUpdateFromDhms()"><span class="dhms-unit">${t('dhmsDay')}</span></div>
+            <div class="dhms-group"><input type="number" id="wizard-in-h" class="dhms-input" value="${h}" min="0" oninput="wizardUpdateFromDhms()"><span class="dhms-unit">${t('dhmsHour')}</span></div>
+            <div class="dhms-group"><input type="number" id="wizard-in-m" class="dhms-input" value="${m}" min="0" max="59" oninput="wizardUpdateFromDhms()"><span class="dhms-unit">${t('dhmsMin')}</span></div>
+            <div class="dhms-group"><input type="number" id="wizard-in-s" class="dhms-input" value="${s}" min="0" max="59" oninput="wizardUpdateFromDhms()"><span class="dhms-unit">${t('dhmsSec')}</span></div>
+        </div>
+        <button type="button" class="btn-adjust timer-wizard-reset" onclick="wizardResetTime()">${t('resetTime')}</button>
+        <label class="timer-wizard-notify">
+            <input type="checkbox" id="wizardNotifyOnFinish"${timerWizardState.notifyOnFinish ? ' checked' : ''} onchange="onWizardNotifyChange()">
+            <span>${t('notifyOnFinishLabel')}</span>
+        </label>`;
+}
+
+function renderTimerWizardDoneStep() {
+    const body = document.getElementById('timerWizardBody');
+    if (!body || !timerWizardState) return;
+    body.innerHTML = `
+        <p class="timer-wizard-hint">${t('timerWizardDoneHint')}</p>
+        <div class="timer-wizard-summary">
+            <div class="timer-wizard-summary-row"><span>${t('timerWizardSummaryAcc')}</span><strong>${timerWizardState.accEmail}</strong></div>
+            <div class="timer-wizard-summary-row"><span>${t('timerWizardSummaryChar')}</span><strong>${timerWizardState.charName || '—'}</strong></div>
+            <div class="timer-wizard-summary-row"><span>${t('timerWizardSummaryTask')}</span><strong>${getWizardTaskLabel()}</strong></div>
+            <div class="timer-wizard-summary-row"><span>${t('timerWizardSummaryTime')}</span><strong>${formatWizardDuration(timerWizardState.wizardSec)}</strong></div>
+        </div>`;
+}
+
+function renderTimerWizardStep() {
+    if (!timerWizardState) return;
+    syncTimerWizardChrome();
+    if (timerWizardState.step === 1) renderTimerWizardAccStep();
+    else if (timerWizardState.step === 2) renderTimerWizardTaskStep();
+    else if (timerWizardState.step === 3) renderTimerWizardTimeStep();
+    else renderTimerWizardDoneStep();
+}
+
+function openTimerWizard() {
+    timerWizardState = getDefaultTimerWizardState();
+    const wizard = document.getElementById('timerWizard');
+    if (!wizard) return;
+    wizard.classList.add('show');
+    wizard.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('timer-wizard-open');
+    if (isMobileLayout()) {
+        closeStartSheet();
+        setSidePanelOpen(false);
+    }
+    renderTimerWizardStep();
+}
+
+function closeTimerWizard() {
+    const wizard = document.getElementById('timerWizard');
+    if (!wizard) return;
+    wizard.classList.remove('show');
+    wizard.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('timer-wizard-open');
+    timerWizardState = null;
+    maybeStartInteractiveTutorial();
+}
+
+function onWizardAccChange() {
+    const sel = document.getElementById('wizardAccSelect');
+    if (!sel || !timerWizardState) return;
+    timerWizardState.accEmail = sel.value;
+    const acc = config.accounts.find(a => a.email === timerWizardState.accEmail);
+    if (acc?.characters?.length) {
+        const c = acc.characters[0];
+        timerWizardState.charName = typeof c === 'string' ? c : c.name;
+    } else {
+        timerWizardState.charName = '';
+    }
+    renderTimerWizardAccStep();
+}
+
+function onWizardCharChange() {
+    const sel = document.getElementById('wizardCharSelect');
+    if (!sel || !timerWizardState) return;
+    timerWizardState.charName = sel.value;
+}
+
+function onWizardTaskChange() {
+    const sel = document.getElementById('wizardTaskSelect');
+    if (!sel || !timerWizardState) return;
+    timerWizardState.taskIdx = parseInt(sel.value, 10) || 0;
+    const tObj = config.tasks[timerWizardState.taskIdx];
+    timerWizardState.subName = tObj?.subs?.length ? tObj.subs[0] : '';
+    renderTimerWizardTaskStep();
+}
+
+function onWizardSubChange() {
+    const sel = document.getElementById('wizardSubSelect');
+    if (!sel || !timerWizardState) return;
+    timerWizardState.subName = sel.value;
+}
+
+function wizardUpdateTimeDisplay() {
+    const el = document.getElementById('wizardTimeDisplay');
+    if (el && timerWizardState) el.textContent = formatWizardDuration(timerWizardState.wizardSec);
+}
+
+function wizardAdj(delta) {
+    if (!timerWizardState) return;
+    timerWizardState.wizardSec = Math.max(0, timerWizardState.wizardSec + delta);
+    wizardUpdateTimeDisplay();
+    const d = Math.floor(timerWizardState.wizardSec / 86400);
+    const h = Math.floor((timerWizardState.wizardSec % 86400) / 3600);
+    const m = Math.floor((timerWizardState.wizardSec % 3600) / 60);
+    const s = timerWizardState.wizardSec % 60;
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    setVal('wizard-in-d', d);
+    setVal('wizard-in-h', h);
+    setVal('wizard-in-m', m);
+    setVal('wizard-in-s', s);
+}
+
+function wizardResetTime() {
+    if (!timerWizardState) return;
+    timerWizardState.wizardSec = 0;
+    wizardUpdateTimeDisplay();
+    wizardAdj(0);
+}
+
+function wizardUpdateFromDhms() {
+    if (!timerWizardState) return;
+    const val = id => parseInt(document.getElementById(id)?.value, 10) || 0;
+    timerWizardState.wizardSec = val('wizard-in-d') * 86400 + val('wizard-in-h') * 3600 + val('wizard-in-m') * 60 + val('wizard-in-s');
+    wizardUpdateTimeDisplay();
+}
+
+function onWizardNotifyChange() {
+    const el = document.getElementById('wizardNotifyOnFinish');
+    if (el && timerWizardState) timerWizardState.notifyOnFinish = el.checked;
+}
+
+function canAdvanceTimerWizard() {
+    if (!timerWizardState) return false;
+    if (timerWizardState.step === 1) {
+        const acc = config.accounts.find(a => a.email === timerWizardState.accEmail);
+        if (!acc) return false;
+        if (acc.characters?.length && !timerWizardState.charName) return false;
+        return true;
+    }
+    if (timerWizardState.step === 2) return !!config.tasks[timerWizardState.taskIdx];
+    if (timerWizardState.step === 3) return timerWizardState.wizardSec > 0;
+    return true;
+}
+
+function timerWizardAction() {
+    if (!timerWizardState) return;
+    if (timerWizardState.step >= TIMER_WIZARD_STEPS.length) {
+        finishTimerWizard();
+        return;
+    }
+    if (!canAdvanceTimerWizard()) {
+        const body = document.getElementById('timerWizardBody');
+        if (timerWizardState.step === 1 && body && !body.querySelector('.timer-wizard-warn')) {
+            body.insertAdjacentHTML('beforeend', `<p class="timer-wizard-warn">${t('timerWizardNeedChar')}</p>`);
+        }
+        if (timerWizardState.step === 3) {
+            const hint = document.querySelector('.timer-wizard-time-display');
+            if (hint) {
+                hint.classList.add('timer-wizard-time-display--warn');
+                setTimeout(() => hint.classList.remove('timer-wizard-time-display--warn'), 600);
+            }
+        }
+        return;
+    }
+    timerWizardState.step += 1;
+    renderTimerWizardStep();
+}
+
+function timerWizardBack() {
+    if (!timerWizardState || timerWizardState.step <= 1) return;
+    timerWizardState.step -= 1;
+    renderTimerWizardStep();
+}
+
+function finishTimerWizard() {
+    if (!timerWizardState || timerWizardState.wizardSec <= 0) return;
+    createAndStartTimer({
+        email: timerWizardState.accEmail,
+        char: timerWizardState.charName,
+        taskIdx: timerWizardState.taskIdx,
+        sub: timerWizardState.subName,
+        durationSec: timerWizardState.wizardSec,
+        fThres: 30,
+        notifyOnFinish: timerWizardState.notifyOnFinish
+    });
+    closeTimerWizard();
 }
 
 let timerEntryGateOpen = true;
