@@ -94,7 +94,10 @@
     <div class="add-timer-hint" id="addTimerHint" aria-hidden="true">
         <div class="add-timer-hint-spot" id="addTimerHintSpot" aria-hidden="true"></div>
         <div class="add-timer-hint-card" id="addTimerHintCard" role="dialog" aria-modal="true" aria-labelledby="addTimerHintTitle">
-            <h2 class="add-timer-hint-title" id="addTimerHintTitle"></h2>
+            <div class="add-timer-hint-head">
+                <h2 class="add-timer-hint-title" id="addTimerHintTitle"></h2>
+                <button type="button" class="add-timer-hint-close" id="addTimerHintCloseBtn" onclick="dismissAddTimerHint()" aria-label="">&times;</button>
+            </div>
             <p class="add-timer-hint-body" id="addTimerHintBody"></p>
             <div class="add-timer-hint-actions">
                 <button type="button" class="add-timer-hint-btn add-timer-hint-btn--primary" id="addTimerHintCreateBtn" onclick="onAddTimerHintCreate()"></button>

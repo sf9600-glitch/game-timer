@@ -6,6 +6,7 @@ const THEME_KEY = 'GameTimer_Theme_Preference';
 const LANG_KEY = 'GameTimer_Lang_Preference';
 const LANG_GATE_DONE_KEY = 'GameTimer_LangGate_Done';
 const ENTRY_GATE_DONE_KEY = 'GameTimer_EntryGate_Done';
+const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 const DEFAULT_LANG = 'zh-TW';
