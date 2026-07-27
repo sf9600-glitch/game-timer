@@ -3811,9 +3811,9 @@ function getStartTitlePillHtml(interactive) {
 }
 
 function getStartSectionPanelHtml() {
-    const taskColor = (config.tasks[0] && config.tasks[0].color) || config.colors.task;
+    const startColor = config.colors.start || '#eab308';
     const startTitle = getStartTitlePillHtml(!isMobileLayout());
-    return `<div class="config-section config-section--collapsible" id="sec-start" style="--section-color: ${taskColor};" onclick="handleSecStartSectionClick(event)">
+    return `<div class="config-section config-section--collapsible" id="sec-start" style="--section-color: ${startColor};" onclick="handleSecStartSectionClick(event)">
             ${startTitle}
         </div>`;
 }
