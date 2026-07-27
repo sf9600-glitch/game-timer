@@ -2295,6 +2295,8 @@ function normalizeConfig() {
     if (config.neonGlow === undefined) config.neonGlow = true;
     if (!['clean', 'colorful', 'list'].includes(config.timerDisplay)) config.timerDisplay = 'clean';
     if (config.showAccountHeader === undefined) config.showAccountHeader = true;
+    if (!config.colors) config.colors = {};
+    if (!config.colors.start) config.colors.start = defaultConfig.colors.start;
     applyNeonGlow();
     applyTimerDisplayMode();
 }
