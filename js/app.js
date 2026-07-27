@@ -3923,20 +3923,19 @@ function buildActiveTimerCard(t, index) {
 }
 
 function getCharGroupTitleHtml(accEmail, charName) {
-    const unspecified = '（未指定角色）';
-    if (charName && charName !== unspecified) return getCharBadgeHtml(accEmail, charName);
-    return `<span class="char-group-label">${charName || unspecified}</span>`;
+    if (charName && !isCharUnspecifiedKey(charName)) return getCharBadgeHtml(accEmail, charName);
+    return `<span class="char-group-label">${getCharDisplayName(charName || CHAR_UNSPECIFIED_KEY)}</span>`;
 }
 
 function getTimerListCharLine(timer) {
     const charKey = getCharGroupKey(timer.char);
-    if (charKey === '（未指定角色）') return '';
+    if (isCharUnspecifiedKey(charKey)) return '';
     return `<div class="timer-list-charline">${getCharBadgeHtml(timer.email, charKey)}</div>`;
 }
 
 function getCleanCharPlainText(timer) {
     const key = getCharGroupKey(timer.char);
-    return key === '（未指定角色）' ? '—' : key;
+    return isCharUnspecifiedKey(key) ? '—' : key;
 }
 
 function getCleanTableHeadHtml(kind) {
