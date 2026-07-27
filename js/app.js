@@ -1892,11 +1892,11 @@ function applyMobileHomeAfterGate() {
 
 function enterTimerFromGate(mode) {
     if (mode === 'new') {
-        hideTimerEntryGate({ skipTutorial: true });
+        hideTimerEntryGate({ skipHint: true });
         openTimerWizard();
         return;
     }
-    hideTimerEntryGate();
+    hideTimerEntryGate({ skipHint: false });
     applyMobileHomeAfterGate();
 }
 
