@@ -5433,6 +5433,7 @@ window.addEventListener('resize', () => {
     await initI18n();
     applyLangFromStorage();
     syncTimerEntryGateChrome();
+    syncPullRefreshChrome();
     updateTutorialModalChrome();
     await initCloudSync();
     renderSidePanel();
