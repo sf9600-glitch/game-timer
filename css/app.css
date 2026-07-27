@@ -3037,19 +3037,47 @@ body.lang-entry-gate-open {
     position: fixed;
     z-index: 2152;
     width: min(320px, calc(100vw - 24px));
-    padding: 14px 14px 12px;
+    padding: 12px 14px 12px;
     border-radius: 14px;
     border: 1px solid var(--border-color);
     background: var(--card-bg);
     box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
     pointer-events: auto;
 }
+.add-timer-hint-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
 .add-timer-hint-title {
-    margin: 0 0 8px;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
     font-size: 0.95rem;
     font-weight: bold;
     color: var(--text-main);
     line-height: 1.35;
+}
+.add-timer-hint-close {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    margin: -4px -4px 0 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-sub);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    font-family: inherit;
+}
+.add-timer-hint-close:hover {
+    color: var(--text-main);
+    background: color-mix(in srgb, var(--text-sub) 12%, transparent);
 }
 .add-timer-hint-body {
     margin: 0 0 12px;

@@ -1753,6 +1753,7 @@ function isLangEntryGateOpen() {
 }
 
 function shouldShowAddTimerHint() {
+    if (localStorage.getItem(ADD_TIMER_HINT_DISMISSED_KEY) === '1') return false;
     if (getActiveTimers().length > 0) return false;
     if (shouldShowLangGate() || shouldShowEntryGate()) return false;
     if (isLangEntryGateOpen() || isTimerEntryGateOpen() || isTimerWizardOpen()) return false;
@@ -1766,11 +1767,13 @@ function syncAddTimerHintChrome() {
     const createBtn = document.getElementById('addTimerHintCreateBtn');
     const interactiveBtn = document.getElementById('addTimerHintInteractiveBtn');
     const guideBtn = document.getElementById('addTimerHintGuideBtn');
+    const closeBtn = document.getElementById('addTimerHintCloseBtn');
     if (title) title.textContent = t('addTimerHintTitle');
     if (body) body.textContent = t('addTimerHintBody');
     if (createBtn) createBtn.textContent = t('addTimerHintCreate');
     if (interactiveBtn) interactiveBtn.textContent = t('addTimerHintInteractive');
     if (guideBtn) guideBtn.textContent = t('addTimerHintGuide');
+    if (closeBtn) closeBtn.setAttribute('aria-label', t('closeLabel'));
 }
 
 function positionAddTimerHintUi() {
@@ -1826,6 +1829,16 @@ function hideAddTimerHint() {
     hint.classList.remove('show');
     hint.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('add-timer-hint-open');
+}
+
+function dismissAddTimerHint() {
+    try { localStorage.setItem(ADD_TIMER_HINT_DISMISSED_KEY, '1'); } catch (_) {}
+    hideAddTimerHint();
+}
+
+function markAddTimerHintDone() {
+    try { localStorage.setItem(ADD_TIMER_HINT_DISMISSED_KEY, '1'); } catch (_) {}
+    hideAddTimerHint();
 }
 
 function maybeShowAddTimerHint() {
