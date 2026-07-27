@@ -2940,6 +2940,153 @@ body.onboarding-active .undo-toast.show { z-index: 2203; }
     }
 }
 
+/* 首次：選擇語言 */
+.lang-entry-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    background: color-mix(in srgb, var(--bg) 88%, #000);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.lang-entry-gate.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+body.lang-entry-gate-open {
+    overflow: hidden;
+}
+.lang-entry-gate-inner {
+    width: min(420px, 100%);
+    text-align: center;
+}
+.lang-entry-gate-title {
+    margin: 0 0 10px;
+    font-size: clamp(1.25rem, 4vw, 1.65rem);
+    font-weight: bold;
+    color: var(--text-main);
+}
+.lang-entry-gate-sub {
+    margin: 0 0 22px;
+    font-size: 0.82rem;
+    color: var(--text-sub);
+    line-height: 1.45;
+}
+.lang-entry-gate-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.lang-entry-gate-btn {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.lang-entry-gate-btn:hover {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 8%, var(--card-bg));
+}
+.lang-entry-gate-btn:active {
+    transform: translateY(1px);
+}
+
+/* 新增計時器提示（建立第一個計時器前） */
+.add-timer-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 2150;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.add-timer-hint.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.add-timer-hint-spot {
+    display: none;
+    position: fixed;
+    z-index: 2151;
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px color-mix(in srgb, #000 52%, transparent);
+    pointer-events: none;
+}
+.add-timer-hint.show .add-timer-hint-spot {
+    display: block;
+}
+.add-timer-hint-card {
+    position: fixed;
+    z-index: 2152;
+    width: min(320px, calc(100vw - 24px));
+    padding: 14px 14px 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+    pointer-events: auto;
+}
+.add-timer-hint-title {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--text-main);
+    line-height: 1.35;
+}
+.add-timer-hint-body {
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    line-height: 1.5;
+}
+.add-timer-hint-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.add-timer-hint-btn {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg);
+    color: var(--text-main);
+    font-size: 0.76rem;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+}
+.add-timer-hint-btn--primary {
+    background: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 70%, #000);
+    color: #fff;
+}
+.add-timer-hint-btn:active {
+    transform: translateY(1px);
+}
+body.add-timer-hint-open {
+    overflow: hidden;
+}
+
 /* 進入計時器入口 */
 .timer-entry-gate {
     position: fixed;
