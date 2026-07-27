@@ -8,11 +8,11 @@
   "files.autoSaveDelay": 1000,
   "runOnSave.commands": [
     {
-      "match": "(index\\.html|css/app\\.css|js/app\\.js)$",
+      "match": "(index\\.html|css/app\\.css|js/app\\.js|locales/.+\\.json|tutorial-en\\.md|新手教學\\.md)$",
       "command": "bash \"${workspaceFolder}/scripts/deploy.sh\"",
-      "runIn": "backend",
-      "runningStatusMessage": "正在部署到 Netlify…",
-      "finishStatusMessage": "部署指令已執行"
+      "runIn": "terminal",
+      "runningStatusMessage": "正在上傳到 GitHub…",
+      "finishStatusMessage": "✅ 已完成上傳（請看終端機）"
     }
   ]
 }

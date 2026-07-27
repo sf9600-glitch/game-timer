@@ -8,22 +8,34 @@ STATUS_LOG="$ROOT/logs/deploy-last.txt"
 mkdir -p "$ROOT/logs"
 write_status() { echo "$1" | tee "$STATUS_LOG"; }
 
-LOCK="${TMPDIR:-/tmp}/game-timer-deploy.lock"
-if [[ -f "$LOCK" ]]; then
+LOCKDIR="${TMPDIR:-/tmp}/game-timer-deploy.lockdir"
+DEBOUNCE_SEC=1.5
+
+print_banner() {
+  echo ""
+  echo "════════════════════════════════════════"
+  printf '  %s\n' "$1"
+  echo "════════════════════════════════════════"
+  echo ""
+}
+
+if ! mkdir "$LOCKDIR" 2>/dev/null; then
+  echo ""
+  echo "⏳ 已有部署正在進行，請看終端機稍後的「已完成上傳」提示…"
+  echo ""
   exit 0
 fi
-touch "$LOCK"
-trap 'rm -f "$LOCK"' EXIT
+trap 'rmdir "$LOCKDIR" 2>/dev/null || true' EXIT
 
-sleep 0.8
+sleep "$DEBOUNCE_SEC"
 
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
-  echo "❌ 尚未初始化 Git。請依 AUTO_DEPLOY.md 完成一次性設定。"
+  print_banner "❌ 尚未初始化 Git（請依 AUTO_DEPLOY.md 設定）"
   exit 1
 fi
 
 if ! git remote get-url origin >/dev/null 2>&1; then
-  echo "❌ 尚未設定 GitHub remote (origin)。請依 AUTO_DEPLOY.md 連線。"
+  print_banner "❌ 尚未設定 GitHub remote（請依 AUTO_DEPLOY.md 設定）"
   exit 1
 fi
 
@@ -33,21 +45,38 @@ git restore --staged logs/ 2>/dev/null || true
 
 if git diff --staged --quiet; then
   write_status "$(date '+%Y-%m-%d %H:%M:%S') — 沒有變更，略過上傳"
+  print_banner "ℹ️  沒有新變更，略過上傳"
   exit 0
 fi
 
 CHANGED_FILES="$(git diff --staged --name-only)"
+FILE_COUNT="$(printf '%s\n' "$CHANGED_FILES" | sed '/^$/d' | wc -l | tr -d ' ')"
 
 BRANCH="$(git branch --show-current 2>/dev/null || echo main)"
 MSG="deploy: $(date '+%Y-%m-%d %H:%M:%S')"
 git commit -m "$MSG"
 git push origin "$BRANCH"
 
+TS="$(date '+%Y-%m-%d %H:%M:%S')"
 {
-  echo "✓ $(date '+%Y-%m-%d %H:%M:%S') 已推送到 GitHub"
+  echo "✓ ${TS} 已推送到 GitHub"
   echo "   https://sf9600-glitch.github.io/game-timer/"
-  echo "📦 本次上傳檔案："
+  echo "📦 本次上傳 ${FILE_COUNT} 個檔案："
   while IFS= read -r f; do
     [[ -n "$f" ]] && echo "   - $f"
   done <<< "$CHANGED_FILES"
 } | tee "$STATUS_LOG"
+
+print_banner "✅ 已完成上傳（${FILE_COUNT} 個檔案）"
+echo "   時間：${TS}"
+echo "   網站：https://sf9600-glitch.github.io/game-timer/"
+echo "   約 1–3 分鐘後請 Cmd+Shift+R 強制重新整理"
+echo ""
+echo "📦 本次上傳檔案："
+while IFS= read -r f; do
+  [[ -n "$f" ]] && echo "   - $f"
+done <<< "$CHANGED_FILES"
+echo ""
+
+# 終端機提示音（macOS / 多數 Linux 終端機）
+printf '\a'
