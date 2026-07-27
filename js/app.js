@@ -3270,7 +3270,7 @@ function syncSubEditPanels() {
 
 function updateExpandAllButtonLabel() {
     const btn = document.getElementById('btn-expand-all-tasks');
-    if (btn) btn.textContent = uiState.allTasksExpanded ? '收合全部' : '展開全部';
+    if (btn) btn.textContent = uiState.allTasksExpanded ? t('collapseAll') : t('expandAll');
 }
 
 function toggleExpandAllTasks() {
