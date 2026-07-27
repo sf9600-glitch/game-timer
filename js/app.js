@@ -2385,7 +2385,7 @@ function getUserDefaultTasks() {
 }
 
 const defaultConfig = {
-    colors: { acc: '#64748b', task: '#475569', start: '#4a90e2', sys: '#475569' },
+    colors: { acc: '#16a34a', task: '#dc2626', start: '#eab308', sys: '#475569' },
     accounts: [
         { email: '帳號1', characters: ['角色1'], color: '#4a90e2' },
         { email: '帳號2', characters: ['角色2'], color: '#e28743' }
