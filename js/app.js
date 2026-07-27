@@ -403,14 +403,8 @@ async function openTutorialModal() {
     modal.classList.add('show');
     body.innerHTML = `<p>${t('tutorialLoading')}</p>`;
     try {
-        if (!tutorialMarkdownCache) {
-            const res = await fetch(TUTORIAL_MD_FILE);
-            if (!res.ok) throw new Error(String(res.status));
-            tutorialMarkdownCache = await res.text();
-        }
-        body.innerHTML = typeof marked !== 'undefined'
-            ? marked.parse(tutorialMarkdownCache)
-            : tutorialMarkdownCache.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        const markdown = await loadTutorialMarkdown(currentLang);
+        body.innerHTML = renderTutorialMarkdownHtml(markdown);
     } catch (e) {
         body.innerHTML = `<p>${t('tutorialLoadFailed')}</p>`;
     }
