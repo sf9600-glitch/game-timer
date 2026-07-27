@@ -5617,6 +5617,7 @@ document.addEventListener('keydown', e => {
         hideAddTimerHint();
         return;
     }
+    if (isTimerWizardOpen()) {
         closeTimerWizard();
         return;
     }
