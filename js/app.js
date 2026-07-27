@@ -5633,7 +5633,7 @@ document.addEventListener('keydown', e => {
     if (isLangEntryGateOpen()) return;
     if (isTimerEntryGateOpen()) return;
     if (addTimerHintOpen) {
-        hideAddTimerHint();
+        dismissAddTimerHint();
         return;
     }
     if (isTimerWizardOpen()) {
