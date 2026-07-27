@@ -294,7 +294,7 @@ const LOCALE_INLINE_FALLBACK = {
     }
 };
 const I18N = {};
-let localeManifest = { default: DEFAULT_LANG, languages: [{ id: 'zh-TW', nativeName: '繁體中文' }, { id: 'zh-CN', nativeName: '简体中文' }] };
+let localeManifest = { default: DEFAULT_LANG, languages: [{ id: 'zh-TW', nativeName: '繁體中文' }, { id: 'zh-CN', nativeName: '简体中文' }, { id: 'en', nativeName: 'English' }] };
 let currentLang = DEFAULT_LANG;
 let cloudSyncStatusKey = 'cloudLoginPrompt';
 
