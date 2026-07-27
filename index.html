@@ -15,9 +15,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<body class="timer-entry-gate-open">
+<body>
 
-    <div class="timer-entry-gate show" id="timerEntryGate" role="dialog" aria-modal="true" aria-labelledby="timerEntryGateTitle" aria-hidden="false">
+    <div class="lang-entry-gate" id="langEntryGate" role="dialog" aria-modal="true" aria-labelledby="langEntryGateTitle" aria-hidden="true">
+        <div class="lang-entry-gate-inner">
+            <h1 class="lang-entry-gate-title" id="langEntryGateTitle"></h1>
+            <p class="lang-entry-gate-sub" id="langEntryGateSub"></p>
+            <div class="lang-entry-gate-actions" id="langEntryGateActions"></div>
+        </div>
+    </div>
+
+    <div class="timer-entry-gate" id="timerEntryGate" role="dialog" aria-modal="true" aria-labelledby="timerEntryGateTitle" aria-hidden="true">
         <div class="timer-entry-gate-inner">
             <h1 class="timer-entry-gate-title" id="timerEntryGateTitle">遊戲計時器</h1>
             <div class="timer-entry-gate-actions">
