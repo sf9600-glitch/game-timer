@@ -1738,6 +1738,8 @@ async function setLang(lang, opts = {}) {
     localStorage.setItem(LANG_KEY, lang);
     document.documentElement.lang = lang;
     document.title = t('appTitle');
+    const appMetaTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if (appMetaTitle) appMetaTitle.setAttribute('content', t('appTitle'));
     syncPanelMobileControls();
     updateCloudSyncUI();
     if (undoStack.length) updateUndoToastText();
