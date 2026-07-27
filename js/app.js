@@ -1881,7 +1881,8 @@ function hideTimerEntryGate(opts = {}) {
     gate.classList.remove('show');
     gate.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('timer-entry-gate-open');
-    if (!opts.skipTutorial) maybeStartInteractiveTutorial();
+    if (!opts.keepEntryGatePending) markEntryGateDone();
+    if (!opts.skipHint) maybeShowAddTimerHint();
 }
 
 function applyMobileHomeAfterGate() {
