@@ -5213,16 +5213,16 @@ function initMobilePullToRefresh() {
         indicator.setAttribute('aria-hidden', 'false');
         if (mode === 'pull') {
             indicator.classList.remove('refreshing');
-            indicatorText.textContent = '下拉更新';
+            indicatorText.textContent = t('pullRefreshPull');
         } else if (mode === 'ready') {
             indicator.classList.remove('refreshing');
-            indicatorText.textContent = '放開立即更新';
+            indicatorText.textContent = t('pullRefreshReady');
         } else if (mode === 'refreshing') {
             indicator.classList.add('refreshing');
-            indicatorText.textContent = '更新中...';
+            indicatorText.textContent = t('pullRefreshRefreshing');
         } else if (mode === 'done') {
             indicator.classList.remove('refreshing');
-            indicatorText.textContent = '更新完成';
+            indicatorText.textContent = t('pullRefreshDone');
         }
     };
 
