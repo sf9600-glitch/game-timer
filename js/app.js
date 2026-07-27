@@ -1942,8 +1942,11 @@ async function setLang(lang, opts = {}) {
     refreshMainDisplay();
     syncStartSheetChrome();
     syncTimerEntryGateChrome();
+    syncLangEntryGateChrome();
     syncPullRefreshChrome();
+    syncAddTimerHintChrome();
     if (isTimerWizardOpen()) renderTimerWizardStep();
+    if (addTimerHintOpen) requestAnimationFrame(positionAddTimerHintUi);
     if (document.getElementById('tutorialModal')?.classList.contains('show')) {
         updateTutorialModalChrome();
         openTutorialModal();
