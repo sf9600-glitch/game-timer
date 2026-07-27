@@ -1543,7 +1543,7 @@ function closeTimerWizard() {
     wizard.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('timer-wizard-open');
     timerWizardState = null;
-    maybeStartInteractiveTutorial();
+    maybeShowAddTimerHint();
 }
 
 function onWizardAccChange() {
