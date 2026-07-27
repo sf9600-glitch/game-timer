@@ -2,6 +2,7 @@
   "default": "zh-TW",
   "languages": [
     { "id": "zh-TW", "nativeName": "繁體中文" },
-    { "id": "zh-CN", "nativeName": "简体中文" }
+    { "id": "zh-CN", "nativeName": "简体中文" },
+    { "id": "en", "nativeName": "English" }
   ]
 }
