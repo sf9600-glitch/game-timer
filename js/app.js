@@ -1760,6 +1760,8 @@ function applyLangFromStorage() {
     else if (!I18N[currentLang] && I18N[DEFAULT_LANG]) currentLang = DEFAULT_LANG;
     document.documentElement.lang = currentLang;
     document.title = t('appTitle');
+    const appMetaTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if (appMetaTitle) appMetaTitle.setAttribute('content', t('appTitle'));
     syncPanelMobileControls();
     const undoEl = document.getElementById('undoText');
     if (undoEl) undoEl.textContent = t('undo');
