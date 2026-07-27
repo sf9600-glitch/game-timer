@@ -1285,12 +1285,17 @@ function advanceInteractiveTutorial() {
     showOnboardingStep(onboardingStepIndex + 1);
 }
 
-function maybeStartInteractiveTutorial() {
-    if (localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
-    setTimeout(() => {
-        if (isTimerEntryGateOpen() || isTimerWizardOpen()) return;
-        startInteractiveTutorial();
-    }, 500);
+function runFirstRunGatesAfterInit() {
+    migrateFirstRunGates();
+    if (shouldShowLangGate()) {
+        showLangEntryGate();
+        return;
+    }
+    if (shouldShowEntryGate()) {
+        showTimerEntryGate();
+        return;
+    }
+    maybeShowAddTimerHint();
 }
 
 const TIMER_WIZARD_STEPS = ['acc', 'task', 'time', 'done'];
