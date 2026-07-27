@@ -1675,7 +1675,175 @@ function finishTimerWizard() {
     closeTimerWizard();
 }
 
-let timerEntryGateOpen = true;
+let timerEntryGateOpen = false;
+let langEntryGateOpen = false;
+let addTimerHintOpen = false;
+let addTimerHintResizeHandler = null;
+
+function migrateFirstRunGates() {
+    if (localStorage.getItem(LANG_KEY)) {
+        localStorage.setItem(LANG_GATE_DONE_KEY, '1');
+        if (localStorage.getItem(STORAGE_KEY)) {
+            localStorage.setItem(ENTRY_GATE_DONE_KEY, '1');
+        }
+    }
+}
+
+function shouldShowLangGate() {
+    return localStorage.getItem(LANG_GATE_DONE_KEY) !== '1';
+}
+
+function shouldShowEntryGate() {
+    return localStorage.getItem(ENTRY_GATE_DONE_KEY) !== '1';
+}
+
+function markEntryGateDone() {
+    localStorage.setItem(ENTRY_GATE_DONE_KEY, '1');
+}
+
+function syncLangEntryGateChrome() {
+    const title = document.getElementById('langEntryGateTitle');
+    const sub = document.getElementById('langEntryGateSub');
+    const actions = document.getElementById('langEntryGateActions');
+    if (title) title.textContent = t('langGateTitle');
+    if (sub) sub.textContent = t('langGateSub');
+    if (actions) {
+        actions.innerHTML = getAvailableLanguages().map(l => (
+            `<button type="button" class="lang-entry-gate-btn" onclick="pickLangFromGate('${l.id}')">${l.nativeName || l.id}</button>`
+        )).join('');
+    }
+}
+
+function showLangEntryGate() {
+    const gate = document.getElementById('langEntryGate');
+    if (!gate) return;
+    langEntryGateOpen = true;
+    gate.classList.add('show');
+    gate.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lang-entry-gate-open');
+    syncLangEntryGateChrome();
+}
+
+function hideLangEntryGate() {
+    const gate = document.getElementById('langEntryGate');
+    if (!gate) return;
+    langEntryGateOpen = false;
+    gate.classList.remove('show');
+    gate.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('lang-entry-gate-open');
+}
+
+async function pickLangFromGate(langId) {
+    if (!langId) return;
+    localStorage.setItem(LANG_GATE_DONE_KEY, '1');
+    hideLangEntryGate();
+    await setLang(langId, { skipCloud: true });
+    if (shouldShowEntryGate()) showTimerEntryGate();
+    else maybeShowAddTimerHint();
+}
+
+function isLangEntryGateOpen() {
+    return langEntryGateOpen;
+}
+
+function shouldShowAddTimerHint() {
+    if (getActiveTimers().length > 0) return false;
+    if (shouldShowLangGate() || shouldShowEntryGate()) return false;
+    if (isLangEntryGateOpen() || isTimerEntryGateOpen() || isTimerWizardOpen()) return false;
+    if (onboardingActive) return false;
+    return true;
+}
+
+function syncAddTimerHintChrome() {
+    const title = document.getElementById('addTimerHintTitle');
+    const body = document.getElementById('addTimerHintBody');
+    const createBtn = document.getElementById('addTimerHintCreateBtn');
+    const interactiveBtn = document.getElementById('addTimerHintInteractiveBtn');
+    const guideBtn = document.getElementById('addTimerHintGuideBtn');
+    if (title) title.textContent = t('addTimerHintTitle');
+    if (body) body.textContent = t('addTimerHintBody');
+    if (createBtn) createBtn.textContent = t('addTimerHintCreate');
+    if (interactiveBtn) interactiveBtn.textContent = t('addTimerHintInteractive');
+    if (guideBtn) guideBtn.textContent = t('addTimerHintGuide');
+}
+
+function positionAddTimerHintUi() {
+    const hint = document.getElementById('addTimerHint');
+    const spot = document.getElementById('addTimerHintSpot');
+    const card = document.getElementById('addTimerHintCard');
+    const target = document.getElementById('sideAddTimerBtn');
+    if (!hint?.classList.contains('show') || !spot || !card || !target) return;
+    target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const pad = 8;
+    const r = target.getBoundingClientRect();
+    spot.style.top = `${Math.max(2, r.top - pad)}px`;
+    spot.style.left = `${Math.max(2, r.left - pad)}px`;
+    spot.style.width = `${Math.max(24, r.width + pad * 2)}px`;
+    spot.style.height = `${Math.max(24, r.height + pad * 2)}px`;
+    const margin = 10;
+    const cardW = Math.min(320, window.innerWidth - 24);
+    card.style.width = `${cardW}px`;
+    let top = r.bottom + margin;
+    const cardH = card.offsetHeight || 180;
+    if (top + cardH > window.innerHeight - margin) top = r.top - cardH - margin;
+    if (top < margin) top = margin;
+    let left = r.left + r.width / 2 - cardW / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - cardW - margin));
+    card.style.top = `${top}px`;
+    card.style.left = `${left}px`;
+}
+
+function showAddTimerHint() {
+    if (!shouldShowAddTimerHint()) return;
+    const hint = document.getElementById('addTimerHint');
+    if (!hint) return;
+    if (isMobileLayout()) setSidePanelOpen(true);
+    syncAddTimerHintChrome();
+    hint.classList.add('show');
+    hint.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('add-timer-hint-open');
+    addTimerHintOpen = true;
+    requestAnimationFrame(() => {
+        positionAddTimerHintUi();
+        requestAnimationFrame(positionAddTimerHintUi);
+    });
+    if (!addTimerHintResizeHandler) {
+        addTimerHintResizeHandler = () => { if (addTimerHintOpen) positionAddTimerHintUi(); };
+        window.addEventListener('resize', addTimerHintResizeHandler);
+    }
+}
+
+function hideAddTimerHint() {
+    const hint = document.getElementById('addTimerHint');
+    if (!hint) return;
+    addTimerHintOpen = false;
+    hint.classList.remove('show');
+    hint.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('add-timer-hint-open');
+}
+
+function maybeShowAddTimerHint() {
+    if (!shouldShowAddTimerHint()) {
+        hideAddTimerHint();
+        return;
+    }
+    setTimeout(() => showAddTimerHint(), 400);
+}
+
+function onAddTimerHintCreate() {
+    hideAddTimerHint();
+    openAddTimerFromPanel();
+}
+
+function onAddTimerHintInteractive() {
+    hideAddTimerHint();
+    startInteractiveTutorial({ force: true });
+}
+
+function onAddTimerHintGuide() {
+    hideAddTimerHint();
+    openTutorialModal();
+}
 
 function isTimerEntryGateOpen() {
     return timerEntryGateOpen;
