@@ -7,6 +7,7 @@ const LANG_KEY = 'GameTimer_Lang_Preference';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 const DEFAULT_LANG = 'zh-TW';
+const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
 const LOCALE_INLINE_FALLBACK = {
     'zh-TW': {
