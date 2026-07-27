@@ -6,13 +6,16 @@
   "workbench.statusBar.visible": true,
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1000,
+  "runOnSave.statusMessageTimeout": 15000,
   "runOnSave.commands": [
     {
       "match": "(index\\.html|css/app\\.css|js/app\\.js|locales/.+\\.json|tutorial-en\\.md|新手教學\\.md)$",
       "command": "bash \"${workspaceFolder}/scripts/deploy.sh\"",
-      "runIn": "terminal",
+      "runIn": "backend",
+      "async": false,
+      "clearOutput": false,
       "runningStatusMessage": "正在上傳到 GitHub…",
-      "finishStatusMessage": "✅ 已完成上傳（請看終端機）"
+      "finishStatusMessage": "✅ 已完成上傳"
     }
   ]
 }

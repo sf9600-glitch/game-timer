@@ -9,7 +9,7 @@ mkdir -p "$ROOT/logs"
 write_status() { echo "$1" | tee "$STATUS_LOG"; }
 
 LOCKDIR="${TMPDIR:-/tmp}/game-timer-deploy.lockdir"
-DEBOUNCE_SEC=1.5
+DEBOUNCE_SEC=2
 
 print_banner() {
   echo ""
@@ -19,15 +19,30 @@ print_banner() {
   echo ""
 }
 
-if ! mkdir "$LOCKDIR" 2>/dev/null; then
-  echo ""
-  echo "⏳ 已有部署正在進行，請看終端機稍後的「已完成上傳」提示…"
-  echo ""
-  exit 0
-fi
+acquire_deploy_lock() {
+  local waited=0
+  while ! mkdir "$LOCKDIR" 2>/dev/null; do
+    if [[ "$waited" -eq 0 ]]; then
+      echo ""
+      echo "⏳ 等待上一個部署完成…"
+    fi
+    sleep 0.3
+    waited=$((waited + 1))
+    if (( waited > 400 )); then
+      print_banner "❌ 等待部署逾時，請稍後再試"
+      exit 1
+    fi
+  done
+}
+
+acquire_deploy_lock
 trap 'rmdir "$LOCKDIR" 2>/dev/null || true' EXIT
 
 sleep "$DEBOUNCE_SEC"
+
+echo ""
+echo "▶ 開始部署 $(date '+%Y-%m-%d %H:%M:%S')"
+echo ""
 
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
   print_banner "❌ 尚未初始化 Git（請依 AUTO_DEPLOY.md 設定）"
@@ -45,7 +60,8 @@ git restore --staged logs/ 2>/dev/null || true
 
 if git diff --staged --quiet; then
   write_status "$(date '+%Y-%m-%d %H:%M:%S') — 沒有變更，略過上傳"
-  print_banner "ℹ️  沒有新變更，略過上傳"
+  print_banner "✅ 部署完成（沒有新變更，略過上傳）"
+  printf '\a'
   exit 0
 fi
 
