@@ -350,6 +350,7 @@ function syncPullRefreshChrome() {
         el.textContent = t('pullRefreshPull');
     }
 }
+function t(key) {
     const d = I18N[currentLang] || I18N[DEFAULT_LANG];
     const inlineFb = LOCALE_INLINE_FALLBACK[currentLang] || LOCALE_INLINE_FALLBACK[DEFAULT_LANG] || {};
     if (!d) return inlineFb[key] ?? key;
