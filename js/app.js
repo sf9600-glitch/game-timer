@@ -362,8 +362,31 @@ function tp(key, params) {
     return s;
 }
 
-const TUTORIAL_MD_FILE = '新手教學.md';
-let tutorialMarkdownCache = null;
+const TUTORIAL_MD_BY_LANG = {
+    'zh-TW': '新手教學.md',
+    'zh-CN': '新手教學.md',
+    en: 'tutorial-en.md'
+};
+const tutorialMarkdownCache = {};
+
+function getTutorialMdFile(lang) {
+    return TUTORIAL_MD_BY_LANG[lang] || TUTORIAL_MD_BY_LANG[DEFAULT_LANG];
+}
+
+async function loadTutorialMarkdown(lang) {
+    const key = lang || currentLang;
+    if (tutorialMarkdownCache[key]) return tutorialMarkdownCache[key];
+    const res = await fetch(getTutorialMdFile(key));
+    if (!res.ok) throw new Error(String(res.status));
+    tutorialMarkdownCache[key] = await res.text();
+    return tutorialMarkdownCache[key];
+}
+
+function renderTutorialMarkdownHtml(markdown) {
+    return typeof marked !== 'undefined'
+        ? marked.parse(markdown)
+        : markdown.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+}
 
 function updateTutorialModalChrome() {
     const titleEl = document.getElementById('tutorialModalTitle');
