@@ -5144,7 +5144,7 @@ function createAndStartTimer({ email, char, taskIdx, durationSec, sub, fThres, n
         timerId: newTimerData.id
     });
     dispatchTimersToDOM();
-    hideAddTimerHint();
+    markAddTimerHintDone();
     return true;
 }
 
