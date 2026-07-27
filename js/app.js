@@ -336,7 +336,20 @@ async function initI18n() {
     if (!I18N[currentLang] && I18N[DEFAULT_LANG]) currentLang = DEFAULT_LANG;
 }
 
-function t(key) {
+function isCharUnspecifiedKey(key) {
+    return key === CHAR_UNSPECIFIED_KEY;
+}
+
+function getCharDisplayName(key) {
+    return isCharUnspecifiedKey(key) ? t('charUnspecified') : key;
+}
+
+function syncPullRefreshChrome() {
+    const el = document.getElementById('pullRefreshText');
+    if (el && !document.getElementById('pullRefreshIndicator')?.classList.contains('show')) {
+        el.textContent = t('pullRefreshPull');
+    }
+}
     const d = I18N[currentLang] || I18N[DEFAULT_LANG];
     const inlineFb = LOCALE_INLINE_FALLBACK[currentLang] || LOCALE_INLINE_FALLBACK[DEFAULT_LANG] || {};
     if (!d) return inlineFb[key] ?? key;
