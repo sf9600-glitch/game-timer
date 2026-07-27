@@ -5627,11 +5627,12 @@ window.addEventListener('resize', () => {
     syncNotifyPermissionUi();
 });
 (async () => {
-    showTimerEntryGate();
     await initI18n();
     applyLangFromStorage();
     syncTimerEntryGateChrome();
+    syncLangEntryGateChrome();
     syncPullRefreshChrome();
+    syncAddTimerHintChrome();
     updateTutorialModalChrome();
     await initCloudSync();
     renderSidePanel();
@@ -5647,5 +5648,6 @@ window.addEventListener('resize', () => {
     initMobilePullToRefresh();
     initMobileSwipePanelToggle();
     syncNotifyEnableBanner();
+    runFirstRunGatesAfterInit();
     runGlobalClockTick();
 })();
