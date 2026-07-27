@@ -1901,7 +1901,8 @@ function enterTimerFromGate(mode) {
 }
 
 function openAddTimerFromPanel() {
-    if (isTimerEntryGateOpen()) hideTimerEntryGate({ skipTutorial: true });
+    if (isTimerEntryGateOpen()) hideTimerEntryGate({ skipHint: true });
+    hideAddTimerHint();
     openTimerWizard();
 }
 
