@@ -91,6 +91,19 @@
         <span onclick="dismissUndo()" style="margin-left:10px; cursor:pointer; font-weight: bold;">&times;</span>
     </div>
 
+    <div class="add-timer-hint" id="addTimerHint" aria-hidden="true">
+        <div class="add-timer-hint-spot" id="addTimerHintSpot" aria-hidden="true"></div>
+        <div class="add-timer-hint-card" id="addTimerHintCard" role="dialog" aria-modal="true" aria-labelledby="addTimerHintTitle">
+            <h2 class="add-timer-hint-title" id="addTimerHintTitle"></h2>
+            <p class="add-timer-hint-body" id="addTimerHintBody"></p>
+            <div class="add-timer-hint-actions">
+                <button type="button" class="add-timer-hint-btn add-timer-hint-btn--primary" id="addTimerHintCreateBtn" onclick="onAddTimerHintCreate()"></button>
+                <button type="button" class="add-timer-hint-btn" id="addTimerHintInteractiveBtn" onclick="onAddTimerHintInteractive()"></button>
+                <button type="button" class="add-timer-hint-btn" id="addTimerHintGuideBtn" onclick="onAddTimerHintGuide()"></button>
+            </div>
+        </div>
+    </div>
+
     <div class="onboarding-tour" id="onboardingTour" aria-hidden="true">
         <div class="onboarding-spot" id="onboardingSpot" aria-hidden="true"></div>
         <div class="onboarding-card" id="onboardingCard" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
