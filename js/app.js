@@ -4228,7 +4228,7 @@ function dispatchFinishedGlobalPanel(allSavedData, now) {
 }
 
 function getCharGroupKey(char) {
-    return (char && String(char).trim()) ? String(char).trim() : '（未指定角色）';
+    return (char && String(char).trim()) ? String(char).trim() : CHAR_UNSPECIFIED_KEY;
 }
 
 /** 先依結束時間全域排序，相鄰同角色再合為一組（最快結束的永遠在最前） */
