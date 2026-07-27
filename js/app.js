@@ -5611,7 +5611,12 @@ function initMobileSwipePanelToggle() {
 
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
-    if (isTimerWizardOpen()) {
+    if (isLangEntryGateOpen()) return;
+    if (isTimerEntryGateOpen()) return;
+    if (addTimerHintOpen) {
+        hideAddTimerHint();
+        return;
+    }
         closeTimerWizard();
         return;
     }
