@@ -3334,6 +3334,45 @@ body.timer-time-edit-open {
     margin-bottom: 0;
 }
 
+.boot-fail-banner {
+    position: fixed;
+    left: 50%;
+    bottom: max(16px, env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: 2400;
+    width: min(360px, calc(100vw - 24px));
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--danger);
+    background: var(--card-bg);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.2);
+    text-align: center;
+}
+.boot-fail-banner strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--danger);
+    font-size: 0.95rem;
+}
+.boot-fail-banner p {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    line-height: 1.45;
+}
+.boot-fail-btn {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+}
+
 /* 新增計時器步驟引導 */
 .timer-wizard {
     position: fixed;
