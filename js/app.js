@@ -1294,8 +1294,25 @@ function advanceInteractiveTutorial() {
 
 function showPendingFirstRunGatesEarly() {
     migrateFirstRunGates();
-    if (shouldShowLangGate()) showLangEntryGate();
-    else if (shouldShowEntryGate()) showTimerEntryGate();
+    if (shouldShowLangGate()) {
+        const gate = document.getElementById('langEntryGate');
+        if (gate) {
+            langEntryGateOpen = true;
+            gate.classList.add('show');
+            gate.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('lang-entry-gate-open');
+        }
+        return;
+    }
+    if (shouldShowEntryGate()) {
+        const gate = document.getElementById('timerEntryGate');
+        if (gate) {
+            timerEntryGateOpen = true;
+            gate.classList.add('show');
+            gate.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('timer-entry-gate-open');
+        }
+    }
 }
 
 function runFirstRunGatesAfterInit() {
