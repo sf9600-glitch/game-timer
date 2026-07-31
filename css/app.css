@@ -2725,6 +2725,35 @@ html.timer-display-list .timer-list-row .timer-list-hint {
     padding: 0;
 }
 
+.cloud-history-backup-box {
+    margin: 10px 0 12px;
+    padding: 10px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border-color));
+}
+.cloud-history-backup-hint {
+    margin: 0 0 8px;
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    line-height: 1.45;
+}
+.cloud-history-backup-btn {
+    width: 100%;
+}
+
+.export-to-drive-btn {
+    width: 100%;
+    margin-top: 6px;
+    font-size: 0.68rem;
+}
+.export-to-drive-hint {
+    margin: 6px 0 0;
+    font-size: 0.62rem;
+    color: var(--text-sub);
+    line-height: 1.45;
+}
+
 .tutorial-modal {
     position: fixed; inset: 0; z-index: 2000;
     display: flex; align-items: center; justify-content: center;

@@ -68,8 +68,20 @@ const LOCALE_INLINE_FALLBACK = {
         recoveryRestoreVersion: '還原',
         recoverySourceLocal: '本機',
         recoverySourceCloud: '雲端',
-        recoveryRetentionHint: '本機最多保留 {max} 份（每次新增計時器時自動備份，不是按天數）。雲端只保留最新 1 份同步狀態，沒有多日版本；更久請用「匯出」。',
+        recoveryRetentionHint: '本機最多保留 {max} 份（新增計時器時自動備份）。登入雲端後可一鍵備份，雲端歷史最多 30 份；更久請用「匯出」。',
         recoveryCloudRestoreConfirm: '確定還原到「{date}」的雲端同步狀態？\n\n會覆蓋目前的設定與計時器。',
+        recoverySourceCloudHistory: '雲端歷史',
+        cloudHistoryHint: '使用左側「雲端同步」登入後，一鍵備份到雲端（最多 30 份，可在「還原備份」選擇還原）。',
+        cloudHistoryBackupBtn: '☁ 一鍵雲端備份',
+        cloudHistoryBackupOk: '已備份到雲端',
+        cloudHistoryBackupFailed: '雲端備份失敗，請確認已登入雲端帳號。',
+        cloudHistoryManualLabel: '手動備份',
+        cloudHistoryNeedSetup: '雲端歷史備份尚未啟用：請管理員在 Supabase 執行 supabase/cloud-history.sql',
+        exportToDriveBtn: '備份到 Google 雲端硬碟（簡易）',
+        exportToDriveHint: 'Mac：選「Google Drive」資料夾即可。iPhone：分享時選 Google Drive App。無須額外設定。',
+        exportToDriveOk: '備份已儲存',
+        exportToDriveShare: '請在分享畫面選「Google Drive」或「儲存到檔案」。',
+        exportToDriveFallback: '已下載備份檔，請上傳到 drive.google.com 的「遊戲計時器備份」資料夾。',
         timerDisplayLabel: '計時器顯示',
         timerDisplayHint: '簡潔為純文字表格（每列一筆）；彩色為卡片；文字列表依角色分組。',
         cleanColChar: '角色',
@@ -1990,6 +2002,9 @@ const SUPABASE_ANON_KEY = 'sb_publishable_06A2mHaxzTXHx6DhQLI2XQ_zSoaveJv';
 /** 背景推播 VAPID 公鑰（npx web-push generate-vapid-keys），見 docs/背景推播設定.md */
 const WEB_PUSH_VAPID_PUBLIC_KEY = 'BEK0-Llemf0WqM_wxZ9qFFPX5bxhDUPyCfpZJlJcw9sMaSsuhp6okQU8RHbWqC4FdGPhKOFD6FfeLhZmTPNISTE';
 
+/** 雲端歷史備份：登入雲端帳號後可用，見 supabase/cloud-history.sql */
+const CLOUD_HISTORY_MAX = 30;
+let cloudHistoryList = [];
 const defaultAccColors = ['#4a90e2', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
 let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null };
 const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
@@ -2631,6 +2646,89 @@ function saveLocalSnapshot(meta) {
     const snapshots = getLocalSnapshots().filter(s => String(s.id) !== entry.id);
     snapshots.unshift(entry);
     persistLocalSnapshots(snapshots.slice(0, LOCAL_SNAPSHOTS_MAX));
+    saveCloudHistorySnapshot(meta).catch(err => console.warn('saveCloudHistorySnapshot', err));
+}
+
+async function loadCloudHistoryList() {
+    if (!isCloudSyncActive()) {
+        cloudHistoryList = [];
+        return;
+    }
+    const sb = getSupabase();
+    if (!sb) return;
+    const { data, error } = await sb
+        .from('timer_snapshot_history')
+        .select('id, label, created_at, payload')
+        .order('created_at', { ascending: false })
+        .limit(CLOUD_HISTORY_MAX);
+    if (error) throw error;
+    cloudHistoryList = (data || []).map(row => ({
+        id: row.id,
+        createdAt: new Date(row.created_at).getTime(),
+        label: row.label || '',
+        payload: row.payload
+    }));
+}
+
+async function pruneCloudHistorySnapshots() {
+    const sb = getSupabase();
+    if (!sb || !currentUser) return;
+    const { data, error } = await sb
+        .from('timer_snapshot_history')
+        .select('id')
+        .order('created_at', { ascending: false });
+    if (error) throw error;
+    const toDelete = (data || []).slice(CLOUD_HISTORY_MAX).map(r => r.id);
+    if (!toDelete.length) return;
+    const { error: delErr } = await sb.from('timer_snapshot_history').delete().in('id', toDelete);
+    if (delErr) throw delErr;
+}
+
+async function saveCloudHistorySnapshot(meta = {}) {
+    if (!isCloudSyncActive()) return;
+    const sb = getSupabase();
+    if (!sb) return;
+    const { error } = await sb.from('timer_snapshot_history').insert({
+        user_id: currentUser.id,
+        payload: buildSnapshotPayload(),
+        label: meta.label || ''
+    });
+    if (error) throw error;
+    await pruneCloudHistorySnapshots();
+    await loadCloudHistoryList();
+}
+
+async function backupToCloudHistoryNow() {
+    if (!isCloudSyncActive()) {
+        alert(t('recoveryCloudLogin'));
+        return;
+    }
+    try {
+        await saveCloudHistorySnapshot({ label: t('cloudHistoryManualLabel') });
+        renderSidePanel();
+        alert(t('cloudHistoryBackupOk'));
+    } catch (err) {
+        console.error('backupToCloudHistoryNow', err);
+        const msg = String(err?.message || err);
+        if (msg.includes('timer_snapshot_history') || msg.includes('does not exist') || msg.includes('404')) {
+            alert(t('cloudHistoryNeedSetup'));
+        } else {
+            alert(t('cloudHistoryBackupFailed'));
+        }
+    }
+}
+
+function getRecoverySourceLabel(source) {
+    if (source === 'cloud') return t('recoverySourceCloud');
+    if (source === 'cloudHistory') return t('recoverySourceCloudHistory');
+    return t('recoverySourceLocal');
+}
+
+function renderCloudHistoryBackupHtml() {
+    return `<div class="cloud-history-backup-box">
+        <p class="cloud-history-backup-hint">${escSnapshotText(t('cloudHistoryHint'))}</p>
+        <button type="button" class="btn-main btn-compact-main cloud-history-backup-btn" onclick="backupToCloudHistoryNow()">${t('cloudHistoryBackupBtn')}</button>
+    </div>`;
 }
 
 function formatSnapshotDateTime(ts) {
@@ -2656,6 +2754,15 @@ function getRecoveryOptionEntries() {
         text: `${getSnapshotSelectLabel(s)}　${t('recoverySourceLocal')}`,
         snapshot: s
     }));
+    cloudHistoryList.forEach(h => {
+        entries.push({
+            id: `cloudhist:${h.id}`,
+            source: 'cloudHistory',
+            createdAt: h.createdAt || 0,
+            text: `${getSnapshotSelectLabel(h)}　${t('recoverySourceCloudHistory')}`,
+            snapshot: h
+        });
+    });
     if (isCloudSyncActive() && lastCloudUpdatedAt > 0) {
         entries.push({
             id: 'cloud',
@@ -2729,7 +2836,7 @@ function syncRecoverySourceNote() {
         note.textContent = '';
         return;
     }
-    note.textContent = entry.source === 'cloud' ? t('recoverySourceCloud') : t('recoverySourceLocal');
+    note.textContent = getRecoverySourceLabel(entry.source);
 }
 
 async function restoreSelectedSnapshot() {
@@ -2755,6 +2862,12 @@ async function restoreSelectedSnapshot() {
         }
         return;
     }
+    if (entry.source === 'cloudHistory') {
+        if (!confirm(tp('confirmRestoreSnapshot', { date }))) return;
+        applyRecoveryPayload(entry.snapshot.payload);
+        alert(t('alertSnapshotRestored'));
+        return;
+    }
     if (!confirm(tp('confirmRestoreSnapshot', { date }))) return;
     applyLocalSnapshot(entry.snapshot);
     alert(t('alertSnapshotRestored'));
@@ -2775,7 +2888,7 @@ function renderRecoveryPanelHtml() {
             return `<option value="${escSnapshotText(e.id)}"${sel}>${escSnapshotText(e.text)}</option>`;
         }).join('');
         const first = entries.find(e => e.id === uiState.selectedRecoverySnapshotId) || entries[0];
-        const sourceNote = first.source === 'cloud' ? t('recoverySourceCloud') : t('recoverySourceLocal');
+        const sourceNote = getRecoverySourceLabel(first.source);
         bodyInner = `<select id="recoverySnapshotSelect" class="recovery-version-select" onchange="uiState.selectedRecoverySnapshotId=this.value;syncRecoverySourceNote()">${opts}</select>
             <p class="recovery-source-note" id="recoverySourceNote">${escSnapshotText(sourceNote)}</p>
             <button type="button" class="btn-adjust recovery-restore-btn" onclick="restoreSelectedSnapshot()">${t('recoveryRestoreVersion')}</button>`;
@@ -3257,6 +3370,7 @@ async function initCloudSync() {
             startCloudPoll();
             updateCloudSyncUI('cloudLoggedIn');
             await setupBackgroundPushAfterLogin();
+            loadCloudHistoryList().catch(err => console.warn('loadCloudHistoryList', err));
         } catch (err) {
             console.error(err);
             updateCloudSyncUI('cloudLoadFailed');
@@ -3273,6 +3387,7 @@ async function initCloudSync() {
         } else if (event === 'SIGNED_OUT') {
             stopCloudPoll();
             cloudAuthView = 'login';
+            cloudHistoryList = [];
             updateCloudSyncUI('cloudSignedOut');
         } else if (currentUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
             if (cloudAuthView !== 'newPassword') {
@@ -3281,6 +3396,7 @@ async function initCloudSync() {
                     startCloudPoll();
                     if (event === 'SIGNED_IN') updateCloudSyncUI('cloudLoggedIn');
                     await setupBackgroundPushAfterLogin();
+                    loadCloudHistoryList().catch(err => console.warn('loadCloudHistoryList', err));
                 } catch (e) {
                     console.error(e);
                     updateCloudSyncUI('cloudLoadFailed');
@@ -3409,6 +3525,11 @@ function toggleRecoveryPanel() {
     const body = document.getElementById('recoveryPanelBody');
     if (panel) panel.classList.toggle('recovery-panel--open', uiState.recoveryExpanded);
     if (body) body.classList.toggle('active', uiState.recoveryExpanded);
+    if (uiState.recoveryExpanded && isCloudSyncActive()) {
+        loadCloudHistoryList()
+            .then(() => renderSidePanel())
+            .catch(err => console.warn('loadCloudHistoryList', err));
+    }
 }
 
 function toggleNotifySetupPanel() {
@@ -3991,6 +4112,9 @@ function renderSidePanel() {
                         <button class="btn-main btn-compact-main" onclick="exportConfig()">${t('exportBackup')}</button>
                         <button class="btn-main btn-compact-main btn-secondary-main" onclick="document.getElementById('importFile').click()">${t('importBtn')}</button>
                     </div>
+                    <button type="button" class="btn-adjust export-to-drive-btn" onclick="exportBackupToDriveFriendly()">${t('exportToDriveBtn')}</button>
+                    <p class="export-to-drive-hint">${escSnapshotText(t('exportToDriveHint'))}</p>
+                    ${renderCloudHistoryBackupHtml()}
                     <input type="file" id="importFile" style="display:none" onchange="importConfig(event)">
                     ${renderRecoveryPanelHtml()}
                 </div>
@@ -5039,33 +5163,91 @@ function restoreRecoverableTimers() {
 }
 
 function exportConfig() {
-    const payload = {
+    downloadBackupBlob(buildBackupBlob(), formatBackupFileName());
+}
+
+function formatBackupFileName() {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `timer_backup_${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.json`;
+}
+
+function buildBackupBlob() {
+    const jsonString = JSON.stringify(buildFullExportPayload(), null, 2);
+    return new Blob([jsonString], { type: 'application/json' });
+}
+
+function downloadBackupBlob(blob, fileName) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+async function exportBackupToDriveFriendly() {
+    const fileName = formatBackupFileName();
+    const blob = buildBackupBlob();
+    const jsonString = await blob.text();
+
+    if (typeof window.showSaveFilePicker === 'function') {
+        try {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: fileName,
+                types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(jsonString);
+            await writable.close();
+            alert(t('exportToDriveOk'));
+            return;
+        } catch (err) {
+            if (err?.name === 'AbortError') return;
+        }
+    }
+
+    if (navigator.share) {
+        try {
+            const file = new File([jsonString], fileName, { type: 'application/json' });
+            if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+                await navigator.share({ files: [file], title: t('exportBackup') });
+                return;
+            }
+        } catch (err) {
+            if (err?.name === 'AbortError') return;
+        }
+    }
+
+    downloadBackupBlob(blob, fileName);
+    alert(t('exportToDriveFallback'));
+}
+
+function buildFullExportPayload() {
+    return {
         version: 2,
         exportedAt: new Date().toISOString(),
         config,
-        activeTimers: getActiveTimers()
+        activeTimers: getActiveTimers(),
+        undoStack
     };
-    const b = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(b);
-    a.download = `timer_backup_${Date.now()}.json`;
-    a.click();
+}
+
+function applyImportPayload(data) {
+    if (data.config) {
+        config = data.config;
+        if (Array.isArray(data.activeTimers)) setActiveTimers(data.activeTimers);
+        if (Array.isArray(data.undoStack)) undoStack = JSON.parse(JSON.stringify(data.undoStack));
+    } else {
+        config = data;
+    }
+    saveConfig();
+    location.reload();
 }
 
 function importConfig(e) {
     const r = new FileReader();
     r.onload = (x) => {
-        const data = JSON.parse(x.target.result);
-        if (data.config) {
-            config = data.config;
-            if (Array.isArray(data.activeTimers)) {
-                setActiveTimers(data.activeTimers);
-            }
-        } else {
-            config = data;
-        }
-        saveConfig();
-        location.reload();
+        applyImportPayload(JSON.parse(x.target.result));
     };
     r.readAsText(e.target.files[0]);
 }
