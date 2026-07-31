@@ -1728,7 +1728,7 @@ function migrateFirstRunGates() {
 }
 
 function shouldShowLangGate() {
-    return localStorage.getItem(LANG_GATE_DONE_KEY) !== '1';
+    return false;
 }
 
 function shouldShowEntryGate() {
