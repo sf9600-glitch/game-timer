@@ -3130,6 +3130,7 @@ body.add-timer-hint-open {
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
+    background: rgba(15, 23, 42, 0.45);
     background: color-mix(in srgb, #0f172a 42%, transparent);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
