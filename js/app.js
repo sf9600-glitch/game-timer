@@ -1305,36 +1305,42 @@ function advanceInteractiveTutorial() {
 }
 
 function showPendingFirstRunGatesEarly() {
+    syncEntryGateVisibility();
+}
+
+function syncEntryGateVisibility() {
     migrateFirstRunGates();
-    if (shouldShowLangGate()) {
-        const gate = document.getElementById('langEntryGate');
-        if (gate) {
-            langEntryGateOpen = true;
-            gate.classList.add('show');
-            gate.setAttribute('aria-hidden', 'false');
-            document.body.classList.add('lang-entry-gate-open');
-        }
-        return;
+    hideAddTimerHint();
+    const langGate = document.getElementById('langEntryGate');
+    if (langGate) {
+        langEntryGateOpen = false;
+        langGate.classList.remove('show');
+        langGate.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('lang-entry-gate-open');
     }
+    const gate = document.getElementById('timerEntryGate');
+    if (!gate) return;
     if (shouldShowEntryGate()) {
-        const gate = document.getElementById('timerEntryGate');
-        if (gate) {
-            timerEntryGateOpen = true;
-            gate.classList.add('show');
-            gate.setAttribute('aria-hidden', 'false');
-            document.body.classList.add('timer-entry-gate-open');
-        }
+        timerEntryGateOpen = true;
+        gate.classList.add('show');
+        gate.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('timer-entry-gate-open');
+        if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
+    } else {
+        timerEntryGateOpen = false;
+        gate.classList.remove('show');
+        gate.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('timer-entry-gate-open');
     }
 }
 
 function runFirstRunGatesAfterInit() {
-    migrateFirstRunGates();
+    syncEntryGateVisibility();
     if (shouldShowLangGate()) {
         showLangEntryGate();
         return;
     }
     if (shouldShowEntryGate()) {
-        showTimerEntryGate();
         return;
     }
     maybeShowAddTimerHint();
