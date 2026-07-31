@@ -5812,6 +5812,7 @@ window.addEventListener('resize', () => {
     syncLangEntryGateChrome();
     syncPullRefreshChrome();
     syncAddTimerHintChrome();
+    syncTimerTimeEditChrome();
     updateTutorialModalChrome();
     await initCloudSync();
     renderSidePanel();
