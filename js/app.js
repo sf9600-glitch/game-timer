@@ -4243,7 +4243,7 @@ function buildActiveTimerListRow(timer) {
                 <div class="timer-list-task">${timer.taskName}</div>
             </div>
             <div class="timer-list-side">
-                <div class="timer-list-time">00:00:00</div>
+                <div class="timer-list-time timer-time-edit-trigger" role="button" tabindex="0" title="${t('editTimerTimeTap')}" aria-label="${t('editTimerTimeTap')}" onclick="openActiveTimerTimeEdit(${timer.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${timer.id}, event);}">00:00:00</div>
                 <div class="timer-list-hint">--</div>
             </div>
             <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>
