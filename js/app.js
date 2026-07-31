@@ -5906,6 +5906,7 @@ window.addEventListener('resize', () => {
 });
 (async () => {
     showPendingFirstRunGatesEarly();
+    let initOk = false;
     try {
         await initI18n();
         applyLangFromStorage();
@@ -5924,6 +5925,7 @@ window.addEventListener('resize', () => {
         syncFinishedNotifyState();
         runFirstRunGatesAfterInit();
         runGlobalClockTick();
+        initOk = true;
         initCloudSync().catch(err => console.error('initCloudSync', err));
         registerAppServiceWorker();
         initNotifyBannerDismissButtons();
@@ -5933,8 +5935,17 @@ window.addEventListener('resize', () => {
         syncNotifyEnableBanner();
     } catch (err) {
         console.error('init failed', err);
+        try {
+            normalizeConfig();
+            renderSidePanel();
+            refreshMainDisplay();
+        } catch (_) {}
         runFirstRunGatesAfterInit();
     }
     window.__gameTimerBooted = true;
-    if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
+    const panelReady = !!document.getElementById('sidePanelContent')?.innerHTML.trim();
+    const gateOpen = isTimerEntryGateOpen() || isLangEntryGateOpen();
+    if (initOk || panelReady || gateOpen) {
+        if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
+    }
 })();
