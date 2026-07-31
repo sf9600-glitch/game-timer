@@ -3017,7 +3017,7 @@ body.lang-entry-gate-open {
 .add-timer-hint {
     position: fixed;
     inset: 0;
-    z-index: 2150;
+    z-index: 2050;
     pointer-events: none;
     opacity: 0;
     visibility: hidden;
