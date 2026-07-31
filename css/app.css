@@ -2949,10 +2949,9 @@ body.onboarding-active .undo-toast.show { z-index: 2203; }
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
-    background: rgba(15, 23, 42, 0.45);
-    background: color-mix(in srgb, #0f172a 42%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--bg) 88%, #000);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -2969,11 +2968,6 @@ body.lang-entry-gate-open {
 .lang-entry-gate-inner {
     width: min(420px, 100%);
     text-align: center;
-    padding: 22px 18px 18px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22);
 }
 .lang-entry-gate-title {
     margin: 0 0 10px;
@@ -3017,7 +3011,7 @@ body.lang-entry-gate-open {
 .add-timer-hint {
     position: fixed;
     inset: 0;
-    z-index: 2050;
+    z-index: 2150;
     pointer-events: none;
     opacity: 0;
     visibility: hidden;
@@ -3130,10 +3124,9 @@ body.add-timer-hint-open {
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
-    background: rgba(15, 23, 42, 0.45);
-    background: color-mix(in srgb, #0f172a 42%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--bg) 88%, #000);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -3200,177 +3193,6 @@ body.timer-entry-gate-open {
     .timer-entry-gate-btn {
         min-height: 96px;
     }
-}
-
-/* 進行中計時器：修改時間 */
-.timer-time-edit-trigger {
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-}
-.timer-time-edit-trigger:hover .time-text,
-.timer-time-edit-trigger:focus-visible .time-text,
-.timer-list-row--active .timer-time-edit-trigger:hover,
-.timer-list-row--active .timer-time-edit-trigger:focus-visible,
-.clean-table-row.timer-list-row--active .timer-time-edit-trigger:hover,
-.clean-table-row.timer-list-row--active .timer-time-edit-trigger:focus-visible {
-    text-decoration: underline dotted;
-    text-underline-offset: 2px;
-}
-.timer-time-edit {
-    position: fixed;
-    inset: 0;
-    z-index: 2250;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    background: color-mix(in srgb, var(--bg) 88%, #000);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-.timer-time-edit.show {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-body.timer-time-edit-open {
-    overflow: hidden;
-}
-.timer-time-edit-card {
-    width: min(360px, calc(100vw - 24px));
-    max-height: calc(100vh - 32px);
-    overflow: auto;
-    padding: 14px 14px 12px;
-    border-radius: 14px;
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
-}
-.timer-time-edit-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-.timer-time-edit-title {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: bold;
-    color: var(--text-main);
-    line-height: 1.35;
-}
-.timer-time-edit-close {
-    flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    margin: -4px -4px 0 0;
-    padding: 0;
-    border: none;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--text-sub);
-    font-size: 1.25rem;
-    line-height: 1;
-    cursor: pointer;
-    font-family: inherit;
-}
-.timer-time-edit-close:hover {
-    color: var(--text-main);
-    background: color-mix(in srgb, var(--text-sub) 12%, transparent);
-}
-.timer-time-edit-task {
-    margin: 0 0 8px;
-    font-size: 0.75rem;
-    color: var(--text-sub);
-    line-height: 1.4;
-    word-break: break-word;
-}
-.timer-time-edit-display {
-    text-align: center;
-    background: var(--bg);
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    font-size: 1.5rem;
-    font-family: monospace;
-    font-weight: bold;
-    color: var(--primary);
-}
-.timer-time-edit-adj {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    margin-bottom: 8px;
-}
-.timer-time-edit-adj .btn-adjust {
-    margin-bottom: 0;
-    font-size: 0.68rem;
-}
-.timer-time-edit-dhms {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin-bottom: 8px;
-    padding: 4px 6px;
-    background: var(--bg);
-    border-radius: 10px;
-}
-.timer-time-edit-dhms .dhms-group {
-    flex: 1;
-    min-width: 0;
-}
-.timer-time-edit-dhms .dhms-input {
-    width: 100%;
-    min-width: 0;
-}
-.timer-time-edit-reset {
-    width: 100%;
-    color: var(--danger);
-    margin-bottom: 0;
-}
-
-.boot-fail-banner {
-    position: fixed;
-    left: 50%;
-    bottom: max(16px, env(safe-area-inset-bottom, 0px));
-    transform: translateX(-50%);
-    z-index: 2400;
-    width: min(360px, calc(100vw - 24px));
-    padding: 14px 16px;
-    border-radius: 14px;
-    border: 1px solid var(--danger);
-    background: var(--card-bg);
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.2);
-    text-align: center;
-}
-.boot-fail-banner strong {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--danger);
-    font-size: 0.95rem;
-}
-.boot-fail-banner p {
-    margin: 0 0 10px;
-    font-size: 0.78rem;
-    color: var(--text-sub);
-    line-height: 1.45;
-}
-.boot-fail-btn {
-    width: 100%;
-    padding: 10px 12px;
-    border: none;
-    border-radius: 10px;
-    background: var(--danger);
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: bold;
-    font-family: inherit;
-    cursor: pointer;
 }
 
 /* 新增計時器步驟引導 */

@@ -52,15 +52,6 @@ const LOCALE_INLINE_FALLBACK = {
         adj10m: '+10分',
         adj1m: '+1分',
         adj30s: '+30秒',
-        editTimerTimeTitle: '修改倒數時間',
-        editTimerTimeTap: '點擊修改時間',
-        editTimerTimeFinishNow: '立即結束',
-        addTimerHintTitle: '從這裡開始建立計時器',
-        addTimerHintBody: '點上方銀色「新增計時器」按鈕即可開始。需要說明時可選下方教學。',
-        addTimerHintCreate: '建立計時器',
-        addTimerHintInteractive: '🎯 互動新手教學',
-        addTimerHintGuide: '📖 新手教學',
-        closeLabel: '關閉',
         startTask: '開始計時',
         undoSettings: '管理',
         allTags: '編輯任務標籤',
@@ -202,15 +193,6 @@ const LOCALE_INLINE_FALLBACK = {
         adj10m: '+10分',
         adj1m: '+1分',
         adj30s: '+30秒',
-        editTimerTimeTitle: '修改倒数时间',
-        editTimerTimeTap: '点击修改时间',
-        editTimerTimeFinishNow: '立即结束',
-        addTimerHintTitle: '从这里开始建立计时器',
-        addTimerHintBody: '点上方银色「新增计时器」按钮即可开始。需要说明可选下方教学。',
-        addTimerHintCreate: '建立计时器',
-        addTimerHintInteractive: '🎯 互动新手教学',
-        addTimerHintGuide: '📖 新手教学',
-        closeLabel: '关闭',
         startTask: '开始计时',
         undoSettings: '管理',
         allTags: '编辑任务标签',
@@ -1304,45 +1286,14 @@ function advanceInteractiveTutorial() {
     showOnboardingStep(onboardingStepIndex + 1);
 }
 
-function showPendingFirstRunGatesEarly() {
-    if (isTimerEntryGateOpen() || document.getElementById('timerEntryGate')?.classList.contains('show')) {
-        hideAddTimerHint();
-    }
-}
-
-function syncEntryGateVisibility() {
-    migrateFirstRunGates();
-    hideAddTimerHint();
-    const langGate = document.getElementById('langEntryGate');
-    if (langGate) {
-        langEntryGateOpen = false;
-        langGate.classList.remove('show');
-        langGate.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('lang-entry-gate-open');
-    }
-    const gate = document.getElementById('timerEntryGate');
-    if (!gate) return;
-    if (shouldShowEntryGate()) {
-        timerEntryGateOpen = true;
-        gate.classList.add('show');
-        gate.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('timer-entry-gate-open');
-        if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
-    } else {
-        timerEntryGateOpen = false;
-        gate.classList.remove('show');
-        gate.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('timer-entry-gate-open');
-    }
-}
-
 function runFirstRunGatesAfterInit() {
-    syncEntryGateVisibility();
+    migrateFirstRunGates();
     if (shouldShowLangGate()) {
         showLangEntryGate();
         return;
     }
     if (shouldShowEntryGate()) {
+        showTimerEntryGate();
         return;
     }
     maybeShowAddTimerHint();
@@ -1736,17 +1687,16 @@ let addTimerHintOpen = false;
 let addTimerHintResizeHandler = null;
 
 function migrateFirstRunGates() {
-    if (!localStorage.getItem(LANG_GATE_DONE_KEY)) {
+    if (localStorage.getItem(LANG_KEY)) {
         localStorage.setItem(LANG_GATE_DONE_KEY, '1');
-        if (!localStorage.getItem(LANG_KEY)) localStorage.setItem(LANG_KEY, DEFAULT_LANG);
-    }
-    if (localStorage.getItem(LANG_KEY) && hasValidStoredConfig()) {
-        localStorage.setItem(ENTRY_GATE_DONE_KEY, '1');
+        if (localStorage.getItem(STORAGE_KEY)) {
+            localStorage.setItem(ENTRY_GATE_DONE_KEY, '1');
+        }
     }
 }
 
 function shouldShowLangGate() {
-    return false;
+    return localStorage.getItem(LANG_GATE_DONE_KEY) !== '1';
 }
 
 function shouldShowEntryGate() {
@@ -1915,7 +1865,7 @@ function onAddTimerHintGuide() {
 }
 
 function isTimerEntryGateOpen() {
-    return timerEntryGateOpen || !!document.getElementById('timerEntryGate')?.classList.contains('show');
+    return timerEntryGateOpen;
 }
 
 function syncTimerEntryGateChrome() {
@@ -1936,13 +1886,11 @@ function syncTimerEntryGateChrome() {
 function showTimerEntryGate() {
     const gate = document.getElementById('timerEntryGate');
     if (!gate) return;
-    hideAddTimerHint();
     timerEntryGateOpen = true;
     gate.classList.add('show');
     gate.setAttribute('aria-hidden', 'false');
     document.body.classList.add('timer-entry-gate-open');
     syncTimerEntryGateChrome();
-    if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
 }
 
 function hideTimerEntryGate(opts = {}) {
@@ -2011,8 +1959,6 @@ async function setLang(lang, opts = {}) {
     syncLangEntryGateChrome();
     syncPullRefreshChrome();
     syncAddTimerHintChrome();
-    syncTimerTimeEditChrome();
-    if (isActiveTimerTimeEditOpen()) refreshActiveTimerTimeEditUi();
     if (isTimerWizardOpen()) renderTimerWizardStep();
     if (addTimerHintOpen) requestAnimationFrame(positionAddTimerHintUi);
     if (document.getElementById('tutorialModal')?.classList.contains('show')) {
@@ -2354,9 +2300,6 @@ function syncTimerListSideAlign() {
 }
 
 function normalizeConfig() {
-    if (!Array.isArray(config.accounts) || !config.accounts.length) {
-        config.accounts = JSON.parse(JSON.stringify(defaultConfig.accounts));
-    }
     if (!config.tasks || !Array.isArray(config.tasks)) {
         config.tasks = cloneTasks(BUILTIN_DEFAULT_TASKS);
     }
@@ -2471,52 +2414,9 @@ const defaultConfig = {
     showAccountHeader: true
 };
 
-function loadConfigFromStorage() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return JSON.parse(JSON.stringify(defaultConfig));
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-            return JSON.parse(JSON.stringify(defaultConfig));
-        }
-        return mergeConfigWithDefaults(parsed);
-    } catch (e) {
-        console.warn('loadConfigFromStorage', e);
-        try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-        return JSON.parse(JSON.stringify(defaultConfig));
-    }
-}
-
-function mergeConfigWithDefaults(parsed) {
-    const base = JSON.parse(JSON.stringify(defaultConfig));
-    const merged = { ...base, ...parsed };
-    merged.colors = { ...base.colors, ...(parsed.colors && typeof parsed.colors === 'object' ? parsed.colors : {}) };
-    merged.accounts = Array.isArray(parsed.accounts) && parsed.accounts.length ? parsed.accounts : base.accounts;
-    merged.tasks = Array.isArray(parsed.tasks) && parsed.tasks.length ? parsed.tasks : base.tasks;
-    merged.defaultTasks = Array.isArray(parsed.defaultTasks) && parsed.defaultTasks.length
-        ? parsed.defaultTasks
-        : (merged.tasks.length ? cloneTasks(merged.tasks) : base.defaultTasks);
-    if (!['clean', 'colorful', 'list'].includes(merged.timerDisplay)) merged.timerDisplay = base.timerDisplay;
-    if (merged.undoTime === undefined) merged.undoTime = base.undoTime;
-    if (merged.neonGlow === undefined) merged.neonGlow = base.neonGlow;
-    if (merged.showAccountHeader === undefined) merged.showAccountHeader = base.showAccountHeader;
-    return merged;
-}
-
-function hasValidStoredConfig() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return false;
-        const parsed = JSON.parse(raw);
-        return !!(parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-            && Array.isArray(parsed.accounts) && parsed.accounts.length);
-    } catch (_) {
-        return false;
-    }
-}
-
-let config = loadConfigFromStorage();
+let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
 if (config.undoTime === undefined) config.undoTime = 10;
+if (!localStorage.getItem(STORAGE_KEY)) config = JSON.parse(JSON.stringify(defaultConfig));
 normalizeConfig();
 applyTimerCardMinWidth();
 
@@ -4212,31 +4112,30 @@ function pruneExpiredSyncNewFlags() {
     if (changed) localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(next));
 }
 
-function buildActiveTimerCard(timer, index) {
+function buildActiveTimerCard(t, index) {
     const card = document.createElement('div');
     card.className = 'timer-card timer-card--active';
-    card.id = `t-${timer.id}`;
-    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
+    card.id = `t-${t.id}`;
+    const taskObj = config.tasks.find(x => x.name === t.taskBase);
     const taskHex = taskObj ? taskObj.color : '#475569';
     const spectrum = getLiteColorSpectrum(taskHex);
-    const charName = timer.char || '';
-    const charColor = charName ? getCharColor(timer.email, charName) : null;
+    const charName = t.char || '';
+    const charColor = charName ? getCharColor(t.email, charName) : null;
     applyTimerCardColorVars(card, taskHex, spectrum, charColor);
-    if (isTimerSyncNewBadgeVisible(timer)) card.classList.add('has-sync-new');
-    const editTapLabel = t('editTimerTimeTap');
+    if (isTimerSyncNewBadgeVisible(t)) card.classList.add('has-sync-new');
     card.innerHTML = `
-        ${getSyncNewBadgeHtml(timer)}
+        ${getSyncNewBadgeHtml(t)}
         <div class="timer-card-bg"></div>
-        <button class="btn-close-circle" onclick="delTask(${timer.id})">×</button>
+        <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
         <div class="timer-card-inner">
             <div class="timer-card-progress-track" aria-hidden="true"><div class="timer-card-progress-fill"></div></div>
             <div class="active-layout">
                 <div class="active-header">
                     <span class="card-id-badge active-slot-id">#${index + 1}</span>
-                    <div class="active-slot-char">${getCharBadgeHtml(timer.email, charName)}</div>
+                    <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
                 </div>
-                <div class="active-slot-task"><div class="task-title-display">${timer.taskName}</div></div>
-                <div class="active-slot-time timer-time-edit-trigger" role="button" tabindex="0" title="${editTapLabel}" aria-label="${editTapLabel}" onclick="openActiveTimerTimeEdit(${timer.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${timer.id}, event);}"><div class="time-text">00:00:00</div></div>
+                <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div></div>
+                <div class="active-slot-time"><div class="time-text">00:00:00</div></div>
                 <div class="active-slot-date"><div class="date-label">--/--</div></div>
             </div>
         </div>`;
@@ -4286,11 +4185,10 @@ function buildActiveTimerCleanRow(timer) {
     const taskHex = taskObj ? taskObj.color : '#475569';
     row.dataset.taskColor = taskHex;
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
-    const editTapLabel = t('editTimerTimeTap');
     row.innerHTML = `
         <span class="clean-col clean-col-char">${getCleanCharPlainText(timer)}</span>
         <span class="clean-col clean-col-task">${timer.taskName}</span>
-        <span class="clean-col clean-col-remain timer-list-time timer-time-edit-trigger" role="button" tabindex="0" title="${editTapLabel}" aria-label="${editTapLabel}" onclick="openActiveTimerTimeEdit(${timer.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${timer.id}, event);}">00:00:00</span>
+        <span class="clean-col clean-col-remain timer-list-time">00:00:00</span>
         <span class="clean-col clean-col-end timer-list-hint">--</span>
         <button type="button" class="clean-col-del timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
     return row;
@@ -4337,7 +4235,6 @@ function buildActiveTimerListRow(timer) {
     const charColor = charName ? getCharColor(timer.email, charName) : null;
     applyTimerCardColorVars(row, taskHex, getLiteColorSpectrum(taskHex), charColor);
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
-    const editTapLabel = t('editTimerTimeTap');
     row.innerHTML = `
         ${getSyncNewBadgeHtml(timer)}
         <div class="timer-list-main">
@@ -4346,7 +4243,7 @@ function buildActiveTimerListRow(timer) {
                 <div class="timer-list-task">${timer.taskName}</div>
             </div>
             <div class="timer-list-side">
-                <div class="timer-list-time timer-time-edit-trigger" role="button" tabindex="0" title="${editTapLabel}" aria-label="${editTapLabel}" onclick="openActiveTimerTimeEdit(${timer.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${timer.id}, event);}">00:00:00</div>
+                <div class="timer-list-time">00:00:00</div>
                 <div class="timer-list-hint">--</div>
             </div>
             <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>
@@ -4849,8 +4746,6 @@ function updateTimersDataTicker(skipRelayout = false) {
         updateSyncNewBadgeOnCard(card, t);
     });
 
-    if (isActiveTimerTimeEditOpen()) refreshActiveTimerTimeEditUi();
-
     if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
     else {
         syncFinishedNotifyState();
@@ -5179,7 +5074,6 @@ function delTask(id) {
     const allSavedData = getActiveTimers();
     const target = allSavedData.find(t => String(t.id) === String(id));
     if(target) triggerUndo('計時器', target, target.taskName || '計時器');
-    if (activeTimerTimeEditId != null && String(activeTimerTimeEditId) === String(id)) closeActiveTimerTimeEdit();
     setActiveTimers(allSavedData.filter(t => String(t.id) !== String(id)), { immediateCloud: true });
     dispatchTimersToDOM();
     if (onboardingActive && onboardingCreatedTimerId != null && String(id) === String(onboardingCreatedTimerId)) {
@@ -5190,149 +5084,6 @@ function delTask(id) {
             if (cur?.id === 'delete-timer') goOnboardingStepById('undo-tip');
         }, 320);
     }
-}
-
-let activeTimerTimeEditId = null;
-
-function getActiveTimerById(id) {
-    return getActiveTimers().find(t => String(t.id) === String(id));
-}
-
-function getTimerRemainingSec(timer) {
-    if (!timer) return 0;
-    return Math.max(0, Math.floor((new Date(timer.finishDate).getTime() - Date.now()) / 1000));
-}
-
-function splitSecToDhms(sec) {
-    let rem = Math.max(0, Math.floor(sec));
-    const d = Math.floor(rem / 86400); rem %= 86400;
-    const h = Math.floor(rem / 3600); rem %= 3600;
-    const m = Math.floor(rem / 60);
-    const s = rem % 60;
-    return { d, h, m, s };
-}
-
-function isActiveTimerTimeEditOpen() {
-    return activeTimerTimeEditId != null;
-}
-
-function syncTimerTimeEditChrome() {
-    const title = document.getElementById('timerTimeEditTitle');
-    const closeBtn = document.getElementById('timerTimeEditCloseBtn');
-    const resetBtn = document.getElementById('timerTimeEditResetBtn');
-    const unitD = document.getElementById('timerTimeEditUnitD');
-    const unitH = document.getElementById('timerTimeEditUnitH');
-    const unitM = document.getElementById('timerTimeEditUnitM');
-    const unitS = document.getElementById('timerTimeEditUnitS');
-    if (title) title.textContent = t('editTimerTimeTitle');
-    if (closeBtn) closeBtn.setAttribute('aria-label', t('closeLabel'));
-    if (resetBtn) resetBtn.textContent = t('editTimerTimeFinishNow');
-    if (unitD) unitD.textContent = t('dhmsDay');
-    if (unitH) unitH.textContent = t('dhmsHour');
-    if (unitM) unitM.textContent = t('dhmsMin');
-    if (unitS) unitS.textContent = t('dhmsSec');
-    const adjBtns = document.querySelectorAll('#timerTimeEdit .timer-time-edit-adj .btn-adjust');
-    const adjKeys = ['adj1d', 'adj12h', 'adj1h', 'adj10m', 'adj1m', 'adj30s'];
-    adjBtns.forEach((btn, i) => { if (adjKeys[i]) btn.textContent = t(adjKeys[i]); });
-}
-
-function refreshActiveTimerTimeEditUi() {
-    if (activeTimerTimeEditId == null) return;
-    const timer = getActiveTimerById(activeTimerTimeEditId);
-    if (!timer) {
-        closeActiveTimerTimeEdit();
-        return;
-    }
-    const rem = getTimerRemainingSec(timer);
-    const taskEl = document.getElementById('timerTimeEditTask');
-    const displayEl = document.getElementById('timerTimeEditDisplay');
-    if (taskEl) taskEl.textContent = timer.taskName || '';
-    if (displayEl) displayEl.textContent = formatWizardDuration(rem);
-    const { d, h, m, s } = splitSecToDhms(rem);
-    const inD = document.getElementById('timerTimeEditInD');
-    const inH = document.getElementById('timerTimeEditInH');
-    const inM = document.getElementById('timerTimeEditInM');
-    const inS = document.getElementById('timerTimeEditInS');
-    if (inD && document.activeElement !== inD) inD.value = String(d);
-    if (inH && document.activeElement !== inH) inH.value = String(h);
-    if (inM && document.activeElement !== inM) inM.value = String(m);
-    if (inS && document.activeElement !== inS) inS.value = String(s);
-}
-
-function openActiveTimerTimeEdit(id, ev) {
-    if (ev) ev.stopPropagation();
-    const timer = getActiveTimerById(id);
-    if (!timer || getTimerRemainingSec(timer) <= 0) return;
-    activeTimerTimeEditId = id;
-    syncTimerTimeEditChrome();
-    refreshActiveTimerTimeEditUi();
-    const modal = document.getElementById('timerTimeEdit');
-    if (!modal) return;
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('timer-time-edit-open');
-}
-
-function closeActiveTimerTimeEdit() {
-    activeTimerTimeEditId = null;
-    const modal = document.getElementById('timerTimeEdit');
-    if (!modal) return;
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('timer-time-edit-open');
-}
-
-function patchActiveTimerRemaining(id, newRemainingSec) {
-    const all = getActiveTimers();
-    const idx = all.findIndex(t => String(t.id) === String(id));
-    if (idx < 0) return;
-    const timer = { ...all[idx] };
-    const oldRem = getTimerRemainingSec(timer);
-    const newRem = Math.max(0, Math.floor(newRemainingSec));
-    const delta = newRem - oldRem;
-    if (delta === 0 && newRem > 0) return;
-    const oldDur = parseInt(timer.dur, 10) || Math.max(oldRem, 1);
-    if (newRem <= 0) {
-        timer.finishDate = new Date(Date.now() - 1000).toISOString();
-        timer.dur = Math.max(1, oldDur);
-    } else {
-        timer.finishDate = new Date(Date.now() + newRem * 1000).toISOString();
-        timer.dur = Math.max(newRem, oldDur + delta, 1);
-    }
-    all[idx] = timer;
-    setActiveTimers(all, { immediateCloud: true });
-    syncPushScheduleToServer().catch(err => console.warn('sync push after time edit', err));
-    updateTimersDataTicker();
-    if (newRem <= 0) {
-        closeActiveTimerTimeEdit();
-        dispatchTimersToDOM();
-    } else {
-        refreshActiveTimerTimeEditUi();
-    }
-}
-
-function adjustActiveTimerTime(deltaSec) {
-    if (activeTimerTimeEditId == null) return;
-    const timer = getActiveTimerById(activeTimerTimeEditId);
-    if (!timer) {
-        closeActiveTimerTimeEdit();
-        return;
-    }
-    patchActiveTimerRemaining(activeTimerTimeEditId, getTimerRemainingSec(timer) + deltaSec);
-}
-
-function activeTimerTimeEditFromDhms() {
-    if (activeTimerTimeEditId == null) return;
-    const d = parseInt(document.getElementById('timerTimeEditInD')?.value, 10) || 0;
-    const h = parseInt(document.getElementById('timerTimeEditInH')?.value, 10) || 0;
-    const m = parseInt(document.getElementById('timerTimeEditInM')?.value, 10) || 0;
-    const s = parseInt(document.getElementById('timerTimeEditInS')?.value, 10) || 0;
-    patchActiveTimerRemaining(activeTimerTimeEditId, d * 86400 + h * 3600 + m * 60 + s);
-}
-
-function resetActiveTimerTimeEdit() {
-    if (activeTimerTimeEditId == null) return;
-    patchActiveTimerRemaining(activeTimerTimeEditId, 0);
 }
 
 function removeAcc(i) {
@@ -5889,10 +5640,6 @@ document.addEventListener('keydown', e => {
         closeTimerWizard();
         return;
     }
-    if (isActiveTimerTimeEditOpen()) {
-        closeActiveTimerTimeEdit();
-        return;
-    }
     if (onboardingActive) {
         skipInteractiveTutorial();
         return;
@@ -5905,47 +5652,27 @@ window.addEventListener('resize', () => {
     syncNotifyPermissionUi();
 });
 (async () => {
-    showPendingFirstRunGatesEarly();
-    let initOk = false;
-    try {
-        await initI18n();
-        applyLangFromStorage();
-        syncTimerEntryGateChrome();
-        syncLangEntryGateChrome();
-        syncPullRefreshChrome();
-        syncAddTimerHintChrome();
-        syncTimerTimeEditChrome();
-        updateTutorialModalChrome();
-        renderSidePanel();
-        refreshMainDisplay();
-        syncPanelMobileControls();
-        lastLayoutWasMobile = isMobileLayout();
-        initMobilePanelState();
-        ensureTimerWizardElement();
-        syncFinishedNotifyState();
-        runFirstRunGatesAfterInit();
-        runGlobalClockTick();
-        initOk = true;
-        initCloudSync().catch(err => console.error('initCloudSync', err));
-        registerAppServiceWorker();
-        initNotifyBannerDismissButtons();
-        initNotifyPermissionPressButtons();
-        initMobilePullToRefresh();
-        initMobileSwipePanelToggle();
-        syncNotifyEnableBanner();
-    } catch (err) {
-        console.error('init failed', err);
-        try {
-            normalizeConfig();
-            renderSidePanel();
-            refreshMainDisplay();
-        } catch (_) {}
-        runFirstRunGatesAfterInit();
-    }
-    window.__gameTimerBooted = true;
-    const panelReady = !!document.getElementById('sidePanelContent')?.innerHTML.trim();
-    const gateOpen = isTimerEntryGateOpen() || isLangEntryGateOpen();
-    if (initOk || panelReady || gateOpen) {
-        if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
-    }
+    await initI18n();
+    applyLangFromStorage();
+    syncTimerEntryGateChrome();
+    syncLangEntryGateChrome();
+    syncPullRefreshChrome();
+    syncAddTimerHintChrome();
+    updateTutorialModalChrome();
+    await initCloudSync();
+    renderSidePanel();
+    refreshMainDisplay();
+    syncPanelMobileControls();
+    lastLayoutWasMobile = isMobileLayout();
+    initMobilePanelState();
+    ensureTimerWizardElement();
+    syncFinishedNotifyState();
+    registerAppServiceWorker();
+    initNotifyBannerDismissButtons();
+    initNotifyPermissionPressButtons();
+    initMobilePullToRefresh();
+    initMobileSwipePanelToggle();
+    syncNotifyEnableBanner();
+    runFirstRunGatesAfterInit();
+    runGlobalClockTick();
 })();
