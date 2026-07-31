@@ -4112,30 +4112,31 @@ function pruneExpiredSyncNewFlags() {
     if (changed) localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(next));
 }
 
-function buildActiveTimerCard(t, index) {
+function buildActiveTimerCard(timer, index) {
     const card = document.createElement('div');
     card.className = 'timer-card timer-card--active';
-    card.id = `t-${t.id}`;
-    const taskObj = config.tasks.find(x => x.name === t.taskBase);
+    card.id = `t-${timer.id}`;
+    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
     const taskHex = taskObj ? taskObj.color : '#475569';
     const spectrum = getLiteColorSpectrum(taskHex);
-    const charName = t.char || '';
-    const charColor = charName ? getCharColor(t.email, charName) : null;
+    const charName = timer.char || '';
+    const charColor = charName ? getCharColor(timer.email, charName) : null;
     applyTimerCardColorVars(card, taskHex, spectrum, charColor);
-    if (isTimerSyncNewBadgeVisible(t)) card.classList.add('has-sync-new');
+    if (isTimerSyncNewBadgeVisible(timer)) card.classList.add('has-sync-new');
+    const editTapLabel = t('editTimerTimeTap');
     card.innerHTML = `
-        ${getSyncNewBadgeHtml(t)}
+        ${getSyncNewBadgeHtml(timer)}
         <div class="timer-card-bg"></div>
-        <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
+        <button class="btn-close-circle" onclick="delTask(${timer.id})">×</button>
         <div class="timer-card-inner">
             <div class="timer-card-progress-track" aria-hidden="true"><div class="timer-card-progress-fill"></div></div>
             <div class="active-layout">
                 <div class="active-header">
                     <span class="card-id-badge active-slot-id">#${index + 1}</span>
-                    <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
+                    <div class="active-slot-char">${getCharBadgeHtml(timer.email, charName)}</div>
                 </div>
-                <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div></div>
-                <div class="active-slot-time timer-time-edit-trigger" role="button" tabindex="0" title="${t('editTimerTimeTap')}" aria-label="${t('editTimerTimeTap')}" onclick="openActiveTimerTimeEdit(${t.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${t.id}, event);}"><div class="time-text">00:00:00</div></div>
+                <div class="active-slot-task"><div class="task-title-display">${timer.taskName}</div></div>
+                <div class="active-slot-time timer-time-edit-trigger" role="button" tabindex="0" title="${editTapLabel}" aria-label="${editTapLabel}" onclick="openActiveTimerTimeEdit(${timer.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${timer.id}, event);}"><div class="time-text">00:00:00</div></div>
                 <div class="active-slot-date"><div class="date-label">--/--</div></div>
             </div>
         </div>`;
