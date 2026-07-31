@@ -4750,6 +4750,8 @@ function updateTimersDataTicker(skipRelayout = false) {
         updateSyncNewBadgeOnCard(card, t);
     });
 
+    if (isActiveTimerTimeEditOpen()) refreshActiveTimerTimeEditUi();
+
     if (needsRelayout && !skipRelayout) dispatchTimersToDOM();
     else {
         syncFinishedNotifyState();
