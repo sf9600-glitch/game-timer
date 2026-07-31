@@ -178,7 +178,25 @@
         } catch (_) {}
         location.reload();
     }
+    function bootMigrateGates() {
+        try {
+            if (localStorage.getItem('GameTimer_LangGate_Done') !== '1') {
+                localStorage.setItem('GameTimer_LangGate_Done', '1');
+                if (!localStorage.getItem('GameTimer_Lang_Preference')) {
+                    localStorage.setItem('GameTimer_Lang_Preference', 'zh-TW');
+                }
+            }
+            if (localStorage.getItem('GameTimer_Lang_Preference') && localStorage.getItem('GameTimer_Config_V7')) {
+                localStorage.setItem('GameTimer_EntryGate_Done', '1');
+            }
+        } catch (_) {}
+    }
+    function hideBootFailBanner() {
+        var fail = document.getElementById('bootFailBanner');
+        if (fail) fail.hidden = true;
+    }
     (function () {
+        bootMigrateGates();
         try {
             if (localStorage.getItem('GameTimer_EntryGate_Done') !== '1') {
                 var entryGate = document.getElementById('timerEntryGate');
@@ -186,28 +204,29 @@
                     entryGate.classList.add('show');
                     entryGate.setAttribute('aria-hidden', 'false');
                     document.body.classList.add('timer-entry-gate-open');
+                    hideBootFailBanner();
                 }
             }
         } catch (_) {}
         setTimeout(function () {
+            if (window.__gameTimerBooted) return;
             try {
                 var main = document.getElementById('mainDisplay');
-                var gate = document.querySelector('.timer-entry-gate.show, .lang-entry-gate.show');
+                var entryGate = document.getElementById('timerEntryGate');
+                var langGate = document.getElementById('langEntryGate');
+                var gateOpen = (entryGate && entryGate.classList.contains('show'))
+                    || (langGate && langGate.classList.contains('show'));
                 var hasMain = main && main.textContent.replace(/\s+/g, '').length > 0;
-                if (!gate && !hasMain) {
-                    var eg = document.getElementById('timerEntryGate');
-                    if (eg) {
-                        eg.classList.add('show');
-                        eg.setAttribute('aria-hidden', 'false');
-                        document.body.classList.add('timer-entry-gate-open');
-                    }
-                    var fail = document.getElementById('bootFailBanner');
-                    if (fail) fail.hidden = false;
+                if (gateOpen || hasMain) {
+                    hideBootFailBanner();
+                    return;
                 }
+                var fail = document.getElementById('bootFailBanner');
+                if (fail) fail.hidden = false;
             } catch (_) {}
-        }, 2500);
+        }, 5000);
     })();
     </script>
-    <script src="js/app.js?v=60"></script>
+    <script src="js/app.js?v=61"></script>
 </body>
 </html>
