@@ -161,17 +161,26 @@
         </div>
     </div>
 
+    <div id="bootFailBanner" class="boot-fail-banner" hidden>
+        <strong>程式未能正常啟動</strong>
+        <p>請按下方按鈕修復（會清除本機設定，計時器資料請先確認已備份）</p>
+        <button type="button" class="boot-fail-btn" onclick="emergencyAppReset()">修復並重新載入</button>
+    </div>
+
     <script>
+    function emergencyAppReset() {
+        try {
+            [
+                'GameTimer_Config_V7', 'GameTimer_Active_Single', 'GameTimer_LangGate_Done',
+                'GameTimer_EntryGate_Done', 'GameTimer_AddTimerHint_Dismissed', 'GameTimer_Undo_Stack',
+                'GameTimer_Undo_Temp', 'GameTimer_Lang_Preference'
+            ].forEach(function (k) { localStorage.removeItem(k); });
+        } catch (_) {}
+        location.reload();
+    }
     (function () {
         try {
-            if (localStorage.getItem('GameTimer_LangGate_Done') !== '1') {
-                var langGate = document.getElementById('langEntryGate');
-                if (langGate) {
-                    langGate.classList.add('show');
-                    langGate.setAttribute('aria-hidden', 'false');
-                    document.body.classList.add('lang-entry-gate-open');
-                }
-            } else if (localStorage.getItem('GameTimer_EntryGate_Done') !== '1') {
+            if (localStorage.getItem('GameTimer_EntryGate_Done') !== '1') {
                 var entryGate = document.getElementById('timerEntryGate');
                 if (entryGate) {
                     entryGate.classList.add('show');
@@ -180,8 +189,25 @@
                 }
             }
         } catch (_) {}
+        setTimeout(function () {
+            try {
+                var main = document.getElementById('mainDisplay');
+                var gate = document.querySelector('.timer-entry-gate.show, .lang-entry-gate.show');
+                var hasMain = main && main.textContent.replace(/\s+/g, '').length > 0;
+                if (!gate && !hasMain) {
+                    var eg = document.getElementById('timerEntryGate');
+                    if (eg) {
+                        eg.classList.add('show');
+                        eg.setAttribute('aria-hidden', 'false');
+                        document.body.classList.add('timer-entry-gate-open');
+                    }
+                    var fail = document.getElementById('bootFailBanner');
+                    if (fail) fail.hidden = false;
+                }
+            } catch (_) {}
+        }, 2500);
     })();
     </script>
-    <script src="js/app.js?v=59"></script>
+    <script src="js/app.js?v=60"></script>
 </body>
 </html>

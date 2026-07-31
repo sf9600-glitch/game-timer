@@ -2445,9 +2445,23 @@ const defaultConfig = {
     showAccountHeader: true
 };
 
-let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
-if (config.undoTime === undefined) config.undoTime = 10;
-if (!localStorage.getItem(STORAGE_KEY)) config = JSON.parse(JSON.stringify(defaultConfig));
+function loadConfigFromStorage() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(defaultConfig));
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+            return JSON.parse(JSON.stringify(defaultConfig));
+        }
+        return parsed;
+    } catch (e) {
+        console.warn('loadConfigFromStorage', e);
+        try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+        return JSON.parse(JSON.stringify(defaultConfig));
+    }
+}
+
+let config = loadConfigFromStorage();
 normalizeConfig();
 applyTimerCardMinWidth();
 
