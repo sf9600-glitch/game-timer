@@ -2476,11 +2476,39 @@ function loadConfigFromStorage() {
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
             return JSON.parse(JSON.stringify(defaultConfig));
         }
-        return parsed;
+        return mergeConfigWithDefaults(parsed);
     } catch (e) {
         console.warn('loadConfigFromStorage', e);
         try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
         return JSON.parse(JSON.stringify(defaultConfig));
+    }
+}
+
+function mergeConfigWithDefaults(parsed) {
+    const base = JSON.parse(JSON.stringify(defaultConfig));
+    const merged = { ...base, ...parsed };
+    merged.colors = { ...base.colors, ...(parsed.colors && typeof parsed.colors === 'object' ? parsed.colors : {}) };
+    merged.accounts = Array.isArray(parsed.accounts) && parsed.accounts.length ? parsed.accounts : base.accounts;
+    merged.tasks = Array.isArray(parsed.tasks) && parsed.tasks.length ? parsed.tasks : base.tasks;
+    merged.defaultTasks = Array.isArray(parsed.defaultTasks) && parsed.defaultTasks.length
+        ? parsed.defaultTasks
+        : (merged.tasks.length ? cloneTasks(merged.tasks) : base.defaultTasks);
+    if (!['clean', 'colorful', 'list'].includes(merged.timerDisplay)) merged.timerDisplay = base.timerDisplay;
+    if (merged.undoTime === undefined) merged.undoTime = base.undoTime;
+    if (merged.neonGlow === undefined) merged.neonGlow = base.neonGlow;
+    if (merged.showAccountHeader === undefined) merged.showAccountHeader = base.showAccountHeader;
+    return merged;
+}
+
+function hasValidStoredConfig() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const parsed = JSON.parse(raw);
+        return !!(parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+            && Array.isArray(parsed.accounts) && parsed.accounts.length);
+    } catch (_) {
+        return false;
     }
 }
 

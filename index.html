@@ -186,8 +186,14 @@
                     localStorage.setItem('GameTimer_Lang_Preference', 'zh-TW');
                 }
             }
-            if (localStorage.getItem('GameTimer_Lang_Preference') && localStorage.getItem('GameTimer_Config_V7')) {
-                localStorage.setItem('GameTimer_EntryGate_Done', '1');
+            var raw = localStorage.getItem('GameTimer_Config_V7');
+            if (localStorage.getItem('GameTimer_Lang_Preference') && raw) {
+                try {
+                    var cfg = JSON.parse(raw);
+                    if (cfg && typeof cfg === 'object' && Array.isArray(cfg.accounts) && cfg.accounts.length) {
+                        localStorage.setItem('GameTimer_EntryGate_Done', '1');
+                    }
+                } catch (_) {}
             }
         } catch (_) {}
     }
