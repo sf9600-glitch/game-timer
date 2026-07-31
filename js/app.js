@@ -5819,28 +5819,34 @@ window.addEventListener('resize', () => {
     syncNotifyPermissionUi();
 });
 (async () => {
-    await initI18n();
-    applyLangFromStorage();
-    syncTimerEntryGateChrome();
-    syncLangEntryGateChrome();
-    syncPullRefreshChrome();
-    syncAddTimerHintChrome();
-    syncTimerTimeEditChrome();
-    updateTutorialModalChrome();
-    await initCloudSync();
-    renderSidePanel();
-    refreshMainDisplay();
-    syncPanelMobileControls();
-    lastLayoutWasMobile = isMobileLayout();
-    initMobilePanelState();
-    ensureTimerWizardElement();
-    syncFinishedNotifyState();
-    registerAppServiceWorker();
-    initNotifyBannerDismissButtons();
-    initNotifyPermissionPressButtons();
-    initMobilePullToRefresh();
-    initMobileSwipePanelToggle();
-    syncNotifyEnableBanner();
-    runFirstRunGatesAfterInit();
-    runGlobalClockTick();
+    showPendingFirstRunGatesEarly();
+    try {
+        await initI18n();
+        applyLangFromStorage();
+        syncTimerEntryGateChrome();
+        syncLangEntryGateChrome();
+        syncPullRefreshChrome();
+        syncAddTimerHintChrome();
+        syncTimerTimeEditChrome();
+        updateTutorialModalChrome();
+        renderSidePanel();
+        refreshMainDisplay();
+        syncPanelMobileControls();
+        lastLayoutWasMobile = isMobileLayout();
+        initMobilePanelState();
+        ensureTimerWizardElement();
+        syncFinishedNotifyState();
+        runFirstRunGatesAfterInit();
+        runGlobalClockTick();
+        initCloudSync().catch(err => console.error('initCloudSync', err));
+        registerAppServiceWorker();
+        initNotifyBannerDismissButtons();
+        initNotifyPermissionPressButtons();
+        initMobilePullToRefresh();
+        initMobileSwipePanelToggle();
+        syncNotifyEnableBanner();
+    } catch (err) {
+        console.error('init failed', err);
+        runFirstRunGatesAfterInit();
+    }
 })();
