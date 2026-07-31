@@ -5784,6 +5784,10 @@ document.addEventListener('keydown', e => {
         closeTimerWizard();
         return;
     }
+    if (isActiveTimerTimeEditOpen()) {
+        closeActiveTimerTimeEdit();
+        return;
+    }
     if (onboardingActive) {
         skipInteractiveTutorial();
         return;
