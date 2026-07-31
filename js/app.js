@@ -1305,7 +1305,9 @@ function advanceInteractiveTutorial() {
 }
 
 function showPendingFirstRunGatesEarly() {
-    syncEntryGateVisibility();
+    if (isTimerEntryGateOpen() || document.getElementById('timerEntryGate')?.classList.contains('show')) {
+        hideAddTimerHint();
+    }
 }
 
 function syncEntryGateVisibility() {
