@@ -2465,6 +2465,7 @@ function loadConfigFromStorage() {
 }
 
 let config = loadConfigFromStorage();
+if (config.undoTime === undefined) config.undoTime = 10;
 normalizeConfig();
 applyTimerCardMinWidth();
 
