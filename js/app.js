@@ -4186,10 +4186,11 @@ function buildActiveTimerCleanRow(timer) {
     const taskHex = taskObj ? taskObj.color : '#475569';
     row.dataset.taskColor = taskHex;
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
+    const editTapLabel = t('editTimerTimeTap');
     row.innerHTML = `
         <span class="clean-col clean-col-char">${getCleanCharPlainText(timer)}</span>
         <span class="clean-col clean-col-task">${timer.taskName}</span>
-        <span class="clean-col clean-col-remain timer-list-time timer-time-edit-trigger" role="button" tabindex="0" title="${t('editTimerTimeTap')}" aria-label="${t('editTimerTimeTap')}" onclick="openActiveTimerTimeEdit(${timer.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${timer.id}, event);}">00:00:00</span>
+        <span class="clean-col clean-col-remain timer-list-time timer-time-edit-trigger" role="button" tabindex="0" title="${editTapLabel}" aria-label="${editTapLabel}" onclick="openActiveTimerTimeEdit(${timer.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${timer.id}, event);}">00:00:00</span>
         <span class="clean-col clean-col-end timer-list-hint">--</span>
         <button type="button" class="clean-col-del timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
     return row;
