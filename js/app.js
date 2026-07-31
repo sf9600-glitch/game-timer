@@ -1936,11 +1936,13 @@ function syncTimerEntryGateChrome() {
 function showTimerEntryGate() {
     const gate = document.getElementById('timerEntryGate');
     if (!gate) return;
+    hideAddTimerHint();
     timerEntryGateOpen = true;
     gate.classList.add('show');
     gate.setAttribute('aria-hidden', 'false');
     document.body.classList.add('timer-entry-gate-open');
     syncTimerEntryGateChrome();
+    if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
 }
 
 function hideTimerEntryGate(opts = {}) {
