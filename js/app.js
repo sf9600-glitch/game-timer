@@ -4135,7 +4135,7 @@ function buildActiveTimerCard(t, index) {
                     <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
                 </div>
                 <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div></div>
-                <div class="active-slot-time"><div class="time-text">00:00:00</div></div>
+                <div class="active-slot-time timer-time-edit-trigger" role="button" tabindex="0" title="${t('editTimerTimeTap')}" aria-label="${t('editTimerTimeTap')}" onclick="openActiveTimerTimeEdit(${t.id}, event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openActiveTimerTimeEdit(${t.id}, event);}"><div class="time-text">00:00:00</div></div>
                 <div class="active-slot-date"><div class="date-label">--/--</div></div>
             </div>
         </div>`;
