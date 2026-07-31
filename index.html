@@ -99,14 +99,14 @@
         <div class="add-timer-hint-spot" id="addTimerHintSpot" aria-hidden="true"></div>
         <div class="add-timer-hint-card" id="addTimerHintCard" role="dialog" aria-modal="true" aria-labelledby="addTimerHintTitle">
             <div class="add-timer-hint-head">
-                <h2 class="add-timer-hint-title" id="addTimerHintTitle"></h2>
-                <button type="button" class="add-timer-hint-close" id="addTimerHintCloseBtn" onclick="dismissAddTimerHint()" aria-label="">&times;</button>
+                <h2 class="add-timer-hint-title" id="addTimerHintTitle">從這裡開始建立計時器</h2>
+                <button type="button" class="add-timer-hint-close" id="addTimerHintCloseBtn" onclick="dismissAddTimerHint()" aria-label="關閉">&times;</button>
             </div>
-            <p class="add-timer-hint-body" id="addTimerHintBody"></p>
+            <p class="add-timer-hint-body" id="addTimerHintBody">點上方銀色「新增計時器」按鈕即可開始。需要說明時可選下方教學。</p>
             <div class="add-timer-hint-actions">
-                <button type="button" class="add-timer-hint-btn add-timer-hint-btn--primary" id="addTimerHintCreateBtn" onclick="onAddTimerHintCreate()"></button>
-                <button type="button" class="add-timer-hint-btn" id="addTimerHintInteractiveBtn" onclick="onAddTimerHintInteractive()"></button>
-                <button type="button" class="add-timer-hint-btn" id="addTimerHintGuideBtn" onclick="onAddTimerHintGuide()"></button>
+                <button type="button" class="add-timer-hint-btn add-timer-hint-btn--primary" id="addTimerHintCreateBtn" onclick="onAddTimerHintCreate()">建立計時器</button>
+                <button type="button" class="add-timer-hint-btn" id="addTimerHintInteractiveBtn" onclick="onAddTimerHintInteractive()">🎯 互動新手教學</button>
+                <button type="button" class="add-timer-hint-btn" id="addTimerHintGuideBtn" onclick="onAddTimerHintGuide()">📖 新手教學</button>
             </div>
         </div>
     </div>
