@@ -1740,10 +1740,8 @@ function migrateFirstRunGates() {
         localStorage.setItem(LANG_GATE_DONE_KEY, '1');
         if (!localStorage.getItem(LANG_KEY)) localStorage.setItem(LANG_KEY, DEFAULT_LANG);
     }
-    if (localStorage.getItem(LANG_KEY)) {
-        if (localStorage.getItem(STORAGE_KEY)) {
-            localStorage.setItem(ENTRY_GATE_DONE_KEY, '1');
-        }
+    if (localStorage.getItem(LANG_KEY) && hasValidStoredConfig()) {
+        localStorage.setItem(ENTRY_GATE_DONE_KEY, '1');
     }
 }
 
