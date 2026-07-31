@@ -2354,6 +2354,9 @@ function syncTimerListSideAlign() {
 }
 
 function normalizeConfig() {
+    if (!Array.isArray(config.accounts) || !config.accounts.length) {
+        config.accounts = JSON.parse(JSON.stringify(defaultConfig.accounts));
+    }
     if (!config.tasks || !Array.isArray(config.tasks)) {
         config.tasks = cloneTasks(BUILTIN_DEFAULT_TASKS);
     }
