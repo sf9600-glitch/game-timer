@@ -1915,7 +1915,7 @@ function onAddTimerHintGuide() {
 }
 
 function isTimerEntryGateOpen() {
-    return timerEntryGateOpen;
+    return timerEntryGateOpen || !!document.getElementById('timerEntryGate')?.classList.contains('show');
 }
 
 function syncTimerEntryGateChrome() {
