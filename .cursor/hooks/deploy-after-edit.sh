@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
-# Cursor Agent 改完 index.html 後自動部署（手動存檔請用 Run on Save 或 watch-deploy）
+# Agent 改網站檔後：實際部署交給 Run on Save（terminal 模式），避免重複 push 且確保終端機可見。
 set -euo pipefail
 
 input=$(cat)
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
-if ! echo "$input" | grep -qE 'index\.html|css/app\.css|js/app\.js'; then
+if ! echo "$input" | grep -qE 'index\.html|css/app\.css|js/app\.js|locales/.+\.json'; then
   exit 0
 fi
 
-if [[ ! -f "$ROOT/index.html" || ! -f "$ROOT/css/app.css" || ! -f "$ROOT/js/app.js" ]]; then
-  exit 0
-fi
+echo ""
+echo "📝 Agent 已修改網站檔案"
+echo "   → 約 1 秒後 Run on Save 會在「終端機」執行部署"
+echo "   → 成功時請看終端機是否顯示：✅ 已完成上傳"
+echo ""
 
-"$ROOT/scripts/deploy.sh" >/tmp/game-timer-deploy.log 2>&1 || true
 exit 0

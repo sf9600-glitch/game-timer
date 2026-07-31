@@ -14,7 +14,8 @@
         "panel": "dedicated",
         "focus": false,
         "showReuseMessage": false,
-        "clear": false
+        "clear": false,
+        "echo": true
       },
       "problemMatcher": []
     },
@@ -30,7 +31,8 @@
         "panel": "shared",
         "focus": false,
         "showReuseMessage": false,
-        "clear": false
+        "clear": false,
+        "echo": true
       },
       "problemMatcher": []
     }

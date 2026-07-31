@@ -1,0 +1,11 @@
+---
+description: 部署完成必須在終端機顯示「已完成上傳」
+alwaysApply: true
+---
+
+# 部署終端機提示（本專案必守）
+
+- 存檔自動部署使用 **Run on Save**，且 `"runIn": "terminal"`（禁止 `backend` / 靜默輸出）。
+- 部署腳本：`bash scripts/deploy.sh`；成功結尾必須印 **`✅ 已完成上傳`**。
+- Agent 改完 `index.html` / `css/app.css` / `js/app.js` / `locales/*.json` 後，**不要**把 deploy 輸出導向 `/tmp` 或隱藏。
+- 若使用者說「沒看到已完成上傳」：檢查 `.vscode/settings.json` 的 `runIn` 是否為 `terminal`，並確認 Run on Save 擴充已安裝。

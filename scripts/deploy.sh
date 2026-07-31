@@ -60,7 +60,7 @@ git restore --staged logs/ 2>/dev/null || true
 
 if git diff --staged --quiet; then
   write_status "$(date '+%Y-%m-%d %H:%M:%S') — 沒有變更，略過上傳"
-  print_banner "✅ 部署完成（沒有新變更，略過上傳）"
+  print_banner "✅ 已完成上傳（沒有新變更，略過上傳）"
   printf '\a'
   exit 0
 fi
