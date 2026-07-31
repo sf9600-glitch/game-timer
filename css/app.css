@@ -3129,9 +3129,9 @@ body.add-timer-hint-open {
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
-    background: color-mix(in srgb, var(--bg) 88%, #000);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: color-mix(in srgb, #0f172a 42%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;

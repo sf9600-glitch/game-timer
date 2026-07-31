@@ -1973,6 +1973,7 @@ async function setLang(lang, opts = {}) {
     syncAddTimerHintChrome();
     syncTimerTimeEditChrome();
     if (isActiveTimerTimeEditOpen()) refreshActiveTimerTimeEditUi();
+    if (isTimerWizardOpen()) renderTimerWizardStep();
     if (addTimerHintOpen) requestAnimationFrame(positionAddTimerHintUi);
     if (document.getElementById('tutorialModal')?.classList.contains('show')) {
         updateTutorialModalChrome();
