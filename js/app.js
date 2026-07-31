@@ -5904,4 +5904,6 @@ window.addEventListener('resize', () => {
         console.error('init failed', err);
         runFirstRunGatesAfterInit();
     }
+    window.__gameTimerBooted = true;
+    if (typeof hideBootFailBanner === 'function') hideBootFailBanner();
 })();
