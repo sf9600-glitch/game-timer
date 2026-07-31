@@ -14,7 +14,7 @@ const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
 const LOCALE_INLINE_FALLBACK = {
     'zh-TW': {
-        panelFabOpen: '管理',
+        panelFabOpen: '管理',   
         openPanel: '開啟管理面板',
         closePanel: '關閉管理面板',
         taskStart: '開新計時器',
