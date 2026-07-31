@@ -5074,6 +5074,7 @@ function delTask(id) {
     const allSavedData = getActiveTimers();
     const target = allSavedData.find(t => String(t.id) === String(id));
     if(target) triggerUndo('計時器', target, target.taskName || '計時器');
+    if (activeTimerTimeEditId != null && String(activeTimerTimeEditId) === String(id)) closeActiveTimerTimeEdit();
     setActiveTimers(allSavedData.filter(t => String(t.id) !== String(id)), { immediateCloud: true });
     dispatchTimersToDOM();
     if (onboardingActive && onboardingCreatedTimerId != null && String(id) === String(onboardingCreatedTimerId)) {
@@ -5084,6 +5085,149 @@ function delTask(id) {
             if (cur?.id === 'delete-timer') goOnboardingStepById('undo-tip');
         }, 320);
     }
+}
+
+let activeTimerTimeEditId = null;
+
+function getActiveTimerById(id) {
+    return getActiveTimers().find(t => String(t.id) === String(id));
+}
+
+function getTimerRemainingSec(timer) {
+    if (!timer) return 0;
+    return Math.max(0, Math.floor((new Date(timer.finishDate).getTime() - Date.now()) / 1000));
+}
+
+function splitSecToDhms(sec) {
+    let rem = Math.max(0, Math.floor(sec));
+    const d = Math.floor(rem / 86400); rem %= 86400;
+    const h = Math.floor(rem / 3600); rem %= 3600;
+    const m = Math.floor(rem / 60);
+    const s = rem % 60;
+    return { d, h, m, s };
+}
+
+function isActiveTimerTimeEditOpen() {
+    return activeTimerTimeEditId != null;
+}
+
+function syncTimerTimeEditChrome() {
+    const title = document.getElementById('timerTimeEditTitle');
+    const closeBtn = document.getElementById('timerTimeEditCloseBtn');
+    const resetBtn = document.getElementById('timerTimeEditResetBtn');
+    const unitD = document.getElementById('timerTimeEditUnitD');
+    const unitH = document.getElementById('timerTimeEditUnitH');
+    const unitM = document.getElementById('timerTimeEditUnitM');
+    const unitS = document.getElementById('timerTimeEditUnitS');
+    if (title) title.textContent = t('editTimerTimeTitle');
+    if (closeBtn) closeBtn.setAttribute('aria-label', t('closeLabel'));
+    if (resetBtn) resetBtn.textContent = t('editTimerTimeFinishNow');
+    if (unitD) unitD.textContent = t('dhmsDay');
+    if (unitH) unitH.textContent = t('dhmsHour');
+    if (unitM) unitM.textContent = t('dhmsMin');
+    if (unitS) unitS.textContent = t('dhmsSec');
+    const adjBtns = document.querySelectorAll('#timerTimeEdit .timer-time-edit-adj .btn-adjust');
+    const adjKeys = ['adj1d', 'adj12h', 'adj1h', 'adj10m', 'adj1m', 'adj30s'];
+    adjBtns.forEach((btn, i) => { if (adjKeys[i]) btn.textContent = t(adjKeys[i]); });
+}
+
+function refreshActiveTimerTimeEditUi() {
+    if (activeTimerTimeEditId == null) return;
+    const timer = getActiveTimerById(activeTimerTimeEditId);
+    if (!timer) {
+        closeActiveTimerTimeEdit();
+        return;
+    }
+    const rem = getTimerRemainingSec(timer);
+    const taskEl = document.getElementById('timerTimeEditTask');
+    const displayEl = document.getElementById('timerTimeEditDisplay');
+    if (taskEl) taskEl.textContent = timer.taskName || '';
+    if (displayEl) displayEl.textContent = formatWizardDuration(rem);
+    const { d, h, m, s } = splitSecToDhms(rem);
+    const inD = document.getElementById('timerTimeEditInD');
+    const inH = document.getElementById('timerTimeEditInH');
+    const inM = document.getElementById('timerTimeEditInM');
+    const inS = document.getElementById('timerTimeEditInS');
+    if (inD && document.activeElement !== inD) inD.value = String(d);
+    if (inH && document.activeElement !== inH) inH.value = String(h);
+    if (inM && document.activeElement !== inM) inM.value = String(m);
+    if (inS && document.activeElement !== inS) inS.value = String(s);
+}
+
+function openActiveTimerTimeEdit(id, ev) {
+    if (ev) ev.stopPropagation();
+    const timer = getActiveTimerById(id);
+    if (!timer || getTimerRemainingSec(timer) <= 0) return;
+    activeTimerTimeEditId = id;
+    syncTimerTimeEditChrome();
+    refreshActiveTimerTimeEditUi();
+    const modal = document.getElementById('timerTimeEdit');
+    if (!modal) return;
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('timer-time-edit-open');
+}
+
+function closeActiveTimerTimeEdit() {
+    activeTimerTimeEditId = null;
+    const modal = document.getElementById('timerTimeEdit');
+    if (!modal) return;
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('timer-time-edit-open');
+}
+
+function patchActiveTimerRemaining(id, newRemainingSec) {
+    const all = getActiveTimers();
+    const idx = all.findIndex(t => String(t.id) === String(id));
+    if (idx < 0) return;
+    const timer = { ...all[idx] };
+    const oldRem = getTimerRemainingSec(timer);
+    const newRem = Math.max(0, Math.floor(newRemainingSec));
+    const delta = newRem - oldRem;
+    if (delta === 0 && newRem > 0) return;
+    const oldDur = parseInt(timer.dur, 10) || Math.max(oldRem, 1);
+    if (newRem <= 0) {
+        timer.finishDate = new Date(Date.now() - 1000).toISOString();
+        timer.dur = Math.max(1, oldDur);
+    } else {
+        timer.finishDate = new Date(Date.now() + newRem * 1000).toISOString();
+        timer.dur = Math.max(newRem, oldDur + delta, 1);
+    }
+    all[idx] = timer;
+    setActiveTimers(all, { immediateCloud: true });
+    syncPushScheduleToServer().catch(err => console.warn('sync push after time edit', err));
+    updateTimersDataTicker();
+    if (newRem <= 0) {
+        closeActiveTimerTimeEdit();
+        dispatchTimersToDOM();
+    } else {
+        refreshActiveTimerTimeEditUi();
+    }
+}
+
+function adjustActiveTimerTime(deltaSec) {
+    if (activeTimerTimeEditId == null) return;
+    const timer = getActiveTimerById(activeTimerTimeEditId);
+    if (!timer) {
+        closeActiveTimerTimeEdit();
+        return;
+    }
+    patchActiveTimerRemaining(activeTimerTimeEditId, getTimerRemainingSec(timer) + deltaSec);
+}
+
+function activeTimerTimeEditFromDhms() {
+    if (activeTimerTimeEditId == null) return;
+    const d = parseInt(document.getElementById('timerTimeEditInD')?.value, 10) || 0;
+    const h = parseInt(document.getElementById('timerTimeEditInH')?.value, 10) || 0;
+    const m = parseInt(document.getElementById('timerTimeEditInM')?.value, 10) || 0;
+    const s = parseInt(document.getElementById('timerTimeEditInS')?.value, 10) || 0;
+    patchActiveTimerRemaining(activeTimerTimeEditId, d * 86400 + h * 3600 + m * 60 + s);
+}
+
+function resetActiveTimerTimeEdit() {
+    if (activeTimerTimeEditId == null) return;
+    patchActiveTimerRemaining(activeTimerTimeEditId, 0);
 }
 
 function removeAcc(i) {
