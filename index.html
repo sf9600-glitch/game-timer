@@ -161,6 +161,27 @@
         </div>
     </div>
 
+    <script>
+    (function () {
+        try {
+            if (localStorage.getItem('GameTimer_LangGate_Done') !== '1') {
+                var langGate = document.getElementById('langEntryGate');
+                if (langGate) {
+                    langGate.classList.add('show');
+                    langGate.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('lang-entry-gate-open');
+                }
+            } else if (localStorage.getItem('GameTimer_EntryGate_Done') !== '1') {
+                var entryGate = document.getElementById('timerEntryGate');
+                if (entryGate) {
+                    entryGate.classList.add('show');
+                    entryGate.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('timer-entry-gate-open');
+                }
+            }
+        } catch (_) {}
+    })();
+    </script>
     <script src="js/app.js?v=59"></script>
 </body>
 </html>
