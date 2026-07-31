@@ -1959,7 +1959,8 @@ async function setLang(lang, opts = {}) {
     syncLangEntryGateChrome();
     syncPullRefreshChrome();
     syncAddTimerHintChrome();
-    if (isTimerWizardOpen()) renderTimerWizardStep();
+    syncTimerTimeEditChrome();
+    if (isActiveTimerTimeEditOpen()) refreshActiveTimerTimeEditUi();
     if (addTimerHintOpen) requestAnimationFrame(positionAddTimerHintUi);
     if (document.getElementById('tutorialModal')?.classList.contains('show')) {
         updateTutorialModalChrome();
