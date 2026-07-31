@@ -121,6 +121,32 @@
         </div>
     </div>
 
+    <div class="timer-time-edit" id="timerTimeEdit" aria-hidden="true" onclick="if(event.target===this)closeActiveTimerTimeEdit()">
+        <div class="timer-time-edit-card" id="timerTimeEditCard" role="dialog" aria-modal="true" aria-labelledby="timerTimeEditTitle" onclick="event.stopPropagation()">
+            <div class="timer-time-edit-head">
+                <h2 class="timer-time-edit-title" id="timerTimeEditTitle"></h2>
+                <button type="button" class="timer-time-edit-close" id="timerTimeEditCloseBtn" onclick="closeActiveTimerTimeEdit()" aria-label="">&times;</button>
+            </div>
+            <p class="timer-time-edit-task" id="timerTimeEditTask"></p>
+            <div class="timer-time-edit-display" id="timerTimeEditDisplay">00:00:00</div>
+            <div class="timer-time-edit-adj">
+                <button type="button" class="btn-adjust" onclick="adjustActiveTimerTime(86400)"></button>
+                <button type="button" class="btn-adjust" onclick="adjustActiveTimerTime(43200)"></button>
+                <button type="button" class="btn-adjust" onclick="adjustActiveTimerTime(3600)"></button>
+                <button type="button" class="btn-adjust" onclick="adjustActiveTimerTime(600)"></button>
+                <button type="button" class="btn-adjust" onclick="adjustActiveTimerTime(60)"></button>
+                <button type="button" class="btn-adjust" onclick="adjustActiveTimerTime(30)"></button>
+            </div>
+            <div class="timer-time-edit-dhms">
+                <div class="dhms-group"><input type="number" id="timerTimeEditInD" class="dhms-input" value="0" min="0" oninput="activeTimerTimeEditFromDhms()"><span class="dhms-unit" id="timerTimeEditUnitD"></span></div>
+                <div class="dhms-group"><input type="number" id="timerTimeEditInH" class="dhms-input" value="0" min="0" oninput="activeTimerTimeEditFromDhms()"><span class="dhms-unit" id="timerTimeEditUnitH"></span></div>
+                <div class="dhms-group"><input type="number" id="timerTimeEditInM" class="dhms-input" value="0" min="0" max="59" oninput="activeTimerTimeEditFromDhms()"><span class="dhms-unit" id="timerTimeEditUnitM"></span></div>
+                <div class="dhms-group"><input type="number" id="timerTimeEditInS" class="dhms-input" value="0" min="0" max="59" oninput="activeTimerTimeEditFromDhms()"><span class="dhms-unit" id="timerTimeEditUnitS"></span></div>
+            </div>
+            <button type="button" class="btn-adjust timer-time-edit-reset" id="timerTimeEditResetBtn" onclick="resetActiveTimerTimeEdit()"></button>
+        </div>
+    </div>
+
     <div class="tutorial-modal" id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialModalTitle" onclick="if(event.target===this)closeTutorialModal()">
         <div class="tutorial-modal-card" onclick="event.stopPropagation()">
             <div class="tutorial-modal-header">
