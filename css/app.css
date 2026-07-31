@@ -2949,9 +2949,9 @@ body.onboarding-active .undo-toast.show { z-index: 2203; }
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
-    background: color-mix(in srgb, var(--bg) 88%, #000);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: color-mix(in srgb, #0f172a 42%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -2968,6 +2968,11 @@ body.lang-entry-gate-open {
 .lang-entry-gate-inner {
     width: min(420px, 100%);
     text-align: center;
+    padding: 22px 18px 18px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22);
 }
 .lang-entry-gate-title {
     margin: 0 0 10px;

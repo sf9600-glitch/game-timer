@@ -1292,6 +1292,12 @@ function advanceInteractiveTutorial() {
     showOnboardingStep(onboardingStepIndex + 1);
 }
 
+function showPendingFirstRunGatesEarly() {
+    migrateFirstRunGates();
+    if (shouldShowLangGate()) showLangEntryGate();
+    else if (shouldShowEntryGate()) showTimerEntryGate();
+}
+
 function runFirstRunGatesAfterInit() {
     migrateFirstRunGates();
     if (shouldShowLangGate()) {

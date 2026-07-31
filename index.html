@@ -19,9 +19,13 @@
 
     <div class="lang-entry-gate" id="langEntryGate" role="dialog" aria-modal="true" aria-labelledby="langEntryGateTitle" aria-hidden="true">
         <div class="lang-entry-gate-inner">
-            <h1 class="lang-entry-gate-title" id="langEntryGateTitle"></h1>
-            <p class="lang-entry-gate-sub" id="langEntryGateSub"></p>
-            <div class="lang-entry-gate-actions" id="langEntryGateActions"></div>
+            <h1 class="lang-entry-gate-title" id="langEntryGateTitle">選擇語言</h1>
+            <p class="lang-entry-gate-sub" id="langEntryGateSub">Choose your language · 選擇語言 · 选择语言</p>
+            <div class="lang-entry-gate-actions" id="langEntryGateActions">
+                <button type="button" class="lang-entry-gate-btn" onclick="pickLangFromGate('zh-TW')">繁體中文</button>
+                <button type="button" class="lang-entry-gate-btn" onclick="pickLangFromGate('zh-CN')">简体中文</button>
+                <button type="button" class="lang-entry-gate-btn" onclick="pickLangFromGate('en')">English</button>
+            </div>
         </div>
     </div>
 
