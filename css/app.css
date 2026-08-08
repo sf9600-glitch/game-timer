@@ -619,13 +619,13 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
 
 /* 帳號管理：帳號卡片與角色 chip */
 .acc-mgmt-card {
-    background: var(--card-bg);
+    background: color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, #94a3b8)) 16%, var(--card-bg));
     padding: 8px 10px;
     border-radius: 10px;
     margin-bottom: 8px;
-    border: 1px solid var(--border-color);
-    border-left: 4px solid var(--acc-color, var(--border-color));
-    box-shadow: 0 1px 3px color-mix(in srgb, var(--acc-color, var(--border-color)) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, #94a3b8)) 26%, var(--border-color));
+    border-left: 4px solid var(--acc-panel-tint, var(--acc-color, var(--border-color)));
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, #94a3b8)) 10%, transparent);
 }
 .acc-mgmt-card-head {
     display: flex;
@@ -633,13 +633,13 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     align-items: center;
     gap: 8px;
     padding-bottom: 6px;
-    border-bottom: 1px dashed color-mix(in srgb, var(--acc-color, var(--border-color)) 28%, var(--border-color));
+    border-bottom: 1px dashed color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, var(--border-color))) 30%, var(--border-color));
 }
 .acc-mgmt-card-title {
     font-weight: 800;
     font-size: 0.78rem;
     color: var(--text-main);
-    border-bottom-color: color-mix(in srgb, var(--acc-color, var(--text-sub)) 45%, var(--text-sub));
+    border-bottom-color: color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, var(--text-sub))) 45%, var(--text-sub));
 }
 .acc-mgmt-card-actions {
     display: flex;
@@ -703,8 +703,8 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     min-height: 32px;
     padding: 4px 10px;
     border-radius: 8px;
-    border: 1.5px dashed color-mix(in srgb, var(--acc-color, var(--border-color)) 45%, var(--border-color));
-    background: color-mix(in srgb, var(--acc-color, var(--border-color)) 6%, var(--bg));
+    border: 1.5px dashed color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, var(--border-color))) 45%, var(--border-color));
+    background: color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, var(--border-color))) 8%, var(--bg));
     color: var(--text-sub);
     font-size: 0.68rem;
     font-weight: 700;
@@ -722,7 +722,7 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
 .acc-char-add-btn:hover {
     border-style: solid;
     color: var(--text-main);
-    background: color-mix(in srgb, var(--acc-color, var(--border-color)) 12%, var(--card-bg));
+    background: color-mix(in srgb, var(--acc-panel-tint, var(--acc-color, var(--border-color))) 14%, var(--card-bg));
 }
 .acc-char-chip .char-add-timer-btn {
     width: 20px;

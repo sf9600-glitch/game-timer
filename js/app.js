@@ -4065,6 +4065,16 @@ function closeStartSheet() {
     setStartSheetOpen(false);
 }
 
+function getAccMgmtPanelTintColor(acc, accColor) {
+    const chars = acc.characters || [];
+    if (!chars.length) return accColor;
+    const rgbs = chars.map(c => parseColorToRgb(typeof c === 'string' ? '#94a3b8' : (c.color || '#94a3b8')));
+    const avg = rgbs.reduce((a, c) => ({ r: a.r + c.r, g: a.g + c.g, b: a.b + c.b }), { r: 0, g: 0, b: 0 });
+    const n = rgbs.length;
+    const hex = v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    return `#${hex(avg.r / n)}${hex(avg.g / n)}${hex(avg.b / n)}`;
+}
+
 function renderSidePanel() {
     detachStartContent();
     const panel = document.getElementById('sidePanelContent');
@@ -4086,8 +4096,9 @@ function renderSidePanel() {
                 <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
                 <div id="emailList">${config.accounts.map((acc, i) => {
                     const accColor = acc.color || defaultAccColors[i % 6];
+                    const panelTint = getAccMgmtPanelTintColor(acc, accColor);
                     return `
-                    <div class="acc-mgmt-card" style="--acc-color: ${accColor};">
+                    <div class="acc-mgmt-card" style="--acc-color: ${accColor}; --acc-panel-tint: ${panelTint};">
                         <div class="acc-mgmt-card-head">
                             <span class="editable-text acc-mgmt-card-title" onclick="renameAccount(${i})">${acc.email}</span>
                             <div class="acc-mgmt-card-actions">
