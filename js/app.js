@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '78';
+const ASSET_VERSION = '79';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -2096,7 +2096,8 @@ let cloudHistoryList = [];
 const ACC_COLOR_PALETTES = {
     rainbow: {
         labelKey: 'accPaletteRainbow',
-        colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#4f46e5', '#a855f7', '#94a3b8', '#64748b', '#475569', '#334155', '#78716c']
+        /** 伊頓十二色環：12 個等距色相（無灰階） */
+        colors: ['#ef4444', '#f97316', '#facc15', '#a3e635', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#ec4899']
     },
     morandi: {
         labelKey: 'accPaletteMorandi',
