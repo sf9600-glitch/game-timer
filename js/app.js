@@ -3810,11 +3810,15 @@ function toggleEditTask(i) {
     syncSubEditPanels();
 }
 
-function getCharColor(accEmail, charName) {
+function getAccountColor(accEmail) {
     const accIdx = config.accounts.findIndex(a => a.email === accEmail);
     if (accIdx < 0) return '#94a3b8';
     const acc = config.accounts[accIdx];
     return acc.color || getDefaultAccountColorByIndex(accIdx);
+}
+
+function getCharColor(accEmail, charName) {
+    return getAccountColor(accEmail);
 }
 
 function handleDragStart(e, index) {
@@ -4359,14 +4363,16 @@ function getFinishedElapsedLine(finishDate) {
     return tightenFinishedCardText(tp('finishedElapsed', { elapsed: formatElapsedSinceFinish(elapsedSec) }));
 }
 
-function applyTimerCardColorVars(card, taskHex, spectrum, charColor) {
-    card.dataset.taskColor = taskHex;
+function applyTimerCardColorVars(card, accEmail) {
+    const accColor = getAccountColor(accEmail);
+    const spectrum = getLiteColorSpectrum(accColor);
+    card.dataset.taskColor = accColor;
     card.style.setProperty('--local-raw-color', spectrum.raw);
     card.style.setProperty('--local-progress-color', spectrum.progress);
     card.style.setProperty('--local-dark-color', spectrum.dark);
     card.style.setProperty('--local-badge-bg', spectrum.badgeBg);
     card.style.setProperty('--local-badge-text', spectrum.badgeText);
-    if (charColor) card.style.setProperty('--local-char-accent', charColor);
+    card.style.setProperty('--local-char-accent', accColor);
 }
 
 function getCharBadgeHtml(accEmail, charName) {
@@ -4415,12 +4421,8 @@ function buildActiveTimerCard(t, index) {
     const card = document.createElement('div');
     card.className = 'timer-card timer-card--active';
     card.id = `t-${t.id}`;
-    const taskObj = config.tasks.find(x => x.name === t.taskBase);
-    const taskHex = taskObj ? taskObj.color : '#475569';
-    const spectrum = getLiteColorSpectrum(taskHex);
     const charName = t.char || '';
-    const charColor = charName ? getCharColor(t.email, charName) : null;
-    applyTimerCardColorVars(card, taskHex, spectrum, charColor);
+    applyTimerCardColorVars(card, t.email);
     if (isTimerSyncNewBadgeVisible(t)) card.classList.add('has-sync-new');
     card.innerHTML = `
         ${getSyncNewBadgeHtml(t)}
@@ -4503,9 +4505,7 @@ function buildActiveTimerCleanRow(timer) {
     const row = document.createElement('div');
     row.className = 'clean-table-row timer-list-row timer-list-row--active';
     row.id = `t-${timer.id}`;
-    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
-    const taskHex = taskObj ? taskObj.color : '#475569';
-    row.dataset.taskColor = taskHex;
+    applyTimerCardColorVars(row, timer.email);
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
     row.innerHTML = `
         <span class="clean-col clean-col-char">${getCharLabelWithAddBtnHtml(timer.email, getCharGroupKey(timer.char)) || getCleanCharPlainText(timer)}</span>
@@ -4520,10 +4520,8 @@ function buildFinishedTimerCleanRow(timer) {
     const row = document.createElement('div');
     row.className = 'clean-table-row timer-list-row timer-list-row--finished is-finished';
     row.id = `t-${timer.id}`;
-    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
-    const taskHex = taskObj ? taskObj.color : '#475569';
     const finishTime = new Date(timer.finishDate);
-    row.dataset.taskColor = taskHex;
+    applyTimerCardColorVars(row, timer.email);
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
     row.innerHTML = `
         <span class="clean-col clean-col-char">${getCleanCharPlainText(timer)}</span>
@@ -4551,11 +4549,7 @@ function buildActiveTimerListRow(timer) {
     const row = document.createElement('div');
     row.className = 'timer-list-row timer-list-row--active';
     row.id = `t-${timer.id}`;
-    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
-    const taskHex = taskObj ? taskObj.color : '#475569';
-    const charName = timer.char || '';
-    const charColor = charName ? getCharColor(timer.email, charName) : null;
-    applyTimerCardColorVars(row, taskHex, getLiteColorSpectrum(taskHex), charColor);
+    applyTimerCardColorVars(row, timer.email);
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
     row.innerHTML = `
         ${getSyncNewBadgeHtml(timer)}
@@ -4577,12 +4571,8 @@ function buildFinishedTimerListRow(timer) {
     const row = document.createElement('div');
     row.className = 'timer-list-row timer-list-row--finished is-finished';
     row.id = `t-${timer.id}`;
-    const taskObj = config.tasks.find(x => x.name === timer.taskBase);
-    const taskHex = taskObj ? taskObj.color : '#475569';
-    const charName = timer.char || '';
     const finishTime = new Date(timer.finishDate);
-    const charColor = charName ? getCharColor(timer.email, charName) : null;
-    applyTimerCardColorVars(row, taskHex, getLiteColorSpectrum(taskHex), charColor);
+    applyTimerCardColorVars(row, timer.email);
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
     row.innerHTML = `
         ${getSyncNewBadgeHtml(timer)}
@@ -4858,13 +4848,9 @@ function buildFinishedTimerCard(t, index) {
     const card = document.createElement('div');
     card.className = 'timer-card is-finished';
     card.id = `t-${t.id}`;
-    const taskObj = config.tasks.find(x => x.name === t.taskBase);
-    const taskHex = taskObj ? taskObj.color : '#475569';
-    const spectrum = getLiteColorSpectrum(taskHex);
     const charName = t.char || '';
     const finishTime = new Date(t.finishDate);
-    const charColor = charName ? getCharColor(t.email, charName) : null;
-    applyTimerCardColorVars(card, taskHex, spectrum, charColor);
+    applyTimerCardColorVars(card, t.email);
     card.style.setProperty('--p', '0%');
     const charCell = getCharBadgeHtml(t.email, charName) || '<span class="finished-char-placeholder"></span>';
     if (isTimerSyncNewBadgeVisible(t)) card.classList.add('has-sync-new');
@@ -5037,7 +5023,7 @@ function updateTimersDataTicker(skipRelayout = false) {
             return;
         }
 
-        const taskHex = card.dataset.taskColor || '#475569';
+        const taskHex = card.dataset.taskColor || getAccountColor(t.email) || '#475569';
 
         if (isFinished) {
             const finishTime = new Date(t.finishDate);
