@@ -4202,6 +4202,7 @@ function renderSidePanel() {
                         <div class="acc-mgmt-card-head">
                             <span class="editable-text acc-mgmt-card-title" onclick="renameAccount(${i})">${acc.email}</span>
                             <div class="acc-mgmt-card-actions">
+                                <button type="button" class="acc-char-add-btn acc-char-add-btn--head" onclick="addCharacter(${i})" title="${escapeHtmlAttr(t('accAddCharHint'))}" aria-label="${escapeHtmlAttr(t('accAddCharHint'))}"><span class="acc-char-add-btn-icon" aria-hidden="true">+</span><span class="acc-char-add-btn-label">${t('accAddCharLabel')}</span></button>
                                 <input type="color" class="color-input acc-mgmt-color-input" value="${accColor}" title="${escapeHtmlAttr(t('accChangeColorHint'))}" aria-label="${escapeHtmlAttr(t('accChangeColorHint'))}" oninput="updateAccountColor(${i}, this.value)" onchange="updateAccountColor(${i}, this.value)">
                                 <button type="button" class="btn-mini acc-mgmt-delete-btn" onclick="removeAcc(${i})" title="${escapeHtmlAttr(t('accDeleteHint'))}" aria-label="${escapeHtmlAttr(t('accDeleteHint'))}">×</button>
                             </div>
@@ -4216,7 +4217,6 @@ function renderSidePanel() {
                                     <button type="button" class="acc-char-chip-remove" onclick="removeChar(${i},${ci})">×</button>
                                 </div>`;
                             }).join('')}
-                            <button type="button" class="acc-char-add-btn" onclick="addCharacter(${i})" title="${escapeHtmlAttr(t('accAddCharHint'))}" aria-label="${escapeHtmlAttr(t('accAddCharHint'))}"><span class="acc-char-add-btn-icon" aria-hidden="true">+</span><span class="acc-char-add-btn-label">${t('accAddCharLabel')}</span></button>
                         </div>
                     </div>`;
                 }).join('')}</div>
@@ -4465,7 +4465,7 @@ function getCharLabelWithAddBtnHtml(accEmail, charName) {
     if (!charName || isCharUnspecifiedKey(charName)) {
         return `<span class="char-group-label">${getCharDisplayName(charName || CHAR_UNSPECIFIED_KEY)}</span>`;
     }
-    return `<span class="char-label-with-add">${getCharAddTimerBtnHtml(accEmail, charName)}${getCharBadgeHtml(accEmail, charName)}</span>`;
+    return getCharBadgeHtml(accEmail, charName);
 }
 
 function getCharGroupTitleHtml(accEmail, charName) {

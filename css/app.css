@@ -777,6 +777,18 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
 .acc-char-chip-remove:hover {
     background: color-mix(in srgb, var(--danger) 22%, transparent);
 }
+.acc-mgmt-card-actions .acc-char-add-btn--head {
+    min-height: 22px;
+    padding: 2px 7px;
+    font-size: 0.62rem;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 5.5rem;
+}
+.acc-mgmt-card-actions .acc-char-add-btn--head .acc-char-add-btn-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .acc-char-add-btn {
     display: inline-flex;
     align-items: center;
