@@ -699,16 +699,25 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 32px;
-    height: 32px;
-    padding: 0 10px;
+    gap: 4px;
+    min-height: 32px;
+    padding: 4px 10px;
     border-radius: 8px;
     border: 1.5px dashed color-mix(in srgb, var(--acc-color, var(--border-color)) 45%, var(--border-color));
     background: color-mix(in srgb, var(--acc-color, var(--border-color)) 6%, var(--bg));
     color: var(--text-sub);
+    font-size: 0.68rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.acc-char-add-btn-icon {
     font-size: 0.9rem;
     font-weight: 800;
-    cursor: pointer;
+    line-height: 1;
+}
+.acc-char-add-btn-label {
+    line-height: 1.2;
+    white-space: nowrap;
 }
 .acc-char-add-btn:hover {
     border-style: solid;

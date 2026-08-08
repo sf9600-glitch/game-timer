@@ -40,6 +40,8 @@
   "accountHeaderOn": "显示账号",
   "accountHeaderOff": "只显示角色",
   "charAddTimerAria": "以此角色新增计时器",
+  "accAddCharLabel": "新增角色",
+  "accAddCharHint": "点此新增角色到此账号",
   "accNamePh": "账号名称",
   "add": "新增",
   "allTags": "编辑任务标签",

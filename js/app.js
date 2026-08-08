@@ -64,6 +64,8 @@ const LOCALE_INLINE_FALLBACK = {
         accountHeaderOn: '顯示帳號',
         accountHeaderOff: '只顯示角色',
         charAddTimerAria: '以此角色新增計時器',
+        accAddCharLabel: '新增角色',
+        accAddCharHint: '點此新增角色到此帳號',
         recoveryTitle: '還原備份',
         recoveryNoSnapshots: '新增計時器時會自動備份；目前尚無紀錄。',
         recoveryRestoreVersion: '還原',
@@ -218,6 +220,8 @@ const LOCALE_INLINE_FALLBACK = {
         accountHeaderOn: '显示账号',
         accountHeaderOff: '只显示角色',
         charAddTimerAria: '以此角色新增计时器',
+        accAddCharLabel: '新增角色',
+        accAddCharHint: '点此新增角色到此账号',
         recoveryTitle: '还原备份',
         recoveryNoSnapshots: '新增计时器时会自动备份；目前没有记录。',
         recoveryRestoreVersion: '还原',
@@ -942,7 +946,7 @@ function getOnboardingSteps() {
             titleKey: 'onboardAddCharTitle',
             bodyKey: 'onboardAddCharBody',
             nextKey: 'onboardNext',
-            target: () => document.querySelector('#emailList .btn-mini[onclick^="addCharacter"]') || document.getElementById('emailList'),
+            target: () => document.querySelector('#emailList .acc-char-add-btn') || document.getElementById('emailList'),
             prepare: ensureAccSectionForOnboarding
         },
         {
@@ -4102,7 +4106,7 @@ function renderSidePanel() {
                                     <button type="button" class="acc-char-chip-remove" onclick="removeChar(${i},${ci})">×</button>
                                 </div>`;
                             }).join('')}
-                            <button type="button" class="acc-char-add-btn" onclick="addCharacter(${i})">+</button>
+                            <button type="button" class="acc-char-add-btn" onclick="addCharacter(${i})" title="${escapeHtmlAttr(t('accAddCharHint'))}" aria-label="${escapeHtmlAttr(t('accAddCharHint'))}"><span class="acc-char-add-btn-icon" aria-hidden="true">+</span><span class="acc-char-add-btn-label">${t('accAddCharLabel')}</span></button>
                         </div>
                     </div>`;
                 }).join('')}</div>

@@ -40,6 +40,8 @@
   "accountHeaderOn": "Show accounts",
   "accountHeaderOff": "Characters only",
   "charAddTimerAria": "New timer for this character",
+  "accAddCharLabel": "Add character",
+  "accAddCharHint": "Add a character to this account",
   "accNamePh": "Account name",
   "add": "Add",
   "allTags": "Edit task tags",
