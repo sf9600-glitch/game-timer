@@ -616,17 +616,36 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
 .account-header-toggle-actions .btn-adjust {
     margin-bottom: 0;
 }
-.acc-color-palettes {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--border-color);
-}
-.acc-color-palettes-title {
+.acc-palette-panel {
     margin-bottom: 8px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+.acc-palette-panel-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
     font-size: 0.68rem;
     font-weight: 700;
     color: var(--text-sub);
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
+.acc-palette-panel-chevron {
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    line-height: 1;
+    color: var(--text-sub);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.acc-palette-panel--open .acc-palette-panel-chevron { transform: rotate(90deg); }
+.acc-palette-panel-body.collapsible-content.active { margin-top: 0; }
+.acc-palette-panel-body > div { padding: 0 8px 8px; }
 .acc-color-palette-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

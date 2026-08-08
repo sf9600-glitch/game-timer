@@ -2143,6 +2143,8 @@ function applyAccountColorPalette(paletteId) {
 
 function getAccColorPalettesHtml() {
     const swatchCount = 7;
+    const paletteOpen = uiState.accPaletteExpanded ? ' acc-palette-panel--open' : '';
+    const paletteActive = uiState.accPaletteExpanded ? ' active' : '';
     const cards = ACC_COLOR_PALETTE_ORDER.map(id => {
         const palette = ACC_COLOR_PALETTES[id];
         const label = escapeHtmlAttr(t(palette.labelKey));
@@ -2154,12 +2156,27 @@ function getAccColorPalettesHtml() {
             <span class="acc-color-palette-swatches">${swatches}</span>
         </button>`;
     }).join('');
-    return `<div class="acc-color-palettes">
-        <div class="acc-color-palettes-title">${t('accColorPaletteTitle')}</div>
-        <div class="acc-color-palette-grid">${cards}</div>
+    return `<div class="acc-palette-panel${paletteOpen}" id="accPalettePanel">
+        <div class="acc-palette-panel-title" role="button" tabindex="0" onclick="toggleAccPalettePanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccPalettePanel();}" aria-expanded="${uiState.accPaletteExpanded}">
+            <span>${t('accColorPaletteTitle')}</span>
+            <span class="acc-palette-panel-chevron" aria-hidden="true">›</span>
+        </div>
+        <div id="accPalettePanelBody" class="acc-palette-panel-body collapsible-content${paletteActive}"><div>
+            <div class="acc-color-palette-grid">${cards}</div>
+        </div></div>
     </div>`;
 }
-let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null };
+
+function toggleAccPalettePanel() {
+    uiState.accPaletteExpanded = !uiState.accPaletteExpanded;
+    const panel = document.getElementById('accPalettePanel');
+    const body = document.getElementById('accPalettePanelBody');
+    const title = panel?.querySelector('.acc-palette-panel-title');
+    if (panel) panel.classList.toggle('acc-palette-panel--open', uiState.accPaletteExpanded);
+    if (body) body.classList.toggle('active', uiState.accPaletteExpanded);
+    if (title) title.setAttribute('aria-expanded', uiState.accPaletteExpanded ? 'true' : 'false');
+}
+let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null, accPaletteExpanded: false };
 const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
 let dragSourceTaskIdx = null;
 let dragSourceSub = { taskIdx: null, subIdx: null };
@@ -4175,6 +4192,7 @@ function renderSidePanel() {
                         <button type="button" class="btn-adjust${!isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(false)">${t('accountHeaderOff')}</button>
                     </div>
                 </div>
+                ${getAccColorPalettesHtml()}
                 <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
                 <div id="emailList">${config.accounts.map((acc, i) => {
                     const accColor = acc.color || getDefaultAccountColorByIndex(i);
@@ -4203,7 +4221,6 @@ function renderSidePanel() {
                         </div>
                     </div>`;
                 }).join('')}</div>
-                ${getAccColorPalettesHtml()}
             </div></div>
         </div>
 
