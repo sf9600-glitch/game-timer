@@ -63,6 +63,7 @@ const LOCALE_INLINE_FALLBACK = {
         accountHeaderDisplay: '帳號標題列',
         accountHeaderOn: '顯示帳號',
         accountHeaderOff: '只顯示角色',
+        charAddTimerAria: '以此角色新增計時器',
         recoveryTitle: '還原備份',
         recoveryNoSnapshots: '新增計時器時會自動備份；目前尚無紀錄。',
         recoveryRestoreVersion: '還原',
@@ -216,6 +217,7 @@ const LOCALE_INLINE_FALLBACK = {
         accountHeaderDisplay: '账号标题栏',
         accountHeaderOn: '显示账号',
         accountHeaderOff: '只显示角色',
+        charAddTimerAria: '以此角色新增计时器',
         recoveryTitle: '还原备份',
         recoveryNoSnapshots: '新增计时器时会自动备份；目前没有记录。',
         recoveryRestoreVersion: '还原',
@@ -1546,6 +1548,31 @@ function openTimerWizard() {
         closeStartSheet();
         setSidePanelOpen(false);
     }
+    renderTimerWizardStep();
+}
+
+function openTimerWizardForCharacter(accEmail, charName) {
+    const email = String(accEmail || '').trim();
+    const char = String(charName || '').trim();
+    if (!email || !char || isCharUnspecifiedKey(char)) return;
+    const acc = config.accounts.find(a => a.email === email);
+    if (!acc) return;
+    const hasChar = (acc.characters || []).some(c => (typeof c === 'string' ? c : c.name) === char);
+    if (!hasChar) return;
+    timerWizardState = getDefaultTimerWizardState();
+    timerWizardState.accEmail = email;
+    timerWizardState.charName = char;
+    timerWizardState.step = 2;
+    const wizard = ensureTimerWizardElement();
+    if (!wizard) return;
+    wizard.classList.add('show');
+    wizard.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('timer-wizard-open');
+    if (isMobileLayout()) {
+        closeStartSheet();
+        setSidePanelOpen(false);
+    }
+    dismissAddTimerHint();
     renderTimerWizardStep();
 }
 
@@ -4032,7 +4059,8 @@ function renderSidePanel() {
                             ${acc.characters.map((c, ci) => {
                                 let cName = typeof c === 'string' ? c : c.name;
                                 let cColor = typeof c === 'string' ? '#94a3b8' : (c.color || '#94a3b8');
-                                return `<div class="btn-mini" style="display:inline-flex; align-items:center; gap:4px; padding: 2px 6px;">
+                                return `<div class="btn-mini char-chip" style="display:inline-flex; align-items:center; gap:4px; padding: 2px 6px;">
+                                    ${getCharAddTimerBtnHtml(acc.email, cName)}
                                     <span class="editable-text" onclick="renameChar(${i},${ci})">${cName}</span> 
                                     <input type="color" class="color-input color-input-sm" value="${cColor}" onchange="updateCharColor(${i},${ci},this.value)">
                                     <span onclick="removeChar(${i},${ci})" style="color:var(--danger); cursor:pointer; font-weight:bold; padding-left:2px;">×</span>
@@ -4256,7 +4284,7 @@ function buildActiveTimerCard(t, index) {
             <div class="active-layout">
                 <div class="active-header">
                     <span class="card-id-badge active-slot-id">#${index + 1}</span>
-                    <div class="active-slot-char">${getCharBadgeHtml(t.email, charName)}</div>
+                    <div class="active-slot-char">${getCharLabelWithAddBtnHtml(t.email, charName)}</div>
                 </div>
                 <div class="active-slot-task"><div class="task-title-display">${t.taskName}</div></div>
                 <div class="active-slot-time"><div class="time-text">00:00:00</div></div>
@@ -4267,15 +4295,28 @@ function buildActiveTimerCard(t, index) {
     return card;
 }
 
+function getCharAddTimerBtnHtml(accEmail, charName) {
+    if (!accEmail || !charName || isCharUnspecifiedKey(charName)) return '';
+    const label = t('charAddTimerAria');
+    const safeLabel = label.replace(/"/g, '&quot;');
+    return `<button type="button" class="char-add-timer-btn btn-press-3d" onclick="event.stopPropagation(); openTimerWizardForCharacter(${JSON.stringify(accEmail)}, ${JSON.stringify(charName)})" aria-label="${safeLabel}" title="${safeLabel}">+</button>`;
+}
+
+function getCharLabelWithAddBtnHtml(accEmail, charName) {
+    if (!charName || isCharUnspecifiedKey(charName)) {
+        return `<span class="char-group-label">${getCharDisplayName(charName || CHAR_UNSPECIFIED_KEY)}</span>`;
+    }
+    return `<span class="char-label-with-add">${getCharAddTimerBtnHtml(accEmail, charName)}${getCharBadgeHtml(accEmail, charName)}</span>`;
+}
+
 function getCharGroupTitleHtml(accEmail, charName) {
-    if (charName && !isCharUnspecifiedKey(charName)) return getCharBadgeHtml(accEmail, charName);
-    return `<span class="char-group-label">${getCharDisplayName(charName || CHAR_UNSPECIFIED_KEY)}</span>`;
+    return getCharLabelWithAddBtnHtml(accEmail, charName);
 }
 
 function getTimerListCharLine(timer) {
     const charKey = getCharGroupKey(timer.char);
     if (isCharUnspecifiedKey(charKey)) return '';
-    return `<div class="timer-list-charline">${getCharBadgeHtml(timer.email, charKey)}</div>`;
+    return `<div class="timer-list-charline">${getCharLabelWithAddBtnHtml(timer.email, charKey)}</div>`;
 }
 
 function getCleanCharPlainText(timer) {
@@ -4310,7 +4351,7 @@ function buildActiveTimerCleanRow(timer) {
     row.dataset.taskColor = taskHex;
     if (isTimerSyncNewBadgeVisible(timer)) row.classList.add('has-sync-new');
     row.innerHTML = `
-        <span class="clean-col clean-col-char">${getCleanCharPlainText(timer)}</span>
+        <span class="clean-col clean-col-char">${getCharLabelWithAddBtnHtml(timer.email, getCharGroupKey(timer.char)) || getCleanCharPlainText(timer)}</span>
         <span class="clean-col clean-col-task">${timer.taskName}</span>
         <span class="clean-col clean-col-remain timer-list-time">00:00:00</span>
         <span class="clean-col clean-col-end timer-list-hint">--</span>

@@ -1336,6 +1336,53 @@ html.timer-display-list .timer-list-charline {
     max-width: 100%;
     min-width: 0;
     overflow: visible;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.char-label-with-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    min-width: 0;
+}
+.char-add-timer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    padding: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-main);
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 2px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent);
+}
+.char-add-timer-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--text-main) var(--btn-shadow-opacity), transparent);
+}
+html.timer-display-clean .clean-col-char .char-label-with-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    min-width: 0;
+}
+html.timer-display-clean .clean-col-char .char-title-badge {
+    max-width: calc(100% - 28px);
+}
+.active-slot-char .char-label-with-add {
+    justify-content: center;
+    width: 100%;
 }
 html.timer-display-list .timer-list-charline .char-title-badge {
     font-size: 0.7rem;
