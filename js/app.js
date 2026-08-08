@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '75';
+const ASSET_VERSION = '76';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -2143,6 +2143,33 @@ function applyAccountColorPalette(paletteId) {
     refreshMainDisplay();
 }
 
+function getAccountHeaderToggleHtml() {
+    const groupingOpen = uiState.accGroupingExpanded ? ' acc-palette-panel--open' : '';
+    const groupingActive = uiState.accGroupingExpanded ? ' active' : '';
+    return `<div class="acc-palette-panel acc-grouping-panel${groupingOpen}" id="accGroupingPanel">
+        <div class="acc-palette-panel-title" role="button" tabindex="0" onclick="toggleAccGroupingPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccGroupingPanel();}" aria-expanded="${uiState.accGroupingExpanded}">
+            <span>${t('accountHeaderDisplay')}</span>
+            <span class="acc-palette-panel-chevron" aria-hidden="true">›</span>
+        </div>
+        <div id="accGroupingPanelBody" class="acc-palette-panel-body collapsible-content${groupingActive}"><div>
+            <div class="account-header-toggle-actions">
+                <button type="button" class="btn-adjust${isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(true)">${t('accountHeaderOn')}</button>
+                <button type="button" class="btn-adjust${!isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(false)">${t('accountHeaderOff')}</button>
+            </div>
+        </div></div>
+    </div>`;
+}
+
+function toggleAccGroupingPanel() {
+    uiState.accGroupingExpanded = !uiState.accGroupingExpanded;
+    const panel = document.getElementById('accGroupingPanel');
+    const body = document.getElementById('accGroupingPanelBody');
+    const title = panel?.querySelector('.acc-palette-panel-title');
+    if (panel) panel.classList.toggle('acc-palette-panel--open', uiState.accGroupingExpanded);
+    if (body) body.classList.toggle('active', uiState.accGroupingExpanded);
+    if (title) title.setAttribute('aria-expanded', uiState.accGroupingExpanded ? 'true' : 'false');
+}
+
 function getAccColorPalettesHtml() {
     const swatchCount = 7;
     const paletteOpen = uiState.accPaletteExpanded ? ' acc-palette-panel--open' : '';
@@ -2178,7 +2205,7 @@ function toggleAccPalettePanel() {
     if (body) body.classList.toggle('active', uiState.accPaletteExpanded);
     if (title) title.setAttribute('aria-expanded', uiState.accPaletteExpanded ? 'true' : 'false');
 }
-let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null, accPaletteExpanded: false };
+let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null, accGroupingExpanded: false, accPaletteExpanded: false };
 const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
 let dragSourceTaskIdx = null;
 let dragSourceSub = { taskIdx: null, subIdx: null };
@@ -4187,13 +4214,7 @@ function renderSidePanel() {
         <div class="config-section" id="sec-acc" style="--section-color: ${config.colors.acc};">
             <div class="config-title" onclick="smartToggle('accContent')"><span>${t('accMgmt')}</span><input type="color" class="color-input" value="${config.colors.acc}" onclick="event.stopPropagation()" onchange="updateSectionColor('acc', this.value)"></div>
             <div id="accContent" class="collapsible-content ${uiState.openSection === 'accContent' ? 'active' : ''}"><div>
-                <div class="account-header-toggle-row">
-                    <span class="account-header-toggle-label">${t('accountHeaderDisplay')}</span>
-                    <div class="account-header-toggle-actions">
-                        <button type="button" class="btn-adjust${isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(true)">${t('accountHeaderOn')}</button>
-                        <button type="button" class="btn-adjust${!isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(false)">${t('accountHeaderOff')}</button>
-                    </div>
-                </div>
+                ${getAccountHeaderToggleHtml()}
                 ${getAccColorPalettesHtml()}
                 <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
                 <div id="emailList">${config.accounts.map((acc, i) => {
