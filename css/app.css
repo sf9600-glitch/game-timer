@@ -616,6 +616,21 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
 .account-header-toggle-actions .btn-adjust {
     margin-bottom: 0;
 }
+.acc-restore-colors-row {
+    margin-bottom: 8px;
+}
+.acc-restore-colors-btn {
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 0.68rem;
+}
+.acc-mgmt-delete-btn {
+    color: var(--danger);
+    font-weight: 800;
+}
+.acc-mgmt-color-input {
+    flex-shrink: 0;
+}
 
 /* 帳號管理：帳號卡片與角色 chip */
 .acc-mgmt-card {

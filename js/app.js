@@ -66,6 +66,10 @@ const LOCALE_INLINE_FALLBACK = {
         charAddTimerAria: '以此角色新增計時器',
         accAddCharLabel: '新增角色',
         accAddCharHint: '點此新增角色到此帳號',
+        accChangeColorHint: '更改此帳號的顏色',
+        accDeleteHint: '刪除此帳號',
+        accRestoreDefaultColors: '恢復預設顏色',
+        accRestoreDefaultColorsConfirm: '確定將所有帳號顏色恢復為預設？\n（前 7 個為彩虹色，第 8 個起為灰階）',
         recoveryTitle: '還原備份',
         recoveryNoSnapshots: '新增計時器時會自動備份；目前尚無紀錄。',
         recoveryRestoreVersion: '還原',
@@ -222,6 +226,10 @@ const LOCALE_INLINE_FALLBACK = {
         charAddTimerAria: '以此角色新增计时器',
         accAddCharLabel: '新增角色',
         accAddCharHint: '点此新增角色到此账号',
+        accChangeColorHint: '更改此账号的颜色',
+        accDeleteHint: '删除此账号',
+        accRestoreDefaultColors: '恢复预设颜色',
+        accRestoreDefaultColorsConfirm: '确定将所有账号颜色恢复为预设？\n（前 7 个为彩虹色，第 8 个起为灰阶）',
         recoveryTitle: '还原备份',
         recoveryNoSnapshots: '新增计时器时会自动备份；目前没有记录。',
         recoveryRestoreVersion: '还原',
@@ -2070,7 +2078,25 @@ const WEB_PUSH_VAPID_PUBLIC_KEY = 'BEK0-Llemf0WqM_wxZ9qFFPX5bxhDUPyCfpZJlJcw9sMa
 /** 雲端歷史備份：登入雲端帳號後可用，見 supabase/cloud-history.sql */
 const CLOUD_HISTORY_MAX = 30;
 let cloudHistoryList = [];
-const defaultAccColors = ['#4a90e2', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
+/** 帳號預設色：前 7 個彩虹，第 8 個起灰階 */
+const RAINBOW_ACC_DEFAULT_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#4f46e5', '#a855f7'];
+const GRAYSCALE_ACC_DEFAULT_COLORS = ['#94a3b8', '#64748b', '#475569', '#334155', '#78716c', '#525252'];
+
+function getDefaultAccountColorByIndex(index) {
+    if (index < RAINBOW_ACC_DEFAULT_COLORS.length) return RAINBOW_ACC_DEFAULT_COLORS[index];
+    const gi = (index - RAINBOW_ACC_DEFAULT_COLORS.length) % GRAYSCALE_ACC_DEFAULT_COLORS.length;
+    return GRAYSCALE_ACC_DEFAULT_COLORS[gi];
+}
+
+function restoreDefaultAccountColors() {
+    if (!config.accounts.length) return;
+    if (!confirm(t('accRestoreDefaultColorsConfirm'))) return;
+    config.accounts.forEach((acc, i) => {
+        acc.color = getDefaultAccountColorByIndex(i);
+    });
+    saveConfig();
+    refreshMainDisplay();
+}
 let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null };
 const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
 let dragSourceTaskIdx = null;
@@ -4066,13 +4092,7 @@ function closeStartSheet() {
 }
 
 function getAccMgmtPanelTintColor(acc, accColor) {
-    const chars = acc.characters || [];
-    if (!chars.length) return accColor;
-    const rgbs = chars.map(c => parseColorToRgb(typeof c === 'string' ? '#94a3b8' : (c.color || '#94a3b8')));
-    const avg = rgbs.reduce((a, c) => ({ r: a.r + c.r, g: a.g + c.g, b: a.b + c.b }), { r: 0, g: 0, b: 0 });
-    const n = rgbs.length;
-    const hex = v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
-    return `#${hex(avg.r / n)}${hex(avg.g / n)}${hex(avg.b / n)}`;
+    return accColor || '#94a3b8';
 }
 
 function renderSidePanel() {
@@ -4093,17 +4113,20 @@ function renderSidePanel() {
                         <button type="button" class="btn-adjust${!isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(false)">${t('accountHeaderOff')}</button>
                     </div>
                 </div>
+                <div class="acc-restore-colors-row">
+                    <button type="button" class="btn-adjust acc-restore-colors-btn" onclick="restoreDefaultAccountColors()">${t('accRestoreDefaultColors')}</button>
+                </div>
                 <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
                 <div id="emailList">${config.accounts.map((acc, i) => {
-                    const accColor = acc.color || defaultAccColors[i % 6];
+                    const accColor = acc.color || getDefaultAccountColorByIndex(i);
                     const panelTint = getAccMgmtPanelTintColor(acc, accColor);
                     return `
                     <div class="acc-mgmt-card" style="--acc-color: ${accColor}; --acc-panel-tint: ${panelTint};">
                         <div class="acc-mgmt-card-head">
                             <span class="editable-text acc-mgmt-card-title" onclick="renameAccount(${i})">${acc.email}</span>
                             <div class="acc-mgmt-card-actions">
-                                <input type="color" class="color-input" value="${accColor}" onchange="updateAccountColor(${i}, this.value)">
-                                <button class="btn-mini" onclick="removeAcc(${i})">×</button>
+                                <input type="color" class="color-input acc-mgmt-color-input" value="${accColor}" title="${escapeHtmlAttr(t('accChangeColorHint'))}" aria-label="${escapeHtmlAttr(t('accChangeColorHint'))}" oninput="updateAccountColor(${i}, this.value)" onchange="updateAccountColor(${i}, this.value)">
+                                <button type="button" class="btn-mini acc-mgmt-delete-btn" onclick="removeAcc(${i})" title="${escapeHtmlAttr(t('accDeleteHint'))}" aria-label="${escapeHtmlAttr(t('accDeleteHint'))}">×</button>
                             </div>
                         </div>
                         <div class="acc-char-list">
@@ -4808,7 +4831,7 @@ function refreshMainDisplay() {
         accountsOrdered.forEach((acc, i) => { 
             const origIdx = config.accounts.findIndex(a => a.email === acc.email);
             const div = document.createElement('div'); div.className = 'account-group'; 
-            div.style.setProperty('--acc-theme', acc.color || defaultAccColors[(origIdx >= 0 ? origIdx : i) % 6]); 
+            div.style.setProperty('--acc-theme', acc.color || getDefaultAccountColorByIndex(origIdx >= 0 ? origIdx : i)); 
             const headerActions = '';
             div.innerHTML = `
                 <div class="account-group-header">
@@ -5552,9 +5575,14 @@ function renameTask(i) {
 
 function updateSectionColor(k, v) { config.colors[k] = v; saveConfig(); } 
 function updateTaskColorItem(i, v) { config.tasks[i].color = v; saveConfig(); renderSidePanel(); } 
-function updateAccountColor(i, v) { config.accounts[i].color = v; saveConfig(); refreshMainDisplay(); }
+function updateAccountColor(i, v) {
+    if (!config.accounts[i]) return;
+    config.accounts[i].color = v;
+    saveConfig();
+    refreshMainDisplay();
+}
 
-function addAccount() { const n = document.getElementById('newEmailInput').value; if(n){ config.accounts.push({email:n, characters:[], color:defaultAccColors[config.accounts.length%6]}); saveConfig(); } }
+function addAccount() { const n = document.getElementById('newEmailInput').value; if(n){ config.accounts.push({email:n, characters:[], color: getDefaultAccountColorByIndex(config.accounts.length)}); saveConfig(); } }
 function saveTask() { const n = document.getElementById('newTaskInput').value; if(n){ config.tasks.push({name:n, subs:[], color:config.colors.task}); saveConfig(); } }
 
 function saveCurrentTasksAsDefault() {
