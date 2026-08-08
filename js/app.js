@@ -1576,6 +1576,11 @@ function openTimerWizardForCharacter(accEmail, charName) {
     renderTimerWizardStep();
 }
 
+function openTimerWizardForCharacterFromBtn(btn) {
+    if (!btn) return;
+    openTimerWizardForCharacter(btn.getAttribute('data-char-acc') || '', btn.getAttribute('data-char-name') || '');
+}
+
 function closeTimerWizard() {
     const wizard = document.getElementById('timerWizard');
     if (!wizard) return;
@@ -4295,11 +4300,19 @@ function buildActiveTimerCard(t, index) {
     return card;
 }
 
+function escapeHtmlAttr(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;');
+}
+
 function getCharAddTimerBtnHtml(accEmail, charName) {
     if (!accEmail || !charName || isCharUnspecifiedKey(charName)) return '';
-    const label = t('charAddTimerAria');
-    const safeLabel = label.replace(/"/g, '&quot;');
-    return `<button type="button" class="char-add-timer-btn btn-press-3d" onclick="event.stopPropagation(); openTimerWizardForCharacter(${JSON.stringify(accEmail)}, ${JSON.stringify(charName)})" aria-label="${safeLabel}" title="${safeLabel}">+</button>`;
+    const label = escapeHtmlAttr(t('charAddTimerAria'));
+    const accAttr = escapeHtmlAttr(accEmail);
+    const charAttr = escapeHtmlAttr(charName);
+    return `<button type="button" class="char-add-timer-btn btn-press-3d" data-char-acc="${accAttr}" data-char-name="${charAttr}" onclick="event.stopPropagation(); openTimerWizardForCharacterFromBtn(this)" aria-label="${label}" title="${label}">+</button>`;
 }
 
 function getCharLabelWithAddBtnHtml(accEmail, charName) {
