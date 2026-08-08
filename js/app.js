@@ -9,6 +9,8 @@ const ENTRY_GATE_DONE_KEY = 'GameTimer_EntryGate_Done';
 const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
+/** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
+const ASSET_VERSION = '75';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -341,7 +343,7 @@ let cloudSyncStatusKey = 'cloudLoginPrompt';
 
 async function loadLocaleFile(lang) {
     if (I18N[lang]) return I18N[lang];
-    const res = await fetch(`${LOCALE_DIR}/${lang}.json`);
+    const res = await fetch(`${LOCALE_DIR}/${lang}.json?v=${ASSET_VERSION}`);
     if (!res.ok) throw new Error(`locale ${lang}: ${res.status}`);
     const data = await res.json();
     const inlineFb = LOCALE_INLINE_FALLBACK[lang] || LOCALE_INLINE_FALLBACK[DEFAULT_LANG] || {};
@@ -351,7 +353,7 @@ async function loadLocaleFile(lang) {
 
 async function loadLocaleManifest() {
     try {
-        const res = await fetch(`${LOCALE_DIR}/manifest.json`);
+        const res = await fetch(`${LOCALE_DIR}/manifest.json?v=${ASSET_VERSION}`);
         if (!res.ok) return;
         const data = await res.json();
         if (data && Array.isArray(data.languages) && data.languages.length) {
