@@ -68,8 +68,14 @@ const LOCALE_INLINE_FALLBACK = {
         accAddCharHint: '點此新增角色到此帳號',
         accChangeColorHint: '更改此帳號的顏色',
         accDeleteHint: '刪除此帳號',
-        accRestoreDefaultColors: '恢復預設顏色',
-        accRestoreDefaultColorsConfirm: '確定將所有帳號顏色恢復為預設？\n（前 7 個為彩虹色，第 8 個起為灰階）',
+        accColorPaletteTitle: '預設顏色組合',
+        accPaletteRainbow: '彩虹',
+        accPaletteMorandi: '莫蘭迪',
+        accPaletteMemphis: '孟菲斯',
+        accPaletteMondrian: '蒙德里安',
+        accPaletteMacaron: '馬卡龍',
+        accPaletteRococo: '洛可可',
+        accApplyPaletteConfirm: '確定將所有帳號套用「{name}」配色？',
         recoveryTitle: '還原備份',
         recoveryNoSnapshots: '新增計時器時會自動備份；目前尚無紀錄。',
         recoveryRestoreVersion: '還原',
@@ -228,8 +234,14 @@ const LOCALE_INLINE_FALLBACK = {
         accAddCharHint: '点此新增角色到此账号',
         accChangeColorHint: '更改此账号的颜色',
         accDeleteHint: '删除此账号',
-        accRestoreDefaultColors: '恢复预设颜色',
-        accRestoreDefaultColorsConfirm: '确定将所有账号颜色恢复为预设？\n（前 7 个为彩虹色，第 8 个起为灰阶）',
+        accColorPaletteTitle: '预设颜色组合',
+        accPaletteRainbow: '彩虹',
+        accPaletteMorandi: '莫兰迪',
+        accPaletteMemphis: '孟菲斯',
+        accPaletteMondrian: '蒙德里安',
+        accPaletteMacaron: '马卡龙',
+        accPaletteRococo: '洛可可',
+        accApplyPaletteConfirm: '确定将所有账号套用「{name}」配色？',
         recoveryTitle: '还原备份',
         recoveryNoSnapshots: '新增计时器时会自动备份；目前没有记录。',
         recoveryRestoreVersion: '还原',
@@ -2078,24 +2090,74 @@ const WEB_PUSH_VAPID_PUBLIC_KEY = 'BEK0-Llemf0WqM_wxZ9qFFPX5bxhDUPyCfpZJlJcw9sMa
 /** 雲端歷史備份：登入雲端帳號後可用，見 supabase/cloud-history.sql */
 const CLOUD_HISTORY_MAX = 30;
 let cloudHistoryList = [];
-/** 帳號預設色：前 7 個彩虹，第 8 個起灰階 */
-const RAINBOW_ACC_DEFAULT_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#4f46e5', '#a855f7'];
-const GRAYSCALE_ACC_DEFAULT_COLORS = ['#94a3b8', '#64748b', '#475569', '#334155', '#78716c', '#525252'];
+/** 帳號配色方案（依序套用到各帳號，超出後循環） */
+const ACC_COLOR_PALETTES = {
+    rainbow: {
+        labelKey: 'accPaletteRainbow',
+        colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#4f46e5', '#a855f7', '#94a3b8', '#64748b', '#475569', '#334155', '#78716c']
+    },
+    morandi: {
+        labelKey: 'accPaletteMorandi',
+        colors: ['#a8847a', '#9aab8e', '#8fa3b8', '#b8a99a', '#7d8f9a', '#c4b6a6', '#8896a8', '#a6937d', '#8e9a8b', '#7a8491', '#9c8f8f', '#6f7f8f']
+    },
+    memphis: {
+        labelKey: 'accPaletteMemphis',
+        colors: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff922b', '#845ef7', '#20c997', '#fa5252', '#339af0', '#fcc419', '#e64980', '#212529']
+    },
+    mondrian: {
+        labelKey: 'accPaletteMondrian',
+        colors: ['#d62828', '#003049', '#fcbf49', '#606c38', '#1a1a1a', '#e85d04', '#023e8a', '#ffba08', '#6c757d', '#495057']
+    },
+    macaron: {
+        labelKey: 'accPaletteMacaron',
+        colors: ['#ffb3ba', '#bae1ff', '#baffc9', '#ffffba', '#ffdfba', '#e0bbff', '#c9fff9', '#ffc9de', '#d4f1f4', '#f7d6e0', '#c7ecee', '#fde2e4']
+    },
+    rococo: {
+        labelKey: 'accPaletteRococo',
+        colors: ['#c9a961', '#d4a5a5', '#b8a9c9', '#9ec5cf', '#e8dcc8', '#c9b1d4', '#a8c5a8', '#8b7355', '#b5c7b7', '#d9c4b0', '#9a8c98', '#7d6b5d']
+    }
+};
+const ACC_COLOR_PALETTE_ORDER = ['rainbow', 'morandi', 'memphis', 'mondrian', 'macaron', 'rococo'];
 
-function getDefaultAccountColorByIndex(index) {
-    if (index < RAINBOW_ACC_DEFAULT_COLORS.length) return RAINBOW_ACC_DEFAULT_COLORS[index];
-    const gi = (index - RAINBOW_ACC_DEFAULT_COLORS.length) % GRAYSCALE_ACC_DEFAULT_COLORS.length;
-    return GRAYSCALE_ACC_DEFAULT_COLORS[gi];
+function getAccountColorFromPalette(paletteId, index) {
+    const palette = ACC_COLOR_PALETTES[paletteId];
+    if (!palette?.colors?.length) return '#94a3b8';
+    return palette.colors[((index % palette.colors.length) + palette.colors.length) % palette.colors.length];
 }
 
-function restoreDefaultAccountColors() {
+function getDefaultAccountColorByIndex(index) {
+    return getAccountColorFromPalette('rainbow', index);
+}
+
+function applyAccountColorPalette(paletteId) {
     if (!config.accounts.length) return;
-    if (!confirm(t('accRestoreDefaultColorsConfirm'))) return;
+    const palette = ACC_COLOR_PALETTES[paletteId];
+    if (!palette) return;
+    if (!confirm(tp('accApplyPaletteConfirm', { name: t(palette.labelKey) }))) return;
     config.accounts.forEach((acc, i) => {
-        acc.color = getDefaultAccountColorByIndex(i);
+        acc.color = getAccountColorFromPalette(paletteId, i);
     });
     saveConfig();
     refreshMainDisplay();
+}
+
+function getAccColorPalettesHtml() {
+    const swatchCount = 7;
+    const cards = ACC_COLOR_PALETTE_ORDER.map(id => {
+        const palette = ACC_COLOR_PALETTES[id];
+        const label = escapeHtmlAttr(t(palette.labelKey));
+        const swatches = palette.colors.slice(0, swatchCount).map(c =>
+            `<span class="acc-color-palette-swatch" style="background-color:${c};" aria-hidden="true"></span>`
+        ).join('');
+        return `<button type="button" class="acc-color-palette-card" onclick="applyAccountColorPalette('${id}')" title="${label}" aria-label="${label}">
+            <span class="acc-color-palette-name">${t(palette.labelKey)}</span>
+            <span class="acc-color-palette-swatches">${swatches}</span>
+        </button>`;
+    }).join('');
+    return `<div class="acc-color-palettes">
+        <div class="acc-color-palettes-title">${t('accColorPaletteTitle')}</div>
+        <div class="acc-color-palette-grid">${cards}</div>
+    </div>`;
 }
 let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null };
 const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
@@ -4113,9 +4175,6 @@ function renderSidePanel() {
                         <button type="button" class="btn-adjust${!isAccountHeaderVisible() ? ' btn-toggle-selected' : ''}" onclick="setAccountHeaderVisible(false)">${t('accountHeaderOff')}</button>
                     </div>
                 </div>
-                <div class="acc-restore-colors-row">
-                    <button type="button" class="btn-adjust acc-restore-colors-btn" onclick="restoreDefaultAccountColors()">${t('accRestoreDefaultColors')}</button>
-                </div>
                 <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
                 <div id="emailList">${config.accounts.map((acc, i) => {
                     const accColor = acc.color || getDefaultAccountColorByIndex(i);
@@ -4144,6 +4203,7 @@ function renderSidePanel() {
                         </div>
                     </div>`;
                 }).join('')}</div>
+                ${getAccColorPalettesHtml()}
             </div></div>
         </div>
 

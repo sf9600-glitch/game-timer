@@ -616,13 +616,61 @@ input, select { background: var(--card-bg); color: var(--text-main); border: 1px
 .account-header-toggle-actions .btn-adjust {
     margin-bottom: 0;
 }
-.acc-restore-colors-row {
-    margin-bottom: 8px;
+.acc-color-palettes {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-color);
 }
-.acc-restore-colors-btn {
-    width: 100%;
-    margin-bottom: 0;
+.acc-color-palettes-title {
+    margin-bottom: 8px;
     font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-sub);
+}
+.acc-color-palette-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.acc-color-palette-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+.acc-color-palette-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 35%, var(--border-color));
+    background: color-mix(in srgb, var(--primary) 6%, var(--card-bg));
+}
+.acc-color-palette-card:active {
+    transform: translateY(1px);
+}
+.acc-color-palette-name {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+.acc-color-palette-swatches {
+    display: flex;
+    gap: 3px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+.acc-color-palette-swatch {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 10px;
+    border-radius: 3px;
+    border: 1px solid color-mix(in srgb, #000 12%, transparent);
+    box-sizing: border-box;
 }
 .acc-mgmt-delete-btn {
     color: var(--danger);
