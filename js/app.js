@@ -3811,12 +3811,10 @@ function toggleEditTask(i) {
 }
 
 function getCharColor(accEmail, charName) {
-    const acc = config.accounts.find(a => a.email === accEmail);
-    if (!acc) return '#94a3b8';
-    const chars = acc.characters || [];
-    const idx = chars.findIndex(c => (typeof c === 'string' ? c : c.name) === charName);
-    if (idx < 0) return '#94a3b8';
-    return getAccountColorFromPalette('morandi', idx);
+    const accIdx = config.accounts.findIndex(a => a.email === accEmail);
+    if (accIdx < 0) return '#94a3b8';
+    const acc = config.accounts[accIdx];
+    return acc.color || getDefaultAccountColorByIndex(accIdx);
 }
 
 function handleDragStart(e, index) {
