@@ -2494,6 +2494,12 @@ function normalizeConfig() {
     if (config.neonGlow === undefined) config.neonGlow = true;
     if (!['clean', 'colorful', 'list'].includes(config.timerDisplay)) config.timerDisplay = 'clean';
     if (config.showAccountHeader === undefined) config.showAccountHeader = true;
+    if (Array.isArray(config.accounts)) {
+        config.accounts.forEach(acc => {
+            if (!Array.isArray(acc.characters)) return;
+            acc.characters = acc.characters.map(c => (typeof c === 'string' ? c : (c?.name || ''))).filter(Boolean);
+        });
+    }
     if (!config.colors) config.colors = {};
     if (!config.colors.start) config.colors.start = defaultConfig.colors.start;
     applyNeonGlow();
@@ -3804,21 +3810,13 @@ function toggleEditTask(i) {
     syncSubEditPanels();
 }
 
-function updateCharColor(accIdx, charIdx, color) {
-    let char = config.accounts[accIdx].characters[charIdx];
-    if (typeof char === 'string') config.accounts[accIdx].characters[charIdx] = { name: char, color: color };
-    else char.color = color;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    touchLocalUpdated();
-    scheduleCloudSync();
-    renderSidePanel(); refreshMainDisplay(); 
-}
-
 function getCharColor(accEmail, charName) {
-    let acc = config.accounts.find(a => a.email === accEmail);
+    const acc = config.accounts.find(a => a.email === accEmail);
     if (!acc) return '#94a3b8';
-    let char = acc.characters.find(c => (typeof c === 'string' ? c : c.name) === charName);
-    return char && char.color ? char.color : '#94a3b8';
+    const chars = acc.characters || [];
+    const idx = chars.findIndex(c => (typeof c === 'string' ? c : c.name) === charName);
+    if (idx < 0) return '#94a3b8';
+    return getAccountColorFromPalette('morandi', idx);
 }
 
 function handleDragStart(e, index) {
@@ -4209,11 +4207,10 @@ function renderSidePanel() {
                         <div class="acc-char-list">
                             ${acc.characters.map((c, ci) => {
                                 let cName = typeof c === 'string' ? c : c.name;
-                                let cColor = typeof c === 'string' ? '#94a3b8' : (c.color || '#94a3b8');
+                                let cColor = getCharColor(acc.email, cName);
                                 return `<div class="acc-char-chip" style="--char-color: ${cColor};">
                                     ${getCharAddTimerBtnHtml(acc.email, cName, i, ci)}
                                     <span class="editable-text acc-char-chip-name" onclick="renameChar(${i},${ci})">${cName}</span>
-                                    <input type="color" class="color-input color-input-sm" value="${cColor}" onchange="updateCharColor(${i},${ci},this.value)">
                                     <button type="button" class="acc-char-chip-remove" onclick="removeChar(${i},${ci})">×</button>
                                 </div>`;
                             }).join('')}
