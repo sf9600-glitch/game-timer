@@ -1551,14 +1551,26 @@ function openTimerWizard() {
     renderTimerWizardStep();
 }
 
-function openTimerWizardForCharacter(accEmail, charName) {
-    const email = String(accEmail || '').trim();
-    const char = String(charName || '').trim();
-    if (!email || !char || isCharUnspecifiedKey(char)) return;
-    const acc = config.accounts.find(a => a.email === email);
-    if (!acc) return;
-    const hasChar = (acc.characters || []).some(c => (typeof c === 'string' ? c : c.name) === char);
-    if (!hasChar) return;
+function openTimerWizardForCharacter(accEmail, charName, accIdx, charIdx) {
+    let email = String(accEmail || '').trim();
+    let char = String(charName || '').trim();
+    if (Number.isInteger(accIdx) && Number.isInteger(charIdx)) {
+        const accByIdx = config.accounts[accIdx];
+        const c = accByIdx?.characters?.[charIdx];
+        if (accByIdx && c != null) {
+            email = accByIdx.email;
+            char = typeof c === 'string' ? c : c.name;
+        }
+    }
+    if (!char || isCharUnspecifiedKey(char)) return;
+    let acc = email ? config.accounts.find(a => a.email === email) : null;
+    if (!acc) {
+        acc = config.accounts.find(a => (a.characters || []).some(c => (typeof c === 'string' ? c : c.name) === char));
+        if (acc) email = acc.email;
+    }
+    if (!acc || !email) return;
+    if (isTimerEntryGateOpen()) hideTimerEntryGate({ skipHint: true });
+    hideAddTimerHint();
     timerWizardState = getDefaultTimerWizardState();
     timerWizardState.accEmail = email;
     timerWizardState.charName = char;
@@ -1572,13 +1584,30 @@ function openTimerWizardForCharacter(accEmail, charName) {
         closeStartSheet();
         setSidePanelOpen(false);
     }
-    dismissAddTimerHint();
     renderTimerWizardStep();
 }
 
 function openTimerWizardForCharacterFromBtn(btn) {
     if (!btn) return;
+    const accIdxRaw = btn.getAttribute('data-acc-idx');
+    const charIdxRaw = btn.getAttribute('data-char-idx');
+    if (accIdxRaw != null && charIdxRaw != null) {
+        openTimerWizardForCharacter('', '', parseInt(accIdxRaw, 10), parseInt(charIdxRaw, 10));
+        return;
+    }
     openTimerWizardForCharacter(btn.getAttribute('data-char-acc') || '', btn.getAttribute('data-char-name') || '');
+}
+
+function initCharAddTimerButtons() {
+    if (document.documentElement.dataset.charAddTimerBound === '1') return;
+    document.documentElement.dataset.charAddTimerBound = '1';
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.char-add-timer-btn');
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openTimerWizardForCharacterFromBtn(btn);
+    }, true);
 }
 
 function closeTimerWizard() {
@@ -4051,29 +4080,32 @@ function renderSidePanel() {
                     </div>
                 </div>
                 <div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" id="newEmailInput" placeholder="${t('accNamePh')}" style="flex:1;" onkeyup="if(event.key==='Enter') addAccount()"><button class="btn-adjust" onclick="addAccount()" style="width: 60px;">${t('add')}</button></div>
-                <div id="emailList">${config.accounts.map((acc, i) => `
-                    <div style="background-color:var(--bg); padding:8px; border-radius:8px; margin-bottom:4px; border:1px solid var(--border-color);">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span class="editable-text" style="font-weight:bold;" onclick="renameAccount(${i})">${acc.email}</span>
-                            <div style="display:flex; gap:5px; align-items:center;">
-                                <input type="color" class="color-input" value="${acc.color || defaultAccColors[i%6]}" onchange="updateAccountColor(${i}, this.value)">
+                <div id="emailList">${config.accounts.map((acc, i) => {
+                    const accColor = acc.color || defaultAccColors[i % 6];
+                    return `
+                    <div class="acc-mgmt-card" style="--acc-color: ${accColor};">
+                        <div class="acc-mgmt-card-head">
+                            <span class="editable-text acc-mgmt-card-title" onclick="renameAccount(${i})">${acc.email}</span>
+                            <div class="acc-mgmt-card-actions">
+                                <input type="color" class="color-input" value="${accColor}" onchange="updateAccountColor(${i}, this.value)">
                                 <button class="btn-mini" onclick="removeAcc(${i})">×</button>
                             </div>
                         </div>
-                        <div style="margin-top:5px; display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
+                        <div class="acc-char-list">
                             ${acc.characters.map((c, ci) => {
                                 let cName = typeof c === 'string' ? c : c.name;
                                 let cColor = typeof c === 'string' ? '#94a3b8' : (c.color || '#94a3b8');
-                                return `<div class="btn-mini char-chip" style="display:inline-flex; align-items:center; gap:4px; padding: 2px 6px;">
-                                    ${getCharAddTimerBtnHtml(acc.email, cName)}
-                                    <span class="editable-text" onclick="renameChar(${i},${ci})">${cName}</span> 
+                                return `<div class="acc-char-chip" style="--char-color: ${cColor};">
+                                    ${getCharAddTimerBtnHtml(acc.email, cName, i, ci)}
+                                    <span class="editable-text acc-char-chip-name" onclick="renameChar(${i},${ci})">${cName}</span>
                                     <input type="color" class="color-input color-input-sm" value="${cColor}" onchange="updateCharColor(${i},${ci},this.value)">
-                                    <span onclick="removeChar(${i},${ci})" style="color:var(--danger); cursor:pointer; font-weight:bold; padding-left:2px;">×</span>
+                                    <button type="button" class="acc-char-chip-remove" onclick="removeChar(${i},${ci})">×</button>
                                 </div>`;
                             }).join('')}
-                            <button class="btn-mini" onclick="addCharacter(${i})" style="height:22px;">+</button>
+                            <button type="button" class="acc-char-add-btn" onclick="addCharacter(${i})">+</button>
                         </div>
-                    </div>`).join('')}</div>
+                    </div>`;
+                }).join('')}</div>
             </div></div>
         </div>
 
@@ -4307,12 +4339,14 @@ function escapeHtmlAttr(s) {
         .replace(/</g, '&lt;');
 }
 
-function getCharAddTimerBtnHtml(accEmail, charName) {
-    if (!accEmail || !charName || isCharUnspecifiedKey(charName)) return '';
+function getCharAddTimerBtnHtml(accEmail, charName, accIdx, charIdx) {
+    if (!charName || isCharUnspecifiedKey(charName)) return '';
+    const hasIdx = Number.isInteger(accIdx) && Number.isInteger(charIdx);
     const label = escapeHtmlAttr(t('charAddTimerAria'));
-    const accAttr = escapeHtmlAttr(accEmail);
-    const charAttr = escapeHtmlAttr(charName);
-    return `<button type="button" class="char-add-timer-btn btn-press-3d" data-char-acc="${accAttr}" data-char-name="${charAttr}" onclick="event.stopPropagation(); openTimerWizardForCharacterFromBtn(this)" aria-label="${label}" title="${label}">+</button>`;
+    const dataAttrs = hasIdx
+        ? ` data-acc-idx="${accIdx}" data-char-idx="${charIdx}"`
+        : ` data-char-acc="${escapeHtmlAttr(accEmail || '')}" data-char-name="${escapeHtmlAttr(charName)}"`;
+    return `<button type="button" class="char-add-timer-btn btn-press-3d"${dataAttrs} aria-label="${label}" title="${label}">+</button>`;
 }
 
 function getCharLabelWithAddBtnHtml(accEmail, charName) {
@@ -5901,6 +5935,7 @@ window.addEventListener('resize', () => {
     syncPanelMobileControls();
     lastLayoutWasMobile = isMobileLayout();
     initMobilePanelState();
+    initCharAddTimerButtons();
     ensureTimerWizardElement();
     syncFinishedNotifyState();
     registerAppServiceWorker();
