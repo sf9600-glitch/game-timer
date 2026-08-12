@@ -188,6 +188,7 @@
   "onboardNeedUndoHint": "After deleting, the undo toast appears at the bottom-right.",
   "timerDoneNoticeTitle": "Timer finished",
   "timerDoneNoticeBody": "{task} is done",
+  "timerDoneNoticeBodyWithChar": "{char} · {task} is done",
   "notifySectionTitle": "Notifications (mobile)",
   "notifyInstallHint": "If the app is missing in Settings → Notifications: open in Safari → Share → Add to Home Screen → open from the icon (not a Safari tab).",
   "notifyInstallOk": "Opened from Home Screen. Tap Allow notifications below so the app appears in iPhone Settings → Notifications.",

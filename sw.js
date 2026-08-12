@@ -16,7 +16,7 @@ self.addEventListener('push', (event) => {
         if (data.body) body = data.body;
         if (data.tag) tag = data.tag;
     } catch (_) {}
-    const options = { body, tag, renotify: true, data: { tag } };
+    const options = { body, tag, renotify: false, data: { tag } };
     event.waitUntil(
         self.registration.showNotification(title, options)
     );

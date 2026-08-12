@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '79';
+const ASSET_VERSION = '81';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -111,6 +111,7 @@ const LOCALE_INLINE_FALLBACK = {
         notifyOnFinishHint: '此計時器到 0 時通知',
         timerDoneNoticeTitle: '計時完成',
         timerDoneNoticeBody: '{task} 已完成',
+        timerDoneNoticeBodyWithChar: '{char} · {task} 已完成',
         notifySectionTitle: '到點通知（手機）',
         notifyInstallHint: '若「設定→通知」找不到本 App：請用 Safari 開啟網站 → 點底部分享 →「加入主畫面」→ 從主畫面圖示開啟（不要只用 Safari 分頁）。',
         notifyInstallOk: '目前已從主畫面開啟。請先按下方「允許通知」，之後才會出現在 iPhone「設定→通知」。',
@@ -265,6 +266,7 @@ const LOCALE_INLINE_FALLBACK = {
         notifyOnFinishHint: '此计时器到 0 时通知',
         timerDoneNoticeTitle: '计时完成',
         timerDoneNoticeBody: '{task} 已完成',
+        timerDoneNoticeBodyWithChar: '{char} · {task} 已完成',
         notifySectionTitle: '到点通知（手机）',
         notifyInstallHint: '若「设置→通知」找不到本 App：请用 Safari 打开网站 → 点底部分享 →「加入主屏幕」→ 从主屏幕图标打开（不要只用 Safari 分页）。',
         notifyInstallOk: '目前已从主屏幕打开。请先按下方「允许通知」，之后才会出现在 iPhone「设置→通知」。',
@@ -468,6 +470,33 @@ let onboardingPositionedStepId = null;
 const ONBOARDING_STRICT_WAITS = new Set(['timer-created', 'timer-deleted']);
 const NOTIFY_BANNER_DISMISS_KEY = 'GameTimer_NotifyBanner_Dismissed';
 const finishedNotifyIds = new Set();
+let pushSubscriptionActive = false;
+
+function getTimerFinishNoticeBody(timer) {
+    const task = timer?.taskName || t('taskStart');
+    const char = String(timer?.char || '').trim();
+    if (char && !isCharUnspecifiedKey(char)) {
+        return tp('timerDoneNoticeBodyWithChar', { char: getCharDisplayName(char), task });
+    }
+    return tp('timerDoneNoticeBody', { task });
+}
+
+function shouldUseLocalFinishNotification() {
+    // 背景推播已訂閱時，改由 Service Worker 顯示，避免同一計時器跳兩次
+    return !pushSubscriptionActive;
+}
+
+async function refreshPushSubscriptionState() {
+    pushSubscriptionActive = false;
+    if (!canUseBackgroundPush() || Notification.permission !== 'granted') return;
+    if (!('serviceWorker' in navigator)) return;
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        pushSubscriptionActive = !!(await reg.pushManager.getSubscription());
+    } catch (_) {
+        pushSubscriptionActive = false;
+    }
+}
 
 function shouldNotifyOnFinish(timer) {
     return timer?.notifyOnFinish !== false;
@@ -570,7 +599,7 @@ async function syncPushScheduleToServer() {
         timer_id: String(timer.id),
         fire_at: new Date(timer.finishDate).toISOString(),
         title: t('timerDoneNoticeTitle'),
-        body: tp('timerDoneNoticeBody', { task: timer.taskName || t('taskStart') })
+        body: getTimerFinishNoticeBody(timer)
     }));
     const { error } = await sb.from('timer_push_schedule').upsert(rows, { onConflict: 'user_id,timer_id' });
     if (error) console.warn('syncPushScheduleToServer', error);
@@ -583,20 +612,18 @@ async function ensureWebPushSubscription() {
     try {
         const reg = await navigator.serviceWorker.ready;
         let sub = await reg.pushManager.getSubscription();
-        // iOS/Safari occasionally keeps a stale subscription after key/environment changes.
-        // Recreate it to ensure server-side endpoint and keys are valid.
-        if (sub) {
-            try { await sub.unsubscribe(); } catch (_) {}
-            sub = null;
+        if (!sub) {
+            sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(WEB_PUSH_VAPID_PUBLIC_KEY.trim())
+            });
         }
-        sub = await reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(WEB_PUSH_VAPID_PUBLIC_KEY.trim())
-        });
         await savePushSubscription(sub);
         await syncPushScheduleToServer();
+        pushSubscriptionActive = true;
         return true;
     } catch (err) {
+        pushSubscriptionActive = false;
         console.warn('ensureWebPushSubscription', err);
         return false;
     }
@@ -769,6 +796,7 @@ async function registerAppServiceWorker() {
     if (!('serviceWorker' in navigator)) return;
     try {
         await navigator.serviceWorker.register('sw.js', { scope: './' });
+        await refreshPushSubscriptionState();
     } catch (err) {
         console.warn('serviceWorker register', err);
     }
@@ -823,11 +851,11 @@ function triggerFinishNotification(timer) {
     if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
         navigator.vibrate([180, 120, 180]);
     }
+    if (!shouldUseLocalFinishNotification()) return;
     if (!canUseWebNotificationOnThisDevice() || Notification.permission !== 'granted') return;
-    const task = timer.taskName || t('taskStart');
     try {
         new Notification(t('timerDoneNoticeTitle'), {
-            body: tp('timerDoneNoticeBody', { task }),
+            body: getTimerFinishNoticeBody(timer),
             tag: `timer-finish-${id}`
         });
     } catch (_) {}
@@ -3108,14 +3136,52 @@ function renderRecoveryPanelHtml() {
     </div>`;
 }
 
+/** 本機是否仍為預設帳號（帳號1／帳號2） */
+function hasUserCustomizedConfig(cfg) {
+    if (!cfg) return false;
+    const accounts = cfg.accounts || [];
+    if (accounts.length > 2) return true;
+    if (!accounts.length) return false;
+    const defaultEmails = new Set(['帳號1', '帳號2']);
+    return accounts.some(a => a?.email && !defaultEmails.has(String(a.email).trim()));
+}
+
+/** 本機是否有值得上傳的資料（計時器或非預設設定） */
+function hasLocalDataToUpload(localPayload) {
+    const p = localPayload || buildCloudPayload();
+    if ((p.activeTimers || []).length > 0) return true;
+    return hasUserCustomizedConfig(p.config);
+}
+
+/** 雲端是否有可還原的資料 */
+function hasCloudSyncableData(cloudPayload) {
+    if (!cloudPayload) return false;
+    if ((cloudPayload.activeTimers || []).length > 0) return true;
+    if (hasUserCustomizedConfig(cloudPayload.config)) return true;
+    return (cloudPayload.updatedAt || 0) > 0;
+}
+
+/** 本機尚無實質資料（新裝置／僅預設畫面） */
+function isLocalFreshForCloudSync(localPayload) {
+    return !hasLocalDataToUpload(localPayload);
+}
+
+/** 計時器所屬帳號在雲端設定裡，但本機設定沒有 → 應採用雲端設定 */
+function shouldPreferCloudConfig(cloudPayload, localPayload) {
+    const cloudConfig = cloudPayload?.config;
+    if (!cloudConfig) return false;
+    const localEmails = new Set((localPayload?.config?.accounts || []).map(a => a?.email).filter(Boolean));
+    const cloudEmails = new Set((cloudConfig.accounts || []).map(a => a?.email).filter(Boolean));
+    const mergedTimers = mergeActiveTimersUnion(localPayload?.activeTimers || [], cloudPayload?.activeTimers || []);
+    if (mergedTimers.some(t => t?.email && cloudEmails.has(t.email) && !localEmails.has(t.email))) return true;
+    if ((cloudConfig.accounts || []).length > (localPayload?.config?.accounts || []).length) return true;
+    return false;
+}
+
 /** 本機從未標記更新時間（0）且雲端有資料時，應優先採用雲端 */
 function shouldPreferCloudOnMerge(cloudPayload) {
-    const localAt = getLocalUpdatedAt();
-    const cloudAt = cloudPayload.updatedAt || 0;
-    if (localAt > 0) return false;
-    if (cloudAt <= 0) return false;
-    const cloudTimers = Array.isArray(cloudPayload.activeTimers) ? cloudPayload.activeTimers : [];
-    return cloudTimers.length > 0 || !!cloudPayload.config;
+    if (!hasCloudSyncableData(cloudPayload)) return false;
+    return isLocalFreshForCloudSync(buildCloudPayload());
 }
 
 /** 雲端含有本機沒有的計時器（另一台裝置新增） */
@@ -3160,15 +3226,22 @@ function activeTimersNeedMerge(localTimers, cloudTimers) {
 function buildMergedSyncPayload(cloudPayload, localPayload) {
     const cloudAt = cloudPayload?.updatedAt || 0;
     const localAt = localPayload?.updatedAt || 0;
-    const preferCloudMeta = cloudAt >= localAt;
+    let preferCloudMeta = cloudAt >= localAt;
+    if (isLocalFreshForCloudSync(localPayload) && hasCloudSyncableData(cloudPayload)) preferCloudMeta = true;
+    if (shouldPreferCloudConfig(cloudPayload, localPayload)) preferCloudMeta = true;
     const meta = preferCloudMeta ? cloudPayload : localPayload;
     const metaAlt = preferCloudMeta ? localPayload : cloudPayload;
     const mergedTimers = mergeActiveTimersUnion(
         localPayload?.activeTimers || [],
         cloudPayload?.activeTimers || []
     );
+    const mergedConfig = preferCloudMeta
+        ? (cloudPayload?.config || localPayload?.config || config)
+        : (shouldPreferCloudConfig(cloudPayload, localPayload)
+            ? (cloudPayload?.config || localPayload?.config || config)
+            : (meta?.config || metaAlt?.config || config));
     return {
-        config: meta.config || metaAlt.config || config,
+        config: mergedConfig,
         activeTimers: mergedTimers,
         undoStack: preferCloudMeta
             ? (Array.isArray(cloudPayload.undoStack) ? cloudPayload.undoStack : undoStack)
@@ -3308,17 +3381,30 @@ async function mergeCloudFromRemote() {
     const localPayload = buildCloudPayload();
 
     if (!cloudPayload) {
-        await uploadToCloud();
-        updateCloudSyncUI('cloudUploadedLocal');
+        if (hasLocalDataToUpload(localPayload)) {
+            await uploadToCloud();
+            updateCloudSyncUI('cloudUploadedLocal');
+        } else {
+            updateCloudSyncUI('cloudInSync');
+        }
         return;
     }
 
     lastCloudUpdatedAt = cloudPayload.updatedAt || 0;
+
+    if (isLocalFreshForCloudSync(localPayload) && hasCloudSyncableData(cloudPayload)) {
+        applyCloudPayload(cloudPayload);
+        lastCloudUpdatedAt = cloudPayload.updatedAt || 0;
+        updateCloudSyncUI('cloudRestoredNewer');
+        return;
+    }
+
     const localTimers = localPayload.activeTimers || [];
     const cloudTimers = cloudPayload.activeTimers || [];
     const needsMerge = activeTimersNeedMerge(localTimers, cloudTimers);
 
     if (!needsMerge && (cloudPayload.updatedAt || 0) === (localPayload.updatedAt || 0)) {
+        applyCloudPayload(cloudPayload);
         updateCloudSyncUI('cloudInSync');
         return;
     }
@@ -3406,6 +3492,7 @@ async function signInFromUI() {
     await mergeCloudFromRemote();
     startCloudPoll();
     await setupBackgroundPushAfterLogin();
+    refreshMainDisplay();
     renderSidePanel();
 }
 
@@ -3439,6 +3526,7 @@ async function signOutCloud() {
     const sb = getSupabase();
     if (sb) await sb.auth.signOut();
     currentUser = null;
+    pushSubscriptionActive = false;
     cloudAuthView = 'login';
     stopCloudPoll();
     updateCloudSyncUI('cloudSignedOut');
@@ -5792,7 +5880,7 @@ window.addEventListener('beforeunload', () => { if (isCloudSyncActive()) flushCl
 document.addEventListener('visibilitychange', () => {
     if (!isCloudSyncActive()) return;
     if (document.visibilityState === 'hidden') flushCloudSyncNow();
-    else pullCloudIfNewer().catch(e => console.error('pullCloudIfNewer', e));
+    else mergeCloudFromRemote().catch(e => console.error('mergeCloudFromRemote on visible', e));
 });
 function shouldPullCloudOnPageShow(e) {
     if (!isCloudSyncActive()) return false;
@@ -6062,7 +6150,7 @@ window.addEventListener('resize', () => {
     initCharAddTimerButtons();
     ensureTimerWizardElement();
     syncFinishedNotifyState();
-    registerAppServiceWorker();
+    await registerAppServiceWorker();
     initNotifyBannerDismissButtons();
     initNotifyPermissionPressButtons();
     initMobilePullToRefresh();
