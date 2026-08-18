@@ -4972,8 +4972,7 @@ function renderOfflineReturnMount() {
     }
     const cards = list.map(item => {
         const state = computeOfflineReturnState(item);
-        const accColor = getAccountColor(item.email);
-        return `<div class="offline-return-card is-${state.status}" data-offline-id="${item.id}" data-offline-status="${state.status}" style="--acc-color:${accColor};">${getOfflineReturnCardInnerHtml(item, state)}</div>`;
+        return `<div class="offline-return-card is-${state.status}" data-offline-id="${item.id}" data-offline-status="${state.status}" style="--acc-color:${color};">${getOfflineReturnCardInnerHtml(item, state)}</div>`;
     }).join('');
     mount.innerHTML = `<div class="offline-return-panel">
         <h2 class="offline-return-panel-title">${t('offlineReturnTitle')}</h2>
