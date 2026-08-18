@@ -3770,6 +3770,21 @@ body.timer-wizard-open {
     background: color-mix(in srgb, var(--text-sub) 16%, transparent);
     color: var(--text-sub);
 }
+.offline-return-login-at {
+    margin: 0 0 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--acc-color, #0ea5e9) 16%, var(--card-bg));
+    font-size: 0.92rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--text-main);
+    text-align: center;
+}
+.offline-return-login-at:empty { display: none; }
+.offline-return-card.is-ready .offline-return-login-at {
+    background: color-mix(in srgb, #16a34a 18%, var(--card-bg));
+}
 .offline-return-card.is-ready .offline-return-status {
     background: color-mix(in srgb, #16a34a 22%, transparent);
     color: #166534;

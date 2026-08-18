@@ -360,5 +360,8 @@
   "offlineReturnRule45": "觸發後冷卻 45 天（可先上線 31 天，再離線 14 天）",
   "offlineReturnElapsed": "已離線 {elapsed}",
   "offlineReturnRemain": "還需 {remain}",
-  "offlineReturnCoolRemain": "冷卻剩餘 {remain}"
+  "offlineReturnCoolRemain": "冷卻剩餘 {remain}",
+  "offlineReturnDateFmt": "{m}月{d}日 {h}:{min}",
+  "offlineReturnLoginAfter": "{date} 後可以登入",
+  "offlineReturnLoginNow": "現在就可以登入"
 }

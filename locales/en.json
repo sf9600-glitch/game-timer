@@ -360,5 +360,8 @@
   "offlineReturnRule45": "45-day cooldown after trigger (play 31 days, then offline 14 days)",
   "offlineReturnElapsed": "Offline {elapsed}",
   "offlineReturnRemain": "{remain} left",
-  "offlineReturnCoolRemain": "Cooldown {remain} left"
+  "offlineReturnCoolRemain": "Cooldown {remain} left",
+  "offlineReturnDateFmt": "{m}/{d} {h}:{min}",
+  "offlineReturnLoginAfter": "Can log in after {date}",
+  "offlineReturnLoginNow": "You can log in now"
 }

@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '82';
+const ASSET_VERSION = '83';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -223,7 +223,10 @@ const LOCALE_INLINE_FALLBACK = {
         offlineReturnRule45: '觸發後冷卻 45 天（可先上線 31 天，再離線 14 天）',
         offlineReturnElapsed: '已離線 {elapsed}',
         offlineReturnRemain: '還需 {remain}',
-        offlineReturnCoolRemain: '冷卻剩餘 {remain}'
+        offlineReturnCoolRemain: '冷卻剩餘 {remain}',
+        offlineReturnDateFmt: '{m}月{d}日 {h}:{min}',
+        offlineReturnLoginAfter: '{date} 後可以登入',
+        offlineReturnLoginNow: '現在就可以登入'
     },
     'zh-CN': {
         panelFabOpen: '管理',
@@ -421,7 +424,10 @@ const LOCALE_INLINE_FALLBACK = {
         offlineReturnRule45: '触发后冷却 45 天（可先上线 31 天，再离线 14 天）',
         offlineReturnElapsed: '已离线 {elapsed}',
         offlineReturnRemain: '还需 {remain}',
-        offlineReturnCoolRemain: '冷却剩余 {remain}'
+        offlineReturnCoolRemain: '冷却剩余 {remain}',
+        offlineReturnDateFmt: '{m}月{d}日 {h}:{min}',
+        offlineReturnLoginAfter: '{date} 后可以登录',
+        offlineReturnLoginNow: '现在就可以登录'
     }
 };
 const I18N = {};
@@ -4446,6 +4452,29 @@ function formatOfflineDateTime(ms) {
     return `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+function formatOfflineLoginDate(ms) {
+    if (!ms) return '';
+    const d = new Date(ms);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = n => String(n).padStart(2, '0');
+    return tp('offlineReturnDateFmt', {
+        m: d.getMonth() + 1,
+        d: d.getDate(),
+        h: pad(d.getHours()),
+        min: pad(d.getMinutes())
+    });
+}
+
+function getOfflineReturnLoginLine(state, now = Date.now()) {
+    if (state.status === 'ready' || (state.nextTriggerAt && state.nextTriggerAt <= now)) {
+        return t('offlineReturnLoginNow');
+    }
+    if (state.nextTriggerAt) {
+        return tp('offlineReturnLoginAfter', { date: formatOfflineLoginDate(state.nextTriggerAt) });
+    }
+    return '';
+}
+
 function computeOfflineReturnState(item, now = Date.now()) {
     const level = parseInt(item.adventureLevel, 10) || 0;
     const levelOk = level >= OFFLINE_RETURN_LEVEL_MIN;
@@ -4846,7 +4875,6 @@ function getOfflineReturnCardInnerHtml(item, state) {
         ? (state.inCooldown ? tp('offlineReturnCoolRemain', { remain: formatOfflineDuration(state.cooldownRemainMs) }) : t('offlineReturnStatusReady'))
         : t('offlineReturnCooldownNone');
     const metaBits = [];
-    if (state.nextTriggerAt) metaBits.push(`${t('offlineReturnNextAt')}：${formatOfflineDateTime(state.nextTriggerAt)}`);
     if (state.suggestOfflineAt && state.status === 'play') {
         metaBits.push(`${t('offlineReturnSuggestOffline')}：${formatOfflineDateTime(state.suggestOfflineAt)}`);
     }
@@ -4866,6 +4894,7 @@ function getOfflineReturnCardInnerHtml(item, state) {
                 <button type="button" class="offline-return-card-remove" onclick="removeOfflineReturn(${item.id})" aria-label="×">×</button>
             </div>
         </div>
+        <p class="offline-return-login-at" data-offline-login>${getOfflineReturnLoginLine(state)}</p>
         <div class="offline-return-meter">
             <div class="offline-return-meter-label"><span>${t('offlineReturnOfflineBar')}</span><span data-offline-bar-right>${offlineRight}</span></div>
             <div class="offline-return-meter-track"><div class="offline-return-meter-fill" data-offline-bar-fill style="--offline-pct:${offlinePct}%"></div></div>
@@ -4941,10 +4970,11 @@ function tickOfflineReturnCards() {
                 ? tp('offlineReturnCoolRemain', { remain: formatOfflineDuration(state.cooldownRemainMs) })
                 : t('offlineReturnStatusReady');
         }
+        const loginEl = card.querySelector('[data-offline-login]');
+        if (loginEl) loginEl.textContent = getOfflineReturnLoginLine(state);
         const metaEl = card.querySelector('[data-offline-meta]');
         if (metaEl) {
             const metaBits = [];
-            if (state.nextTriggerAt) metaBits.push(`${t('offlineReturnNextAt')}：${formatOfflineDateTime(state.nextTriggerAt)}`);
             if (state.suggestOfflineAt && state.status === 'play') {
                 metaBits.push(`${t('offlineReturnSuggestOffline')}：${formatOfflineDateTime(state.suggestOfflineAt)}`);
             }
