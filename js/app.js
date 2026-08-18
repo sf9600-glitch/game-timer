@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '81';
+const ASSET_VERSION = '82';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -180,7 +180,50 @@ const LOCALE_INLINE_FALLBACK = {
         onboardNeedOpenStartDesktop: '請先點左側「開新計時器」。',
         onboardNeedOpenStartMobile: '請先點「開新計時器」。',
         onboardNeedDeleteHint: '請點計時卡片右上角的 ×。',
-        onboardNeedUndoHint: '刪除後右下角會出現復原提示。'
+        onboardNeedUndoHint: '刪除後右下角會出現復原提示。',
+        offlineReturnTitle: '回歸離線計時',
+        offlineReturnHint: '選定角色後填寫等級與離線時間。此區塊獨立計算，不會影響一般計時器。',
+        offlineReturnPickChar: '請先選帳號與角色',
+        offlineReturnNeedChar: '請先到「帳號管理」新增角色。',
+        offlineReturnNoChars: '此帳號尚無角色',
+        offlineReturnLevel: '冒險等級',
+        offlineReturnLevelHint: '需達 10 級（含）以上才能觸發',
+        offlineReturnLogout: '開始離線時間',
+        offlineReturnLogoutNow: '現在開始離線',
+        offlineReturnTrigger: '上次觸發回歸',
+        offlineReturnNever: '從未觸發過',
+        offlineReturnSave: '加入追蹤',
+        offlineReturnUpdate: '儲存',
+        offlineReturnEmpty: '尚未追蹤任何角色',
+        offlineReturnTracked: '追蹤中',
+        offlineReturnStatusReady: '可觸發',
+        offlineReturnStatusOffline: '離線中',
+        offlineReturnStatusPlay: '冷卻・可上線',
+        offlineReturnStatusNeedLogout: '該開始離線',
+        offlineReturnStatusWait: '等待冷卻結束',
+        offlineReturnStatusLevel: '等級不足',
+        offlineReturnStatusNeedTime: '請設定離線時間',
+        offlineReturnOfflineBar: '離線進度',
+        offlineReturnCooldownBar: '冷卻進度',
+        offlineReturnCooldownNone: '尚未進入冷卻',
+        offlineReturnAdviceReady: '條件已滿足，登入即可觸發回歸活動。',
+        offlineReturnAdviceOffline: '已離線 {elapsed}，再等 {remain} 即可觸發。',
+        offlineReturnAdvicePlay: '冷卻中，{date} 前可繼續上線；之後請離線 14 天。',
+        offlineReturnAdviceNeedLogout: '現在開始離線，滿 14 天後可再次觸發。',
+        offlineReturnAdviceWait: '離線已滿 14 天，冷卻再等 {remain} 後登入即可觸發。',
+        offlineReturnAdviceLevel: '冒險等級需達到 10 級。',
+        offlineReturnAdviceNeedTime: '請設定「開始離線時間」，連續未登入需滿 14 天。',
+        offlineReturnNextAt: '可觸發時間',
+        offlineReturnSuggestOffline: '建議開始離線',
+        offlineReturnMarkTriggered: '已登入觸發',
+        offlineReturnMarkTriggeredConfirm: '確定這個角色已登入並觸發回歸活動？將開始計算 45 天冷卻。',
+        offlineReturnRemoveConfirm: '停止追蹤「{name}」的回歸計時？',
+        offlineReturnRule14: '連續未登入需滿 14 天',
+        offlineReturnRuleLv: '冒險等級需 ≥ 10',
+        offlineReturnRule45: '觸發後冷卻 45 天（可先上線 31 天，再離線 14 天）',
+        offlineReturnElapsed: '已離線 {elapsed}',
+        offlineReturnRemain: '還需 {remain}',
+        offlineReturnCoolRemain: '冷卻剩餘 {remain}'
     },
     'zh-CN': {
         panelFabOpen: '管理',
@@ -335,7 +378,50 @@ const LOCALE_INLINE_FALLBACK = {
         onboardNeedOpenStartDesktop: '请先点左侧「开新计时器」。',
         onboardNeedOpenStartMobile: '请先点「开新计时器」。',
         onboardNeedDeleteHint: '请点击计时卡片右上角的 ×。',
-        onboardNeedUndoHint: '删除后右下角会出现复原提示。'
+        onboardNeedUndoHint: '删除后右下角会出现复原提示。',
+        offlineReturnTitle: '回归离线计时',
+        offlineReturnHint: '选定角色后填写等级与离线时间。此区块独立计算，不会影响一般计时器。',
+        offlineReturnPickChar: '请先选账号与角色',
+        offlineReturnNeedChar: '请先到「账号管理」新增角色。',
+        offlineReturnNoChars: '此账号尚无角色',
+        offlineReturnLevel: '冒险等级',
+        offlineReturnLevelHint: '需达 10 级（含）以上才能触发',
+        offlineReturnLogout: '开始离线时间',
+        offlineReturnLogoutNow: '现在开始离线',
+        offlineReturnTrigger: '上次触发回归',
+        offlineReturnNever: '从未触发过',
+        offlineReturnSave: '加入追踪',
+        offlineReturnUpdate: '保存',
+        offlineReturnEmpty: '尚未追踪任何角色',
+        offlineReturnTracked: '追踪中',
+        offlineReturnStatusReady: '可触发',
+        offlineReturnStatusOffline: '离线中',
+        offlineReturnStatusPlay: '冷却・可上线',
+        offlineReturnStatusNeedLogout: '该开始离线',
+        offlineReturnStatusWait: '等待冷却结束',
+        offlineReturnStatusLevel: '等级不足',
+        offlineReturnStatusNeedTime: '请设定离线时间',
+        offlineReturnOfflineBar: '离线进度',
+        offlineReturnCooldownBar: '冷却进度',
+        offlineReturnCooldownNone: '尚未进入冷却',
+        offlineReturnAdviceReady: '条件已满足，登录即可触发回归活动。',
+        offlineReturnAdviceOffline: '已离线 {elapsed}，再等 {remain} 即可触发。',
+        offlineReturnAdvicePlay: '冷却中，{date} 前可继续上线；之后请离线 14 天。',
+        offlineReturnAdviceNeedLogout: '现在开始离线，满 14 天后可再次触发。',
+        offlineReturnAdviceWait: '离线已满 14 天，冷却再等 {remain} 后登录即可触发。',
+        offlineReturnAdviceLevel: '冒险等级需达到 10 级。',
+        offlineReturnAdviceNeedTime: '请设定「开始离线时间」，连续未登录需满 14 天。',
+        offlineReturnNextAt: '可触发时间',
+        offlineReturnSuggestOffline: '建议开始离线',
+        offlineReturnMarkTriggered: '已登录触发',
+        offlineReturnMarkTriggeredConfirm: '确定这个角色已登录并触发回归活动？将开始计算 45 天冷却。',
+        offlineReturnRemoveConfirm: '停止追踪「{name}」的回归计时？',
+        offlineReturnRule14: '连续未登录需满 14 天',
+        offlineReturnRuleLv: '冒险等级需 ≥ 10',
+        offlineReturnRule45: '触发后冷却 45 天（可先上线 31 天，再离线 14 天）',
+        offlineReturnElapsed: '已离线 {elapsed}',
+        offlineReturnRemain: '还需 {remain}',
+        offlineReturnCoolRemain: '冷却剩余 {remain}'
     }
 };
 const I18N = {};
@@ -2233,8 +2319,8 @@ function toggleAccPalettePanel() {
     if (body) body.classList.toggle('active', uiState.accPaletteExpanded);
     if (title) title.setAttribute('aria-expanded', uiState.accPaletteExpanded ? 'true' : 'false');
 }
-let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null, accGroupingExpanded: false, accPaletteExpanded: false };
-const SECTION_IDS = ['accContent', 'taskContent', 'startContent', 'sysContent'];
+let uiState = { openSection: 'startContent', editingTaskIdx: null, allTasksExpanded: false, collapsedTaskIndices: new Set(), recoveryExpanded: false, notifySetupExpanded: false, cloudSyncExpanded: false, selectedRecoverySnapshotId: null, accGroupingExpanded: false, accPaletteExpanded: false, offlineReturnEmail: '', offlineReturnChar: '' };
+const SECTION_IDS = ['accContent', 'offlineContent', 'taskContent', 'startContent', 'sysContent'];
 let dragSourceTaskIdx = null;
 let dragSourceSub = { taskIdx: null, subIdx: null };
 
@@ -2559,6 +2645,8 @@ function normalizeConfig() {
     }
     if (!config.colors) config.colors = {};
     if (!config.colors.start) config.colors.start = defaultConfig.colors.start;
+    if (!config.colors.offline) config.colors.offline = '#0ea5e9';
+    if (!Array.isArray(config.offlineReturns)) config.offlineReturns = [];
     applyNeonGlow();
     applyTimerDisplayMode();
 }
@@ -2649,7 +2737,7 @@ function getUserDefaultTasks() {
 }
 
 const defaultConfig = {
-    colors: { acc: '#16a34a', task: '#dc2626', start: '#eab308', sys: '#475569' },
+    colors: { acc: '#16a34a', task: '#dc2626', start: '#eab308', sys: '#475569', offline: '#0ea5e9' },
     accounts: [
         { email: '帳號1', characters: ['角色1'], color: '#4a90e2' },
         { email: '帳號2', characters: ['角色2'], color: '#e28743' }
@@ -2659,7 +2747,8 @@ const defaultConfig = {
     undoTime: 10,
     neonGlow: true,
     timerDisplay: 'clean',
-    showAccountHeader: true
+    showAccountHeader: true,
+    offlineReturns: []
 };
 
 let config = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultConfig;
@@ -3139,6 +3228,7 @@ function renderRecoveryPanelHtml() {
 /** 本機是否仍為預設帳號（帳號1／帳號2） */
 function hasUserCustomizedConfig(cfg) {
     if (!cfg) return false;
+    if ((cfg.offlineReturns || []).length) return true;
     const accounts = cfg.accounts || [];
     if (accounts.length > 2) return true;
     if (!accounts.length) return false;
@@ -4291,6 +4381,578 @@ function getAccMgmtPanelTintColor(acc, accColor) {
     return accColor || '#94a3b8';
 }
 
+const OFFLINE_RETURN_OFFLINE_DAYS = 14;
+const OFFLINE_RETURN_COOLDOWN_DAYS = 45;
+const OFFLINE_RETURN_LEVEL_MIN = 10;
+const OFFLINE_RETURN_OFFLINE_MS = OFFLINE_RETURN_OFFLINE_DAYS * 86400000;
+const OFFLINE_RETURN_COOLDOWN_MS = OFFLINE_RETURN_COOLDOWN_DAYS * 86400000;
+const OFFLINE_RETURN_PLAY_MS = (OFFLINE_RETURN_COOLDOWN_DAYS - OFFLINE_RETURN_OFFLINE_DAYS) * 86400000;
+
+function persistConfigQuiet() {
+    normalizeConfig();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    touchLocalUpdated();
+    scheduleCloudSync();
+}
+
+function getOfflineReturnList() {
+    return Array.isArray(config.offlineReturns) ? config.offlineReturns : [];
+}
+
+function getOfflineReturnById(id) {
+    return getOfflineReturnList().find(item => String(item.id) === String(id));
+}
+
+function findOfflineReturn(email, charName) {
+    return getOfflineReturnList().find(item => item.email === email && item.char === charName);
+}
+
+function getOfflineCharsForEmail(email) {
+    const acc = config.accounts.find(a => a.email === email);
+    if (!acc) return [];
+    return (acc.characters || []).map(c => typeof c === 'string' ? c : c.name).filter(n => n && !isCharUnspecifiedKey(n));
+}
+
+function toLocalDatetimeInput(ms) {
+    if (!ms) return '';
+    const d = new Date(ms);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function parseLocalDatetimeInput(val) {
+    if (!val) return null;
+    const n = new Date(val).getTime();
+    return Number.isNaN(n) ? null : n;
+}
+
+function formatOfflineDuration(ms) {
+    const totalSec = Math.max(0, Math.floor(ms / 1000));
+    const d = Math.floor(totalSec / 86400);
+    const h = Math.floor((totalSec % 86400) / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if (d > 0) return `${d}${t('dhmsDay')} ${h}${t('dhmsHour')} ${m}${t('dhmsMin')}`;
+    if (h > 0) return `${h}${t('dhmsHour')} ${m}${t('dhmsMin')} ${s}${t('dhmsSec')}`;
+    return `${m}${t('dhmsMin')} ${s}${t('dhmsSec')}`;
+}
+
+function formatOfflineDateTime(ms) {
+    if (!ms) return '—';
+    const d = new Date(ms);
+    if (Number.isNaN(d.getTime())) return '—';
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function computeOfflineReturnState(item, now = Date.now()) {
+    const level = parseInt(item.adventureLevel, 10) || 0;
+    const levelOk = level >= OFFLINE_RETURN_LEVEL_MIN;
+    const logoutAt = item.lastLogoutAt || null;
+    const triggerAt = item.lastTriggerAt || null;
+    const offlineMs = logoutAt ? Math.max(0, now - logoutAt) : 0;
+    const offlineOk = !!logoutAt && offlineMs >= OFFLINE_RETURN_OFFLINE_MS;
+    const offlineRemainMs = logoutAt ? Math.max(0, OFFLINE_RETURN_OFFLINE_MS - offlineMs) : OFFLINE_RETURN_OFFLINE_MS;
+    const cooldownEndAt = triggerAt ? triggerAt + OFFLINE_RETURN_COOLDOWN_MS : 0;
+    const cooldownRemainMs = triggerAt ? Math.max(0, cooldownEndAt - now) : 0;
+    const inCooldown = cooldownRemainMs > 0;
+    const suggestOfflineAt = triggerAt ? triggerAt + OFFLINE_RETURN_PLAY_MS : 0;
+    const stillCanPlay = !!(triggerAt && now < suggestOfflineAt && !logoutAt);
+    let nextTriggerAt = null;
+    if (logoutAt) {
+        const offlineReadyAt = logoutAt + OFFLINE_RETURN_OFFLINE_MS;
+        nextTriggerAt = triggerAt ? Math.max(offlineReadyAt, cooldownEndAt) : offlineReadyAt;
+    } else if (triggerAt) {
+        nextTriggerAt = cooldownEndAt;
+    }
+    const canTrigger = levelOk && offlineOk && !inCooldown;
+    let status = 'needTime';
+    if (!levelOk) status = 'level';
+    else if (canTrigger) status = 'ready';
+    else if (inCooldown && offlineOk) status = 'wait';
+    else if (stillCanPlay) status = 'play';
+    else if (!logoutAt) status = 'needLogout';
+    else if (!offlineOk) status = 'offline';
+    else status = 'wait';
+    return {
+        level, levelOk, logoutAt, triggerAt,
+        offlineMs, offlineOk, offlineRemainMs,
+        cooldownEndAt, cooldownRemainMs, inCooldown,
+        suggestOfflineAt, stillCanPlay, nextTriggerAt, canTrigger, status
+    };
+}
+
+function getOfflineReturnStatusLabel(status) {
+    const map = {
+        ready: 'offlineReturnStatusReady',
+        offline: 'offlineReturnStatusOffline',
+        play: 'offlineReturnStatusPlay',
+        needLogout: 'offlineReturnStatusNeedLogout',
+        wait: 'offlineReturnStatusWait',
+        level: 'offlineReturnStatusLevel',
+        needTime: 'offlineReturnStatusNeedTime'
+    };
+    return t(map[status] || 'offlineReturnStatusNeedTime');
+}
+
+function getOfflineReturnAdvice(state) {
+    if (state.status === 'level') return t('offlineReturnAdviceLevel');
+    if (state.status === 'ready') return t('offlineReturnAdviceReady');
+    if (state.status === 'offline') {
+        return tp('offlineReturnAdviceOffline', {
+            elapsed: formatOfflineDuration(state.offlineMs),
+            remain: formatOfflineDuration(state.offlineRemainMs)
+        });
+    }
+    if (state.status === 'play') {
+        return tp('offlineReturnAdvicePlay', { date: formatOfflineDateTime(state.suggestOfflineAt) });
+    }
+    if (state.status === 'needLogout') return t('offlineReturnAdviceNeedLogout');
+    if (state.status === 'wait') {
+        return tp('offlineReturnAdviceWait', { remain: formatOfflineDuration(state.cooldownRemainMs) });
+    }
+    return t('offlineReturnAdviceNeedTime');
+}
+
+function readOfflineReturnForm() {
+    const email = document.getElementById('offlineAccSelect')?.value || '';
+    const charName = document.getElementById('offlineCharSelect')?.value || '';
+    const level = parseInt(document.getElementById('offlineLevelInput')?.value, 10);
+    const logoutAt = parseLocalDatetimeInput(document.getElementById('offlineLogoutInput')?.value);
+    const never = !!document.getElementById('offlineNeverTrigger')?.checked;
+    const triggerAt = never ? null : parseLocalDatetimeInput(document.getElementById('offlineTriggerInput')?.value);
+    return {
+        email,
+        char: charName,
+        adventureLevel: Number.isFinite(level) ? level : OFFLINE_RETURN_LEVEL_MIN,
+        lastLogoutAt: logoutAt,
+        lastTriggerAt: triggerAt
+    };
+}
+
+function syncOfflineReturnCharSelect() {
+    const email = document.getElementById('offlineAccSelect')?.value || '';
+    const sel = document.getElementById('offlineCharSelect');
+    if (!sel) return;
+    const chars = getOfflineCharsForEmail(email);
+    const keep = uiState.offlineReturnChar;
+    if (!chars.length) {
+        sel.innerHTML = `<option value="">${escapeHtmlAttr(t('offlineReturnNoChars'))}</option>`;
+        uiState.offlineReturnChar = '';
+        return;
+    }
+    const opts = [`<option value="">${escapeHtmlAttr(t('offlineReturnPickChar'))}</option>`]
+        .concat(chars.map(name => `<option value="${escapeHtmlAttr(name)}">${escapeHtmlAttr(name)}</option>`));
+    sel.innerHTML = opts.join('');
+    const next = chars.includes(keep) ? keep : '';
+    sel.value = next;
+    uiState.offlineReturnChar = next;
+}
+
+function fillOfflineReturnFieldsFromTracker() {
+    const email = uiState.offlineReturnEmail;
+    const charName = uiState.offlineReturnChar;
+    const item = (email && charName) ? findOfflineReturn(email, charName) : null;
+    const levelEl = document.getElementById('offlineLevelInput');
+    const logoutEl = document.getElementById('offlineLogoutInput');
+    const triggerEl = document.getElementById('offlineTriggerInput');
+    const neverEl = document.getElementById('offlineNeverTrigger');
+    if (levelEl) levelEl.value = item ? (item.adventureLevel || OFFLINE_RETURN_LEVEL_MIN) : OFFLINE_RETURN_LEVEL_MIN;
+    if (logoutEl) logoutEl.value = item ? toLocalDatetimeInput(item.lastLogoutAt) : '';
+    const never = item ? !item.lastTriggerAt : true;
+    if (neverEl) neverEl.checked = never;
+    if (triggerEl) {
+        triggerEl.value = (!never && item) ? toLocalDatetimeInput(item.lastTriggerAt) : '';
+        triggerEl.disabled = never;
+    }
+}
+
+function renderOfflineReturnFields() {
+    const wrap = document.getElementById('offlineReturnFields');
+    if (!wrap) return;
+    const email = uiState.offlineReturnEmail;
+    const charName = uiState.offlineReturnChar;
+    if (!email || !charName) {
+        wrap.innerHTML = `<p class="offline-return-side-hint">${t('offlineReturnPickChar')}</p>`;
+        return;
+    }
+    const existing = findOfflineReturn(email, charName);
+    wrap.innerHTML = `
+        <div class="offline-return-field">
+            <label for="offlineLevelInput">${t('offlineReturnLevel')}</label>
+            <input type="number" id="offlineLevelInput" min="1" max="999" step="1" value="${OFFLINE_RETURN_LEVEL_MIN}" onchange="onOfflineReturnFieldChange()">
+            <span class="offline-return-field-hint">${t('offlineReturnLevelHint')}</span>
+        </div>
+        <div class="offline-return-field">
+            <label for="offlineLogoutInput">${t('offlineReturnLogout')}</label>
+            <input type="datetime-local" id="offlineLogoutInput" step="60" onchange="onOfflineReturnFieldChange()">
+            <button type="button" class="btn-adjust" onclick="setOfflineReturnLogoutNow()">${t('offlineReturnLogoutNow')}</button>
+        </div>
+        <label class="offline-return-check"><input type="checkbox" id="offlineNeverTrigger" onchange="onOfflineNeverTriggerChange()"> ${t('offlineReturnNever')}</label>
+        <div class="offline-return-field">
+            <label for="offlineTriggerInput">${t('offlineReturnTrigger')}</label>
+            <input type="datetime-local" id="offlineTriggerInput" step="60" onchange="onOfflineReturnFieldChange()">
+        </div>
+        <div class="offline-return-side-preview" id="offlineReturnPreview"></div>
+        <button type="button" class="btn-main" id="offlineReturnSaveBtn" onclick="saveOfflineReturnFromForm()">${existing ? t('offlineReturnUpdate') : t('offlineReturnSave')}</button>
+    `;
+    fillOfflineReturnFieldsFromTracker();
+    updateOfflineReturnPreview();
+}
+
+function updateOfflineReturnPreview() {
+    const el = document.getElementById('offlineReturnPreview');
+    if (!el) return;
+    const draft = readOfflineReturnForm();
+    if (!draft.email || !draft.char) {
+        el.textContent = t('offlineReturnPickChar');
+        return;
+    }
+    const state = computeOfflineReturnState(draft);
+    el.textContent = `${getOfflineReturnStatusLabel(state.status)} · ${getOfflineReturnAdvice(state)}`;
+}
+
+function onOfflineReturnAccChange() {
+    uiState.offlineReturnEmail = document.getElementById('offlineAccSelect')?.value || '';
+    uiState.offlineReturnChar = '';
+    syncOfflineReturnCharSelect();
+    renderOfflineReturnFields();
+}
+
+function onOfflineReturnCharChange() {
+    uiState.offlineReturnChar = document.getElementById('offlineCharSelect')?.value || '';
+    renderOfflineReturnFields();
+}
+
+function onOfflineNeverTriggerChange() {
+    const never = !!document.getElementById('offlineNeverTrigger')?.checked;
+    const triggerEl = document.getElementById('offlineTriggerInput');
+    if (triggerEl) {
+        triggerEl.disabled = never;
+        if (never) triggerEl.value = '';
+    }
+    onOfflineReturnFieldChange();
+}
+
+function onOfflineReturnFieldChange() {
+    updateOfflineReturnPreview();
+    const draft = readOfflineReturnForm();
+    if (!draft.email || !draft.char) return;
+    const item = findOfflineReturn(draft.email, draft.char);
+    if (!item) return;
+    item.adventureLevel = draft.adventureLevel;
+    item.lastLogoutAt = draft.lastLogoutAt;
+    item.lastTriggerAt = draft.lastTriggerAt;
+    persistConfigQuiet();
+    renderOfflineReturnMount();
+    renderOfflineReturnTrackedList();
+}
+
+function setOfflineReturnLogoutNow() {
+    const el = document.getElementById('offlineLogoutInput');
+    if (el) el.value = toLocalDatetimeInput(Date.now());
+    const draft = readOfflineReturnForm();
+    if (draft.email && draft.char) saveOfflineReturnFromForm();
+    else onOfflineReturnFieldChange();
+}
+
+function saveOfflineReturnFromForm() {
+    const draft = readOfflineReturnForm();
+    if (!draft.email || !draft.char) return;
+    let item = findOfflineReturn(draft.email, draft.char);
+    if (item) {
+        item.adventureLevel = draft.adventureLevel;
+        item.lastLogoutAt = draft.lastLogoutAt;
+        item.lastTriggerAt = draft.lastTriggerAt;
+    } else {
+        config.offlineReturns.push({
+            id: Date.now(),
+            email: draft.email,
+            char: draft.char,
+            adventureLevel: draft.adventureLevel,
+            lastLogoutAt: draft.lastLogoutAt,
+            lastTriggerAt: draft.lastTriggerAt
+        });
+    }
+    persistConfigQuiet();
+    renderOfflineReturnMount();
+    renderOfflineReturnFields();
+    renderOfflineReturnTrackedList();
+}
+
+function startOfflineReturnNow(id) {
+    const item = getOfflineReturnById(id);
+    if (!item) return;
+    item.lastLogoutAt = Date.now();
+    persistConfigQuiet();
+    renderOfflineReturnMount();
+    if (uiState.offlineReturnEmail === item.email && uiState.offlineReturnChar === item.char) {
+        fillOfflineReturnFieldsFromTracker();
+        updateOfflineReturnPreview();
+    }
+    renderOfflineReturnTrackedList();
+}
+
+function markOfflineReturnTriggered(id) {
+    if (!confirm(t('offlineReturnMarkTriggeredConfirm'))) return;
+    const item = getOfflineReturnById(id);
+    if (!item) return;
+    item.lastTriggerAt = Date.now();
+    item.lastLogoutAt = null;
+    persistConfigQuiet();
+    renderOfflineReturnMount();
+    if (uiState.offlineReturnEmail === item.email && uiState.offlineReturnChar === item.char) {
+        fillOfflineReturnFieldsFromTracker();
+        updateOfflineReturnPreview();
+    }
+    renderOfflineReturnTrackedList();
+}
+
+function removeOfflineReturn(id) {
+    const item = getOfflineReturnById(id);
+    if (!item) return;
+    const name = item.char || item.email;
+    if (!confirm(tp('offlineReturnRemoveConfirm', { name }))) return;
+    config.offlineReturns = getOfflineReturnList().filter(x => String(x.id) !== String(id));
+    persistConfigQuiet();
+    renderOfflineReturnMount();
+    renderOfflineReturnFields();
+    renderOfflineReturnTrackedList();
+}
+
+function selectOfflineReturnTracker(id) {
+    const item = getOfflineReturnById(id);
+    if (!item) return;
+    uiState.offlineReturnEmail = item.email;
+    uiState.offlineReturnChar = item.char;
+    const accSel = document.getElementById('offlineAccSelect');
+    if (accSel) accSel.value = item.email;
+    syncOfflineReturnCharSelect();
+    const charSel = document.getElementById('offlineCharSelect');
+    if (charSel) charSel.value = item.char;
+    uiState.offlineReturnChar = item.char;
+    renderOfflineReturnFields();
+    renderOfflineReturnTrackedList();
+}
+
+function renameOfflineReturnsAccount(oldEmail, newEmail) {
+    getOfflineReturnList().forEach(item => {
+        if (item.email === oldEmail) item.email = newEmail;
+    });
+    if (uiState.offlineReturnEmail === oldEmail) uiState.offlineReturnEmail = newEmail;
+}
+
+function renameOfflineReturnsChar(email, oldName, newName) {
+    getOfflineReturnList().forEach(item => {
+        if (item.email === email && item.char === oldName) item.char = newName;
+    });
+    if (uiState.offlineReturnEmail === email && uiState.offlineReturnChar === oldName) {
+        uiState.offlineReturnChar = newName;
+    }
+}
+
+function removeOfflineReturnsForAccount(email) {
+    config.offlineReturns = getOfflineReturnList().filter(item => item.email !== email);
+    if (uiState.offlineReturnEmail === email) {
+        uiState.offlineReturnEmail = '';
+        uiState.offlineReturnChar = '';
+    }
+}
+
+function removeOfflineReturnsForChar(email, charName) {
+    config.offlineReturns = getOfflineReturnList().filter(item => !(item.email === email && item.char === charName));
+    if (uiState.offlineReturnEmail === email && uiState.offlineReturnChar === charName) {
+        uiState.offlineReturnChar = '';
+    }
+}
+
+function renderOfflineReturnTrackedList() {
+    const el = document.getElementById('offlineReturnTrackedList');
+    if (!el) return;
+    const list = getOfflineReturnList();
+    if (!list.length) {
+        el.innerHTML = `<p class="offline-return-side-hint">${t('offlineReturnEmpty')}</p>`;
+        return;
+    }
+    el.innerHTML = list.map(item => {
+        const state = computeOfflineReturnState(item);
+        const selected = item.email === uiState.offlineReturnEmail && item.char === uiState.offlineReturnChar;
+        return `<button type="button" class="offline-return-tracked-item${selected ? ' is-selected' : ''}" onclick="selectOfflineReturnTracker(${item.id})">
+            <span>
+                <span class="offline-return-tracked-name">${escapeHtmlAttr(item.char)}</span>
+                <span class="offline-return-tracked-sub"> · ${escapeHtmlAttr(item.email)}</span>
+            </span>
+            <span class="offline-return-status">${getOfflineReturnStatusLabel(state.status)}</span>
+        </button>`;
+    }).join('');
+}
+
+function getOfflineReturnSectionHtml() {
+    const color = config.colors.offline || '#0ea5e9';
+    const accOpts = (config.accounts || []).map(acc =>
+        `<option value="${escapeHtmlAttr(acc.email)}">${escapeHtmlAttr(acc.email)}</option>`
+    ).join('');
+    if (!uiState.offlineReturnEmail && config.accounts[0]) {
+        uiState.offlineReturnEmail = config.accounts[0].email;
+    }
+    return `<div class="config-section" id="sec-offline" style="--section-color: ${color};">
+        <div class="config-title" onclick="smartToggle('offlineContent')">
+            <span>${t('offlineReturnTitle')}</span>
+            <input type="color" class="color-input" value="${color}" onclick="event.stopPropagation()" onchange="updateSectionColor('offline', this.value)">
+        </div>
+        <div id="offlineContent" class="collapsible-content ${uiState.openSection === 'offlineContent' ? 'active' : ''}"><div>
+            <p class="offline-return-side-hint">${t('offlineReturnHint')}</p>
+            <ul class="offline-return-rules">
+                <li>${t('offlineReturnRule14')}</li>
+                <li>${t('offlineReturnRuleLv')}</li>
+                <li>${t('offlineReturnRule45')}</li>
+            </ul>
+            <div class="offline-return-field">
+                <label for="offlineAccSelect">${t('startLabelAccount')}</label>
+                <select id="offlineAccSelect" onchange="onOfflineReturnAccChange()">${accOpts}</select>
+            </div>
+            <div class="offline-return-field">
+                <label for="offlineCharSelect">${t('startLabelChar')}</label>
+                <select id="offlineCharSelect" onchange="onOfflineReturnCharChange()"></select>
+            </div>
+            <div id="offlineReturnFields"></div>
+            <div class="offline-return-tracked-name" style="margin:10px 0 4px;">${t('offlineReturnTracked')}</div>
+            <div id="offlineReturnTrackedList" class="offline-return-tracked-list"></div>
+        </div></div>
+    </div>`;
+}
+
+function initOfflineReturnSectionDom() {
+    const accSel = document.getElementById('offlineAccSelect');
+    if (!accSel) return;
+    if (uiState.offlineReturnEmail) accSel.value = uiState.offlineReturnEmail;
+    else uiState.offlineReturnEmail = accSel.value || '';
+    syncOfflineReturnCharSelect();
+    const charSel = document.getElementById('offlineCharSelect');
+    if (charSel && uiState.offlineReturnChar) charSel.value = uiState.offlineReturnChar;
+    renderOfflineReturnFields();
+    renderOfflineReturnTrackedList();
+}
+
+function getOfflineReturnCardInnerHtml(item, state) {
+    const offlinePct = Math.max(0, Math.min(100, state.logoutAt ? (state.offlineMs / OFFLINE_RETURN_OFFLINE_MS) * 100 : 0));
+    const coolElapsed = state.triggerAt ? Math.max(0, Date.now() - state.triggerAt) : 0;
+    const coolPct = state.triggerAt ? Math.max(0, Math.min(100, (coolElapsed / OFFLINE_RETURN_COOLDOWN_MS) * 100)) : 0;
+    const offlineRight = state.logoutAt
+        ? (state.offlineOk ? t('offlineReturnStatusReady') : tp('offlineReturnRemain', { remain: formatOfflineDuration(state.offlineRemainMs) }))
+        : t('offlineReturnStatusNeedTime');
+    const coolRight = state.triggerAt
+        ? (state.inCooldown ? tp('offlineReturnCoolRemain', { remain: formatOfflineDuration(state.cooldownRemainMs) }) : t('offlineReturnStatusReady'))
+        : t('offlineReturnCooldownNone');
+    const metaBits = [];
+    if (state.nextTriggerAt) metaBits.push(`${t('offlineReturnNextAt')}：${formatOfflineDateTime(state.nextTriggerAt)}`);
+    if (state.suggestOfflineAt && state.status === 'play') {
+        metaBits.push(`${t('offlineReturnSuggestOffline')}：${formatOfflineDateTime(state.suggestOfflineAt)}`);
+    }
+    const cooldownMeter = state.triggerAt ? `
+        <div class="offline-return-meter offline-return-meter--cool">
+            <div class="offline-return-meter-label"><span>${t('offlineReturnCooldownBar')}</span><span data-offline-cool-right>${coolRight}</span></div>
+            <div class="offline-return-meter-track"><div class="offline-return-meter-fill" data-offline-cool-fill style="--offline-pct:${coolPct}%"></div></div>
+        </div>` : '';
+    return `
+        <div class="offline-return-card-head">
+            <div class="offline-return-card-who">
+                ${getCharBadgeHtml(item.email, item.char)}
+                <span class="offline-return-acc-name">${escapeHtmlAttr(item.email)}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span class="offline-return-status" data-offline-status>${getOfflineReturnStatusLabel(state.status)}</span>
+                <button type="button" class="offline-return-card-remove" onclick="removeOfflineReturn(${item.id})" aria-label="×">×</button>
+            </div>
+        </div>
+        <div class="offline-return-meter">
+            <div class="offline-return-meter-label"><span>${t('offlineReturnOfflineBar')}</span><span data-offline-bar-right>${offlineRight}</span></div>
+            <div class="offline-return-meter-track"><div class="offline-return-meter-fill" data-offline-bar-fill style="--offline-pct:${offlinePct}%"></div></div>
+        </div>
+        ${cooldownMeter}
+        <p class="offline-return-advice" data-offline-advice>${getOfflineReturnAdvice(state)}</p>
+        <p class="offline-return-meta" data-offline-meta>${metaBits.join(' · ')}</p>
+        <div class="offline-return-actions">
+            <button type="button" class="btn-adjust" onclick="startOfflineReturnNow(${item.id})">${t('offlineReturnLogoutNow')}</button>
+            <button type="button" class="btn-adjust" onclick="markOfflineReturnTriggered(${item.id})">${t('offlineReturnMarkTriggered')}</button>
+        </div>`;
+}
+
+function renderOfflineReturnMount() {
+    const mount = document.getElementById('offlineReturnMount');
+    if (!mount) return;
+    const list = getOfflineReturnList();
+    const color = config.colors.offline || '#0ea5e9';
+    if (!list.length) {
+        mount.classList.add('is-empty');
+        mount.hidden = true;
+        mount.innerHTML = '';
+        return;
+    }
+    mount.hidden = false;
+    mount.classList.remove('is-empty');
+    mount.style.setProperty('--offline-section-color', color);
+    const cards = list.map(item => {
+        const state = computeOfflineReturnState(item);
+        const accColor = getAccountColor(item.email);
+        return `<div class="offline-return-card is-${state.status}" data-offline-id="${item.id}" data-offline-status="${state.status}" style="--acc-color:${accColor};">${getOfflineReturnCardInnerHtml(item, state)}</div>`;
+    }).join('');
+    mount.innerHTML = `<div class="offline-return-panel">
+        <h2 class="offline-return-panel-title">${t('offlineReturnTitle')}</h2>
+        <div class="offline-return-cards">${cards}</div>
+    </div>`;
+}
+
+function tickOfflineReturnCards() {
+    const mount = document.getElementById('offlineReturnMount');
+    if (!mount || mount.hidden) return;
+    getOfflineReturnList().forEach(item => {
+        const card = mount.querySelector(`[data-offline-id="${item.id}"]`);
+        if (!card) return;
+        const state = computeOfflineReturnState(item);
+        const prev = card.dataset.offlineStatus;
+        if (prev !== state.status) {
+            card.className = `offline-return-card is-${state.status}`;
+            card.dataset.offlineStatus = state.status;
+        }
+        const statusEl = card.querySelector('[data-offline-status]');
+        if (statusEl) statusEl.textContent = getOfflineReturnStatusLabel(state.status);
+        const adviceEl = card.querySelector('[data-offline-advice]');
+        if (adviceEl) adviceEl.textContent = getOfflineReturnAdvice(state);
+        const offlinePct = Math.max(0, Math.min(100, state.logoutAt ? (state.offlineMs / OFFLINE_RETURN_OFFLINE_MS) * 100 : 0));
+        const fill = card.querySelector('[data-offline-bar-fill]');
+        if (fill) fill.style.setProperty('--offline-pct', `${offlinePct}%`);
+        const barRight = card.querySelector('[data-offline-bar-right]');
+        if (barRight) {
+            barRight.textContent = state.logoutAt
+                ? (state.offlineOk ? t('offlineReturnStatusReady') : tp('offlineReturnRemain', { remain: formatOfflineDuration(state.offlineRemainMs) }))
+                : t('offlineReturnStatusNeedTime');
+        }
+        const coolFill = card.querySelector('[data-offline-cool-fill]');
+        if (coolFill && state.triggerAt) {
+            const coolElapsed = Math.max(0, Date.now() - state.triggerAt);
+            const coolPct = Math.max(0, Math.min(100, (coolElapsed / OFFLINE_RETURN_COOLDOWN_MS) * 100));
+            coolFill.style.setProperty('--offline-pct', `${coolPct}%`);
+        }
+        const coolRight = card.querySelector('[data-offline-cool-right]');
+        if (coolRight) {
+            coolRight.textContent = state.inCooldown
+                ? tp('offlineReturnCoolRemain', { remain: formatOfflineDuration(state.cooldownRemainMs) })
+                : t('offlineReturnStatusReady');
+        }
+        const metaEl = card.querySelector('[data-offline-meta]');
+        if (metaEl) {
+            const metaBits = [];
+            if (state.nextTriggerAt) metaBits.push(`${t('offlineReturnNextAt')}：${formatOfflineDateTime(state.nextTriggerAt)}`);
+            if (state.suggestOfflineAt && state.status === 'play') {
+                metaBits.push(`${t('offlineReturnSuggestOffline')}：${formatOfflineDateTime(state.suggestOfflineAt)}`);
+            }
+            metaEl.textContent = metaBits.join(' · ');
+        }
+    });
+}
+
 function renderSidePanel() {
     detachStartContent();
     const panel = document.getElementById('sidePanelContent');
@@ -4333,6 +4995,8 @@ function renderSidePanel() {
                 }).join('')}</div>
             </div></div>
         </div>
+
+        ${getOfflineReturnSectionHtml()}
 
         <div class="config-section" id="sec-task" style="--section-color: ${config.colors.task};">
             <div class="config-title" onclick="smartToggle('taskContent')">
@@ -4434,6 +5098,7 @@ function renderSidePanel() {
     mountStartContent();
     syncCollapsibleClasses();
     syncStartSheetChrome();
+    initOfflineReturnSectionDom();
     initNotifyBannerDismissButtons();
     initNotifyPermissionPressButtons();
     syncNotifyPermissionUi();
@@ -5016,6 +5681,7 @@ function refreshMainDisplay() {
     syncMainTimerDisplayBar();
     dispatchTimersToDOM();
     syncPanelMobileControls();
+    renderOfflineReturnMount();
 }
 
 function hasAnyFinishedTimers() {
@@ -5174,6 +5840,7 @@ function updateTimersDataTicker(skipRelayout = false) {
             syncTimerListSideAlign();
         });
     }
+    tickOfflineReturnCards();
 }
 
 function runGlobalClockTick() { updateTimersDataTicker(); requestAnimationFrame(runGlobalClockTick); }
@@ -5572,6 +6239,7 @@ function removeAcc(i) {
     config.accounts.splice(i, 1);
     const allSavedData = getActiveTimers();
     setActiveTimers(allSavedData.filter(t => t.email !== email));
+    removeOfflineReturnsForAccount(email);
     saveConfig();
     refreshMainDisplay();
 }
@@ -5579,7 +6247,9 @@ function removeChar(ai, ci) {
     const c = config.accounts[ai].characters[ci];
     const charName = typeof c === 'string' ? c : c.name;
     triggerUndo(t('undoSettings'), JSON.parse(JSON.stringify(config)), charName);
+    const email = config.accounts[ai].email;
     config.accounts[ai].characters.splice(ci, 1);
+    removeOfflineReturnsForChar(email, charName);
     saveConfig(); refreshMainDisplay();
 }
 function removeTask(i) {
@@ -5703,6 +6373,7 @@ function renameAccount(i) {
     const allSavedData = getActiveTimers();
     allSavedData.forEach(t => { if (t.email === oldEmail) t.email = newVal; });
     setActiveTimers(allSavedData);
+    renameOfflineReturnsAccount(oldEmail, newVal);
     saveConfig();
     refreshMainDisplay();
 }
@@ -5717,6 +6388,7 @@ function renameChar(ai, ci) {
     const allSavedData = getActiveTimers();
     allSavedData.forEach(t => { if (t.email === email && t.char === oldName) t.char = newVal; });
     setActiveTimers(allSavedData);
+    renameOfflineReturnsChar(email, oldName, newVal);
     saveConfig();
     refreshMainDisplay();
 }
