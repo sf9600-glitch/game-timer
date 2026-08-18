@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '83';
+const ASSET_VERSION = '84';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -226,7 +226,11 @@ const LOCALE_INLINE_FALLBACK = {
         offlineReturnCoolRemain: '冷卻剩餘 {remain}',
         offlineReturnDateFmt: '{m}月{d}日 {h}:{min}',
         offlineReturnLoginAfter: '{date} 後可以登入',
-        offlineReturnLoginNow: '現在就可以登入'
+        offlineReturnLoginNow: '現在就可以登入',
+        mainPageLabel: '主畫面分頁',
+        mainPageTimers: '一般計時器',
+        mainPageOffline: '回歸離線',
+        offlineReturnPageEmpty: '尚未追蹤任何角色。請到左側「回歸離線計時」選角色後加入追蹤。'
     },
     'zh-CN': {
         panelFabOpen: '管理',
@@ -427,7 +431,11 @@ const LOCALE_INLINE_FALLBACK = {
         offlineReturnCoolRemain: '冷却剩余 {remain}',
         offlineReturnDateFmt: '{m}月{d}日 {h}:{min}',
         offlineReturnLoginAfter: '{date} 后可以登录',
-        offlineReturnLoginNow: '现在就可以登录'
+        offlineReturnLoginNow: '现在就可以登录',
+        mainPageLabel: '主画面分页',
+        mainPageTimers: '一般计时器',
+        mainPageOffline: '回归离线',
+        offlineReturnPageEmpty: '尚未追踪任何角色。请到左侧「回归离线计时」选角色后加入追踪。'
     }
 };
 const I18N = {};
@@ -2653,6 +2661,7 @@ function normalizeConfig() {
     if (!config.colors.start) config.colors.start = defaultConfig.colors.start;
     if (!config.colors.offline) config.colors.offline = '#0ea5e9';
     if (!Array.isArray(config.offlineReturns)) config.offlineReturns = [];
+    if (config.mainPage !== 'offline') config.mainPage = 'timers';
     applyNeonGlow();
     applyTimerDisplayMode();
 }
@@ -2701,20 +2710,54 @@ function setAccountHeaderVisible(show) {
 }
 
 function renderTimerDisplayTabsHtml() {
+    const page = getMainPage();
     const mobileActions = isMobileLayout()
         ? `<div class="main-toolbar-actions-mobile">
             <button type="button" class="main-start-btn" onclick="openStartSheet()"></button>
             <button type="button" class="main-settings-btn" onclick="toggleSidePanel()"></button>
            </div>`
         : '';
-    return `<div class="main-toolbar-stack">
-        <div class="timer-display-header-tabs" role="group" aria-label="${t('timerDisplayLabel')}">
+    const pageTabs = `<div class="main-page-tabs" role="tablist" aria-label="${t('mainPageLabel')}">
+            <button type="button" class="main-page-tab btn-adjust${page !== 'offline' ? ' btn-toggle-selected' : ''}" onclick="setMainPage('timers')">${t('mainPageTimers')}</button>
+            <button type="button" class="main-page-tab btn-adjust${page === 'offline' ? ' btn-toggle-selected' : ''}" onclick="setMainPage('offline')">${t('mainPageOffline')}</button>
+        </div>`;
+    const displayTabs = page === 'offline' ? '' : `<div class="timer-display-header-tabs" role="group" aria-label="${t('timerDisplayLabel')}">
             <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayClean() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('clean')">${t('timerDisplayClean')}</button>
             <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayColorful() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('colorful')">${t('timerDisplayColorful')}</button>
             <button type="button" class="timer-display-tab-btn btn-adjust${isTimerDisplayList() ? ' btn-toggle-selected' : ''}" onclick="setTimerDisplay('list')">${t('timerDisplayList')}</button>
-        </div>
+        </div>`;
+    return `<div class="main-toolbar-stack">
+        ${pageTabs}
+        ${displayTabs}
         ${mobileActions}
     </div>`;
+}
+
+function getMainPage() {
+    return config.mainPage === 'offline' ? 'offline' : 'timers';
+}
+
+function applyMainPage() {
+    const offline = getMainPage() === 'offline';
+    document.body.classList.toggle('main-page-offline', offline);
+    document.body.classList.toggle('main-page-timers', !offline);
+}
+
+function setMainPage(page) {
+    const next = page === 'offline' ? 'offline' : 'timers';
+    if (config.mainPage !== next) {
+        config.mainPage = next;
+        persistConfigQuiet();
+    }
+    applyMainPage();
+    syncMainTimerDisplayBar();
+    syncPanelMobileControls();
+    if (next === 'offline') renderOfflineReturnMount();
+}
+
+function switchToOfflinePage() {
+    if (getMainPage() === 'offline') return;
+    setMainPage('offline');
 }
 
 function syncMainTimerDisplayBar() {
@@ -2754,6 +2797,7 @@ const defaultConfig = {
     neonGlow: true,
     timerDisplay: 'clean',
     showAccountHeader: true,
+    mainPage: 'timers',
     offlineReturns: []
 };
 
@@ -2762,6 +2806,7 @@ if (config.undoTime === undefined) config.undoTime = 10;
 if (!localStorage.getItem(STORAGE_KEY)) config = JSON.parse(JSON.stringify(defaultConfig));
 normalizeConfig();
 applyTimerCardMinWidth();
+applyMainPage();
 
 let undoStack = [];
 let undoTimerInterval = null; 
@@ -4387,6 +4432,7 @@ function getAccMgmtPanelTintColor(acc, accColor) {
     return accColor || '#94a3b8';
 }
 
+const OFFLINE_RETURN_UNDO_LABEL = '回歸離線';
 const OFFLINE_RETURN_OFFLINE_DAYS = 14;
 const OFFLINE_RETURN_COOLDOWN_DAYS = 45;
 const OFFLINE_RETURN_LEVEL_MIN = 10;
@@ -4705,6 +4751,7 @@ function saveOfflineReturnFromForm() {
         });
     }
     persistConfigQuiet();
+    switchToOfflinePage();
     renderOfflineReturnMount();
     renderOfflineReturnFields();
     renderOfflineReturnTrackedList();
@@ -4741,8 +4788,8 @@ function markOfflineReturnTriggered(id) {
 function removeOfflineReturn(id) {
     const item = getOfflineReturnById(id);
     if (!item) return;
-    const name = item.char || item.email;
-    if (!confirm(tp('offlineReturnRemoveConfirm', { name }))) return;
+    const name = item.char || item.email || t('offlineReturnTitle');
+    triggerUndo(OFFLINE_RETURN_UNDO_LABEL, JSON.parse(JSON.stringify(item)), name);
     config.offlineReturns = getOfflineReturnList().filter(x => String(x.id) !== String(id));
     persistConfigQuiet();
     renderOfflineReturnMount();
@@ -4913,15 +4960,16 @@ function renderOfflineReturnMount() {
     if (!mount) return;
     const list = getOfflineReturnList();
     const color = config.colors.offline || '#0ea5e9';
+    mount.hidden = false;
+    mount.classList.toggle('is-empty', !list.length);
+    mount.style.setProperty('--offline-section-color', color);
     if (!list.length) {
-        mount.classList.add('is-empty');
-        mount.hidden = true;
-        mount.innerHTML = '';
+        mount.innerHTML = `<div class="offline-return-panel">
+            <h2 class="offline-return-panel-title">${t('offlineReturnTitle')}</h2>
+            <p class="offline-return-page-empty">${t('offlineReturnPageEmpty')}</p>
+        </div>`;
         return;
     }
-    mount.hidden = false;
-    mount.classList.remove('is-empty');
-    mount.style.setProperty('--offline-section-color', color);
     const cards = list.map(item => {
         const state = computeOfflineReturnState(item);
         const accColor = getAccountColor(item.email);
@@ -4934,8 +4982,9 @@ function renderOfflineReturnMount() {
 }
 
 function tickOfflineReturnCards() {
+    if (getMainPage() !== 'offline') return;
     const mount = document.getElementById('offlineReturnMount');
-    if (!mount || mount.hidden) return;
+    if (!mount || mount.classList.contains('is-empty')) return;
     getOfflineReturnList().forEach(item => {
         const card = mount.querySelector(`[data-offline-id="${item.id}"]`);
         if (!card) return;
@@ -5708,6 +5757,7 @@ function refreshMainDisplay() {
         });
     }
     applyTimerCardMinWidth();
+    applyMainPage();
     syncMainTimerDisplayBar();
     dispatchTimersToDOM();
     syncPanelMobileControls();
@@ -5988,6 +6038,17 @@ function undoAction() {
         });
         setActiveTimers(allSavedData, { immediateCloud: true });
         dispatchTimersToDOM();
+    } else if (last.label === OFFLINE_RETURN_UNDO_LABEL) {
+        const item = last.data;
+        if (item && item.id != null && !getOfflineReturnList().some(x => String(x.id) === String(item.id))) {
+            if (!Array.isArray(config.offlineReturns)) config.offlineReturns = [];
+            config.offlineReturns.push(JSON.parse(JSON.stringify(item)));
+            persistConfigQuiet();
+        }
+        setMainPage('offline');
+        renderOfflineReturnMount();
+        renderOfflineReturnFields();
+        renderOfflineReturnTrackedList();
     } else {
         config = last.data;
         saveConfig();

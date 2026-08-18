@@ -363,5 +363,9 @@
   "offlineReturnCoolRemain": "冷却剩余 {remain}",
   "offlineReturnDateFmt": "{m}月{d}日 {h}:{min}",
   "offlineReturnLoginAfter": "{date} 后可以登录",
-  "offlineReturnLoginNow": "现在就可以登录"
+  "offlineReturnLoginNow": "现在就可以登录",
+  "mainPageLabel": "主画面分页",
+  "mainPageTimers": "一般计时器",
+  "mainPageOffline": "回归离线",
+  "offlineReturnPageEmpty": "尚未追踪任何角色。请到左侧「回归离线计时」选角色后加入追踪。"
 }

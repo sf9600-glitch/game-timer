@@ -103,6 +103,21 @@ button, input, select { outline: none; -webkit-tap-highlight-color: transparent;
     gap: 6px;
     width: 100%;
 }
+.main-page-tabs {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    max-width: 420px;
+    justify-content: center;
+}
+.main-page-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 6px 10px;
+    margin-bottom: 0;
+}
 .main-toolbar-actions-mobile { display: none; }
 .main-body {
     flex: 1;
@@ -2596,6 +2611,10 @@ html.timer-display-list .timer-list-row .timer-list-hint {
         line-height: normal;
     }
     .main-toolbar { margin-bottom: 8px; }
+    .main-page-tab {
+        font-size: 0.72rem;
+        padding: 5px 8px;
+    }
     .timer-display-header-tabs .timer-display-tab-btn {
         padding: 4px 7px;
         font-size: 0.62rem;
@@ -3716,6 +3735,17 @@ body.timer-wizard-open {
     display: none;
     margin: 0;
 }
+body.main-page-timers #offlineReturnMount {
+    display: none !important;
+}
+body.main-page-offline #mainDisplay {
+    display: none;
+}
+body.main-page-offline #offlineReturnMount,
+body.main-page-offline .offline-return-mount.is-empty {
+    display: block;
+    margin-bottom: 14px;
+}
 .offline-return-panel {
     padding: 12px;
     border: 1px solid var(--border-color);
@@ -3729,6 +3759,12 @@ body.timer-wizard-open {
     font-weight: 800;
     margin: 0 0 10px;
     color: var(--text-main);
+}
+.offline-return-page-empty {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text-sub);
 }
 .offline-return-cards {
     display: flex;

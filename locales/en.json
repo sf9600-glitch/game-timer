@@ -363,5 +363,9 @@
   "offlineReturnCoolRemain": "Cooldown {remain} left",
   "offlineReturnDateFmt": "{m}/{d} {h}:{min}",
   "offlineReturnLoginAfter": "Can log in after {date}",
-  "offlineReturnLoginNow": "You can log in now"
+  "offlineReturnLoginNow": "You can log in now",
+  "mainPageLabel": "Pages",
+  "mainPageTimers": "Timers",
+  "mainPageOffline": "Return offline",
+  "offlineReturnPageEmpty": "No characters tracked yet. Open Return offline timer on the left, pick a character, then start tracking."
 }
