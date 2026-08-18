@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '84';
+const ASSET_VERSION = '85';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -4911,6 +4911,15 @@ function initOfflineReturnSectionDom() {
     renderOfflineReturnTrackedList();
 }
 
+function getOfflineReturnCharBadgeHtml(charName) {
+    if (!charName) return '';
+    const badgeColor = config.colors.offline || '#888';
+    const rgb = parseColorToRgb(badgeColor);
+    const textColor = getContrastTextColor(badgeColor);
+    const contrastClass = getRelativeLuminance(rgb.r, rgb.g, rgb.b) > 0.52 ? 'contrast-dark' : 'contrast-light';
+    return `<span class="char-title-badge ${contrastClass}" style="background-color:${badgeColor}; color:${textColor};">${charName}</span>`;
+}
+
 function getOfflineReturnCardInnerHtml(item, state) {
     const offlinePct = Math.max(0, Math.min(100, state.logoutAt ? (state.offlineMs / OFFLINE_RETURN_OFFLINE_MS) * 100 : 0));
     const coolElapsed = state.triggerAt ? Math.max(0, Date.now() - state.triggerAt) : 0;
@@ -4933,7 +4942,7 @@ function getOfflineReturnCardInnerHtml(item, state) {
     return `
         <div class="offline-return-card-head">
             <div class="offline-return-card-who">
-                ${getCharBadgeHtml(item.email, item.char)}
+                ${getOfflineReturnCharBadgeHtml(item.char)}
                 <span class="offline-return-acc-name">${escapeHtmlAttr(item.email)}</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
