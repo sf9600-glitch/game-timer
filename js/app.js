@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '86';
+const ASSET_VERSION = '87';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -5202,7 +5202,8 @@ function renderSidePanel() {
 
 function getFinishDateLabel(targetDate) {
     const now = new Date(); const target = new Date(targetDate); const diffMs = target - now;
-    const dateStr = `${target.getMonth() + 1}/${target.getDate()}`;
+    const pad = n => String(n).padStart(2, '0');
+    const dateStr = `${target.getMonth() + 1}/${target.getDate()} ${pad(target.getHours())}:${pad(target.getMinutes())}`;
     if (diffMs <= 0) return tp('dateEnded', { date: dateStr });
     if (diffMs < 60000) return tp('dateSoon', { date: dateStr });
     if (diffMs < 3600000) return tp('dateMinLater', { date: dateStr, n: Math.ceil(diffMs / 60000) });
