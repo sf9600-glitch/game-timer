@@ -1384,7 +1384,7 @@ html.timer-display-clean .clean-table {
 html.timer-display-clean .clean-table-head,
 html.timer-display-clean .clean-table-row {
     display: grid;
-    grid-template-columns: minmax(4.8em, 18%) minmax(0, 1fr) minmax(5.8em, 22%) minmax(4.8em, 20%) 28px;
+    grid-template-columns: minmax(4.8em, 18%) minmax(0, 1fr) minmax(5.8em, 22%) minmax(4.8em, 20%) 52px;
     align-items: center;
     min-height: 34px;
 }
@@ -1469,7 +1469,7 @@ html.timer-display-clean .finished-global-panel {
 @media (max-width: 768px) {
     html.timer-display-clean .clean-table-head,
     html.timer-display-clean .clean-table-row {
-        grid-template-columns: minmax(3.6em, 22%) minmax(0, 1fr) minmax(4.8em, 24%) minmax(3.6em, 22%) 24px;
+        grid-template-columns: minmax(3.6em, 22%) minmax(0, 1fr) minmax(4.8em, 24%) minmax(3.6em, 22%) 48px;
         min-height: 32px;
     }
     html.timer-display-clean .clean-col {
@@ -1511,7 +1511,7 @@ html.timer-display-list .timer-list {
 html.timer-display-list .timer-list-row {
     position: relative;
     display: grid;
-    grid-template-columns: var(--timer-list-info-w, max-content) max-content 26px;
+    grid-template-columns: var(--timer-list-info-w, max-content) max-content auto;
     column-gap: 10px;
     align-items: center;
     justify-content: start;
@@ -1667,8 +1667,17 @@ html.timer-display-list .timer-list-status {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-html.timer-display-list .timer-list-del {
+html.timer-display-list .timer-list-actions {
     grid-column: 3;
+    justify-self: start;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+html.timer-display-list .timer-list-del {
+    grid-column: unset;
     justify-self: start;
     align-self: center;
     margin: 0;
@@ -2250,6 +2259,77 @@ html.neon-glow-enabled[data-theme="dark"] .timer-card.is-warning-blinking {
     background-color: var(--danger);
     color: #fff;
     border-color: var(--danger);
+}
+
+/* 加入 Apple 行事曆（WOS） */
+.btn-calendar-add {
+    position: absolute;
+    top: 0;
+    right: 22px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    color: var(--local-raw-color);
+    border: 2px solid var(--local-raw-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    opacity: 0;
+    padding: 0;
+    transform: translate(38%, -38%) scale(0.85) translateY(-2px);
+    transition: opacity 0.2s, transform 0.15s, background-color 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 0 color-mix(in srgb, var(--local-raw-color) 55%, black);
+}
+.btn-calendar-add .btn-calendar-icon {
+    display: block;
+    pointer-events: none;
+}
+.timer-card:hover .btn-calendar-add {
+    opacity: 1;
+    transform: translate(38%, -38%) scale(1) translateY(-2px);
+}
+.btn-calendar-add:active {
+    transform: translate(38%, -38%) scale(1) translateY(0);
+    box-shadow: 0 0 0 transparent;
+    background-color: color-mix(in srgb, var(--local-raw-color) 18%, var(--card-bg));
+}
+.btn-calendar-add--inline {
+    position: static;
+    opacity: 1;
+    transform: none;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 6px;
+    border-width: 1px;
+    box-shadow: none;
+    background: transparent;
+    color: var(--text-sub);
+    flex-shrink: 0;
+}
+.btn-calendar-add--inline:active {
+    transform: none;
+    background: color-mix(in srgb, var(--local-raw-color) 12%, transparent);
+}
+.clean-col-actions,
+.timer-list-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+}
+html.timer-display-clean .clean-col-actions .timer-list-del {
+    width: 24px;
+    min-width: 24px;
+    min-height: 34px;
+    flex-shrink: 0;
+}
+html.timer-display-list .timer-list-actions .timer-list-del {
+    position: static;
 }
 
 .time-text { font-size: 1.5rem; font-family: monospace; font-weight: bold; letter-spacing: 0.5px; margin-top: 4px; color: var(--text-main); }
@@ -2956,6 +3036,10 @@ html.timer-display-list .timer-list-row .timer-list-hint {
 
 @media (hover: none) and (pointer: coarse) {
     .timer-card .btn-close-circle {
+        opacity: 1;
+        transform: translate(38%, -38%) scale(0.92);
+    }
+    .timer-card .btn-calendar-add {
         opacity: 1;
         transform: translate(38%, -38%) scale(0.92);
     }

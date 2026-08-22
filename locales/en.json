@@ -367,5 +367,9 @@
   "mainPageLabel": "Pages",
   "mainPageTimers": "Timers",
   "mainPageOffline": "Return offline",
-  "offlineReturnPageEmpty": "No characters tracked yet. Open Return offline timer on the left, pick a character, then start tracking."
+  "offlineReturnPageEmpty": "No characters tracked yet. Open Return offline timer on the left, pick a character, then start tracking.",
+  "calendarAddBtnAria": "Add to Apple Calendar (WOS)",
+  "calendarEventDefaultTitle": "Timer complete",
+  "calendarEventAccount": "Account",
+  "calendarEventFinish": "Finish time"
 }

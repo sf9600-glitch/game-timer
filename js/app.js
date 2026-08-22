@@ -10,7 +10,7 @@ const ADD_TIMER_HINT_DISMISSED_KEY = 'GameTimer_AddTimerHint_Dismissed';
 const UNDO_TEMP_KEY = 'GameTimer_Undo_Stack';
 const LOCALE_DIR = 'locales';
 /** 與 index.html 的 app.js?v= 同步，語言檔 fetch 也帶此版本避免快取舊文案 */
-const ASSET_VERSION = '85';
+const ASSET_VERSION = '86';
 const DEFAULT_LANG = 'zh-TW';
 const CHAR_UNSPECIFIED_KEY = '（未指定角色）';
 /** 新 key 在舊版 locales/*.json 快取時仍顯示正確中文 */
@@ -230,7 +230,11 @@ const LOCALE_INLINE_FALLBACK = {
         mainPageLabel: '主畫面分頁',
         mainPageTimers: '一般計時器',
         mainPageOffline: '回歸離線',
-        offlineReturnPageEmpty: '尚未追蹤任何角色。請到左側「回歸離線計時」選角色後加入追蹤。'
+        offlineReturnPageEmpty: '尚未追蹤任何角色。請到左側「回歸離線計時」選角色後加入追蹤。',
+        calendarAddBtnAria: '加入 Apple 行事曆（WOS）',
+        calendarEventDefaultTitle: '計時完成',
+        calendarEventAccount: '帳號',
+        calendarEventFinish: '完成時間'
     },
     'zh-CN': {
         panelFabOpen: '管理',
@@ -435,7 +439,11 @@ const LOCALE_INLINE_FALLBACK = {
         mainPageLabel: '主画面分页',
         mainPageTimers: '一般计时器',
         mainPageOffline: '回归离线',
-        offlineReturnPageEmpty: '尚未追踪任何角色。请到左侧「回归离线计时」选角色后加入追踪。'
+        offlineReturnPageEmpty: '尚未追踪任何角色。请到左侧「回归离线计时」选角色后加入追踪。',
+        calendarAddBtnAria: '加入 Apple 行事历（WOS）',
+        calendarEventDefaultTitle: '计时完成',
+        calendarEventAccount: '账号',
+        calendarEventFinish: '完成时间'
     }
 };
 const I18N = {};
@@ -5280,6 +5288,102 @@ function pruneExpiredSyncNewFlags() {
     if (changed) localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(next));
 }
 
+const CALENDAR_GROUP_NAME = 'WOS';
+
+function escapeIcsText(value) {
+    return String(value)
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\r?\n/g, '\\n');
+}
+
+function toIcsLocalDateTime(date) {
+    const d = new Date(date);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+function buildTimerCalendarIcs(timer) {
+    const finish = new Date(timer.finishDate);
+    if (Number.isNaN(finish.getTime())) return '';
+    const end = new Date(finish.getTime() + 15 * 60 * 1000);
+    const charKey = getCharGroupKey(timer.char);
+    const charPart = charKey && !isCharUnspecifiedKey(charKey) ? charKey : '';
+    const summaryParts = [charPart, timer.taskName].filter(Boolean);
+    const summary = escapeIcsText(summaryParts.join(' · ') || t('calendarEventDefaultTitle'));
+    const descLines = [];
+    if (timer.email) descLines.push(`${t('calendarEventAccount')}: ${timer.email}`);
+    descLines.push(`${t('calendarEventFinish')}: ${getFinishedEndLine(finish)}`);
+    const description = escapeIcsText(descLines.join('\n'));
+    const uid = `wos-timer-${timer.id}@game-timer`;
+    const stamp = toIcsLocalDateTime(new Date());
+    return [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//WOS Game Timer//CN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        `X-WR-CALNAME:${CALENDAR_GROUP_NAME}`,
+        'X-APPLE-CALENDAR-COLOR:#16a34a',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART:${toIcsLocalDateTime(finish)}`,
+        `DTEND:${toIcsLocalDateTime(end)}`,
+        `SUMMARY:${summary}`,
+        `DESCRIPTION:${description}`,
+        'BEGIN:VALARM',
+        'TRIGGER:PT0S',
+        'ACTION:DISPLAY',
+        `DESCRIPTION:${summary}`,
+        'END:VALARM',
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+}
+
+function downloadCalendarIcs(ics, filename) {
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const ua = navigator.userAgent || '';
+    const isAppleMobile = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    try {
+        if (isAppleMobile) {
+            window.location.assign(url);
+        } else {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.rel = 'noopener';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+    } finally {
+        setTimeout(() => URL.revokeObjectURL(url), isAppleMobile ? 60000 : 2000);
+    }
+}
+
+function exportTimerToCalendar(timerId) {
+    const id = Number(timerId);
+    const timer = getActiveTimers().find(item => item.id === id);
+    if (!timer) return;
+    const ics = buildTimerCalendarIcs(timer);
+    if (!ics) return;
+    downloadCalendarIcs(ics, `${CALENDAR_GROUP_NAME}-${id}.ics`);
+}
+
+function getCalendarIconSvg() {
+    return `<svg class="btn-calendar-icon" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" focusable="false"><rect x="1.5" y="2.5" width="13" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.2"/><line x1="5" y1="1.2" x2="5" y2="4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="11" y1="1.2" x2="11" y2="4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+}
+
+function getTimerCalendarBtnHtml(timerId, variant = 'card') {
+    const label = escapeHtmlAttr(t('calendarAddBtnAria'));
+    const extraClass = variant === 'inline' ? ' btn-calendar-add--inline' : '';
+    return `<button type="button" class="btn-calendar-add btn-press-3d${extraClass}" onclick="exportTimerToCalendar(${timerId})" aria-label="${label}" title="${label}">${getCalendarIconSvg()}</button>`;
+}
+
 function buildActiveTimerCard(t, index) {
     const card = document.createElement('div');
     card.className = 'timer-card timer-card--active';
@@ -5290,6 +5394,7 @@ function buildActiveTimerCard(t, index) {
     card.innerHTML = `
         ${getSyncNewBadgeHtml(t)}
         <div class="timer-card-bg"></div>
+        ${getTimerCalendarBtnHtml(t.id)}
         <button class="btn-close-circle" onclick="delTask(${t.id})">×</button>
         <div class="timer-card-inner">
             <div class="timer-card-progress-track" aria-hidden="true"><div class="timer-card-progress-fill"></div></div>
@@ -5375,7 +5480,7 @@ function buildActiveTimerCleanRow(timer) {
         <span class="clean-col clean-col-task">${timer.taskName}</span>
         <span class="clean-col clean-col-remain timer-list-time">00:00:00</span>
         <span class="clean-col clean-col-end timer-list-hint">--</span>
-        <button type="button" class="clean-col-del timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>`;
+        <span class="clean-col clean-col-del clean-col-actions">${getTimerCalendarBtnHtml(timer.id, 'inline')}<button type="button" class="clean-col-del timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button></span>`;
     return row;
 }
 
@@ -5425,7 +5530,7 @@ function buildActiveTimerListRow(timer) {
                 <div class="timer-list-time">00:00:00</div>
                 <div class="timer-list-hint">--</div>
             </div>
-            <button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button>
+            <div class="timer-list-actions">${getTimerCalendarBtnHtml(timer.id, 'inline')}<button type="button" class="timer-list-del" onclick="delTask(${timer.id})" aria-label="刪除">×</button></div>
         </div>`;
     return row;
 }

@@ -367,5 +367,9 @@
   "mainPageLabel": "主画面分页",
   "mainPageTimers": "一般计时器",
   "mainPageOffline": "回归离线",
-  "offlineReturnPageEmpty": "尚未追踪任何角色。请到左侧「回归离线计时」选角色后加入追踪。"
+  "offlineReturnPageEmpty": "尚未追踪任何角色。请到左侧「回归离线计时」选角色后加入追踪。",
+  "calendarAddBtnAria": "加入 Apple 行事历（WOS）",
+  "calendarEventDefaultTitle": "计时完成",
+  "calendarEventAccount": "账号",
+  "calendarEventFinish": "完成时间"
 }
