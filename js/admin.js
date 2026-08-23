@@ -119,8 +119,16 @@ function showForbiddenView(email) {
     hide($('adminLoginCard'));
     show($('adminForbiddenCard'));
     hide($('adminDashboard'));
-    const line = $('adminUserLine');
-    if (line) line.textContent = email ? `目前登入：${email}` : '';
+    const forbiddenEmail = $('adminForbiddenEmail');
+    if (forbiddenEmail) {
+        if (email) {
+            forbiddenEmail.textContent = `目前登入：${email}`;
+            show(forbiddenEmail);
+        } else {
+            forbiddenEmail.textContent = '';
+            hide(forbiddenEmail);
+        }
+    }
 }
 
 function showDashboardView(email) {
