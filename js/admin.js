@@ -73,6 +73,55 @@ function renderStats(data) {
     `).join('');
 }
 
+function renderVisitorStats(data) {
+    const grid = $('adminVisitorStatsGrid');
+    if (!grid) return;
+    const cards = [
+        { label: '到訪總次數', value: data.total ?? 0 },
+        { label: '不重複 IP', value: data.unique_ips ?? 0 },
+        { label: '今日到訪', value: data.today ?? 0 }
+    ];
+    grid.innerHTML = cards.map(card => `
+        <div class="admin-stat-card">
+            <div class="admin-stat-label">${card.label}</div>
+            <div class="admin-stat-value">${card.value}</div>
+        </div>
+    `).join('');
+}
+
+function formatCountryLabel(visitor) {
+    const name = visitor.country_name || '';
+    const code = visitor.country_code || '';
+    if (name && code && name !== code) return `${name} (${code})`;
+    if (name) return name;
+    if (code) return code;
+    return '—';
+}
+
+function renderVisitors(visitors) {
+    const body = $('adminVisitorBody');
+    const empty = $('adminVisitorEmpty');
+    const meta = $('adminVisitorMeta');
+    const list = Array.isArray(visitors) ? visitors : [];
+    if (meta) meta.textContent = `最近 ${list.length} 筆`;
+    if (!body) return;
+    if (!list.length) {
+        body.innerHTML = '';
+        show(empty);
+        return;
+    }
+    hide(empty);
+    body.innerHTML = list.map((visitor, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(visitor.ip || '—')}</td>
+            <td>${escapeHtml(formatCountryLabel(visitor))}</td>
+            <td>${formatDateTime(visitor.visited_at)}</td>
+            <td>${escapeHtml(visitor.page_path || '—')}</td>
+        </tr>
+    `).join('');
+}
+
 function renderUsers(users) {
     const body = $('adminUsersBody');
     const empty = $('adminEmpty');
@@ -151,10 +200,24 @@ async function loadRegistrationStats(sb) {
     return data || {};
 }
 
+async function loadVisitorStats(sb) {
+    const { data, error } = await sb.rpc('admin_get_visitor_stats');
+    if (error) throw error;
+    return data || {};
+}
+
 async function refreshDashboard(sb, email) {
-    const stats = await loadRegistrationStats(sb);
+    const [stats, visitors] = await Promise.all([
+        loadRegistrationStats(sb),
+        loadVisitorStats(sb).catch(err => {
+            console.error(err);
+            return { total: 0, unique_ips: 0, today: 0, visitors: [] };
+        })
+    ]);
     renderStats(stats);
     renderUsers(stats.users);
+    renderVisitorStats(visitors);
+    renderVisitors(visitors.visitors);
     showDashboardView(email);
 }
 

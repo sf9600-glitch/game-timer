@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="robots" content="noindex, nofollow">
     <title>管理後台 · 註冊統計</title>
-    <link rel="stylesheet" href="css/admin.css?v=2">
+    <link rel="stylesheet" href="css/admin.css?v=3">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -13,7 +13,7 @@
         <header class="admin-header">
             <div>
                 <h1 class="admin-title">管理後台</h1>
-                <p class="admin-subtitle">雲端帳號註冊統計（不含未登入的本機使用者）</p>
+                <p class="admin-subtitle">雲端帳號註冊統計與訪客到訪紀錄</p>
             </div>
             <a class="admin-back-link" href="index.html">← 回計時器</a>
         </header>
@@ -57,6 +57,30 @@
 
             <div class="admin-stats-grid" id="adminStatsGrid"></div>
 
+            <div class="admin-stats-grid" id="adminVisitorStatsGrid"></div>
+
+            <section class="admin-card admin-table-card">
+                <div class="admin-table-head">
+                    <h2 class="admin-card-title">訪客到訪紀錄</h2>
+                    <p class="admin-table-meta" id="adminVisitorMeta"></p>
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table" id="adminVisitorTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>IP</th>
+                                <th>國籍</th>
+                                <th>到訪時間</th>
+                                <th>頁面</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminVisitorBody"></tbody>
+                    </table>
+                </div>
+                <p class="admin-empty" id="adminVisitorEmpty" hidden>尚無訪客紀錄。請先在 Supabase 執行 supabase/visitor-stats.sql，並讓使用者開啟計時器主頁。</p>
+            </section>
+
             <section class="admin-card admin-table-card">
                 <div class="admin-table-head">
                     <h2 class="admin-card-title">註冊名單</h2>
@@ -85,6 +109,6 @@
         <p class="admin-footnote">首次使用請在 Supabase 執行 <code>supabase/admin-stats.sql</code>，並將你的 Email 加入 <code>admin_allowlist</code>。</p>
     </main>
 
-    <script src="js/admin.js?v=2"></script>
+    <script src="js/admin.js?v=3"></script>
 </body>
 </html>

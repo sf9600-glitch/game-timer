@@ -109,3 +109,19 @@ on conflict (email) do nothing;
 可看到：註冊總數、近 7 日活躍、每位使用者的 Email、註冊時間、最後登入、是否有雲端資料等。
 
 **注意**：這只能統計「有註冊雲端帳號」的人；沒登入、只用本機的使用者無法統計。
+
+---
+
+## 訪客到訪紀錄（IP、國籍、時間）
+
+1. 到 Supabase **SQL Editor**，執行 `supabase/visitor-stats.sql` 全部內容。
+2. （選用，IP 更準）部署 Edge Function：
+
+```bash
+supabase functions deploy log-visit --no-verify-jwt
+```
+
+3. 使用者開啟計時器主頁後，會自動記錄到訪（同一 IP 30 分鐘內只記一次）。
+4. 在管理後台 `admin.html` 可看到：**IP、國籍、到訪時間、頁面**。
+
+若未部署 Edge Function，會改用備援方式記錄，功能仍可用。
