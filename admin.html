@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow">
+    <title>管理後台 · 註冊統計</title>
+    <link rel="stylesheet" href="css/admin.css?v=1">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <main class="admin-page">
+        <header class="admin-header">
+            <div>
+                <h1 class="admin-title">管理後台</h1>
+                <p class="admin-subtitle">雲端帳號註冊統計（不含未登入的本機使用者）</p>
+            </div>
+            <a class="admin-back-link" href="index.html">← 回計時器</a>
+        </header>
+
+        <section class="admin-card" id="adminLoginCard">
+            <h2 class="admin-card-title">管理員登入</h2>
+            <p class="admin-hint">請使用已加入 Supabase 管理白名單的 Email 與密碼登入。</p>
+            <div class="admin-form-grid">
+                <label class="admin-field">
+                    <span>Email</span>
+                    <input type="email" id="adminEmail" autocomplete="username" placeholder="admin@example.com">
+                </label>
+                <label class="admin-field">
+                    <span>密碼</span>
+                    <input type="password" id="adminPassword" autocomplete="current-password" placeholder="密碼">
+                </label>
+            </div>
+            <div class="admin-actions">
+                <button type="button" class="admin-btn admin-btn--primary" id="adminSignInBtn">登入</button>
+            </div>
+            <p class="admin-status" id="adminLoginStatus" hidden></p>
+        </section>
+
+        <section class="admin-card" id="adminForbiddenCard" hidden>
+            <h2 class="admin-card-title">無管理權限</h2>
+            <p class="admin-hint">此帳號尚未加入管理白名單。請到 Supabase SQL Editor 執行 <code>supabase/admin-stats.sql</code> 並加入你的 Email。</p>
+            <div class="admin-actions">
+                <button type="button" class="admin-btn" id="adminForbiddenSignOutBtn">登出</button>
+            </div>
+        </section>
+
+        <section id="adminDashboard" hidden>
+            <div class="admin-toolbar">
+                <div class="admin-user-line" id="adminUserLine"></div>
+                <div class="admin-actions admin-actions--inline">
+                    <button type="button" class="admin-btn" id="adminRefreshBtn">重新整理</button>
+                    <button type="button" class="admin-btn admin-btn--ghost" id="adminSignOutBtn">登出</button>
+                </div>
+            </div>
+
+            <div class="admin-stats-grid" id="adminStatsGrid"></div>
+
+            <section class="admin-card admin-table-card">
+                <div class="admin-table-head">
+                    <h2 class="admin-card-title">註冊名單</h2>
+                    <p class="admin-table-meta" id="adminTableMeta"></p>
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table" id="adminUsersTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Email</th>
+                                <th>註冊時間</th>
+                                <th>最後登入</th>
+                                <th>信箱驗證</th>
+                                <th>雲端資料</th>
+                                <th>推播</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersBody"></tbody>
+                    </table>
+                </div>
+                <p class="admin-empty" id="adminEmpty" hidden>目前尚無註冊帳號。</p>
+            </section>
+        </section>
+
+        <p class="admin-footnote">首次使用請在 Supabase 執行 <code>supabase/admin-stats.sql</code>，並將你的 Email 加入 <code>admin_allowlist</code>。</p>
+    </main>
+
+    <script src="js/admin.js?v=1"></script>
+</body>
+</html>

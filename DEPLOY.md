@@ -86,3 +86,26 @@ python3 -m http.server 8765
 - **Cloudflare Pages**：連 GitHub repo 自動部署  
 
 記得部署後更新 Supabase 的 Site URL。
+
+---
+
+## 管理後台（看註冊人數）
+
+1. 到 Supabase **SQL Editor**，執行 `supabase/admin-stats.sql` 全部內容。
+2. 在同一個 SQL Editor 加入你的管理員 Email（改成你自己的）：
+
+```sql
+insert into public.admin_allowlist (email)
+values ('你的Email@example.com')
+on conflict (email) do nothing;
+```
+
+3. 部署網站後，用瀏覽器開啟：
+
+`https://你的帳號.github.io/game-timer/admin.html`
+
+4. 用**上面那組 Email + 密碼**登入（需先在 App 註冊過，或到 Authentication → Users 建立）。
+
+可看到：註冊總數、近 7 日活躍、每位使用者的 Email、註冊時間、最後登入、是否有雲端資料等。
+
+**注意**：這只能統計「有註冊雲端帳號」的人；沒登入、只用本機的使用者無法統計。
